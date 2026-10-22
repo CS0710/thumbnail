@@ -8,34 +8,55 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#15171C">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap">
 <link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js" crossorigin="anonymous"></script>
 <style>
-/* Layout: workbench — tool rail · drawer · cutting-mat stage · inspector */
+/* Layout: workbench — tool rail · drawer · stage · inspector.
+   Design: monochrome first (white ground, grey text, near-black actions); blue only for the one emphasised action,
+   yellow only for the mark. Pills for buttons and toggles, 4px for small chips, hairlines instead of boxes,
+   soft shadow only on floating surfaces, focus = white 4px ring inside a 2px near-black outline. */
 :root{
-  --bg:#E8EAEE; --panel:#FFFFFF; --panel-2:#F2F3F6; --ink:#15171C; --muted:#626875; --line:#D8DBE2;
-  --mat:#D9DCE2; --mat-dot:#C3C8D1; --accent:#FFD21F; --accent-ink:#15171C; --hot:#EE3124; --ok:#178A4B;
-  --focus:#2F6BFF;
-  --display:"Black Han Sans","Pretendard",sans-serif;
+  --bg:#FFFFFF; --panel:#FFFFFF; --panel-2:#F5F5F5; --ink:#111111; --text:#484848; --muted:#767676; --faint:#929292; --line:#DFDFDF;
+  --mat:#F5F5F5; --mat-dot:#F5F5F5;
+  --primary:#111111; --primary-hover:#333333; --primary-pressed:#000000; --on-primary:#FFFFFF;
+  --sec:#F5F5F5; --sec-hover:#DFDFDF; --sec-pressed:#CCCCCC;
+  --emph:#0058A3; --emph-hover:#004F93; --emph-pressed:#003E72; --on-emph:#FFFFFF;
+  --brand-yellow:#FFDB00;
+  --accent:#111111; --accent-ink:#FFFFFF;
+  --hot:#E00751; --ok:#0A8A00; --caution:#F26A2F; --focus:#111111; --ring:#FFFFFF;
+  --float-shadow:0 4px 16px rgba(0,0,0,.1);
+  --display:"Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --body:"Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --mono:"Pretendard",system-ui,sans-serif;
   --emoji:"Noto Color Emoji","Apple Color Emoji","Segoe UI Emoji",sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0F1014; --panel:#181A20; --panel-2:#21242C; --ink:#ECEEF2; --muted:#9BA1AD; --line:#2A2E37;
-    --mat:#0A0B0E; --mat-dot:#1F222A; --hot:#FF4B3E; --ok:#3CC97A; --focus:#7AA2FF; color-scheme:dark;
+    --bg:#111111; --panel:#161616; --panel-2:#242424; --ink:#F5F5F5; --text:#CCCCCC; --muted:#A3A3A3; --faint:#7A7A7A; --line:#333333;
+    --mat:#0B0B0B; --mat-dot:#0B0B0B;
+    --primary:#F5F5F5; --primary-hover:#DFDFDF; --primary-pressed:#FFFFFF; --on-primary:#111111;
+    --sec:#242424; --sec-hover:#333333; --sec-pressed:#444444;
+    --emph:#2E7FD0; --emph-hover:#3D8DDB; --emph-pressed:#1F6CB8; --on-emph:#FFFFFF;
+    --accent:#F5F5F5; --accent-ink:#111111;
+    --hot:#FF4D7D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F5F5F5; --ring:#111111;
+    --float-shadow:0 4px 16px rgba(0,0,0,.5); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0F1014; --panel:#181A20; --panel-2:#21242C; --ink:#ECEEF2; --muted:#9BA1AD; --line:#2A2E37;
-  --mat:#0A0B0E; --mat-dot:#1F222A; --hot:#FF4B3E; --ok:#3CC97A; --focus:#7AA2FF; color-scheme:dark;
+  --bg:#111111; --panel:#161616; --panel-2:#242424; --ink:#F5F5F5; --text:#CCCCCC; --muted:#A3A3A3; --faint:#7A7A7A; --line:#333333;
+  --mat:#0B0B0B; --mat-dot:#0B0B0B;
+  --primary:#F5F5F5; --primary-hover:#DFDFDF; --primary-pressed:#FFFFFF; --on-primary:#111111;
+  --sec:#242424; --sec-hover:#333333; --sec-pressed:#444444;
+  --emph:#2E7FD0; --emph-hover:#3D8DDB; --emph-pressed:#1F6CB8; --on-emph:#FFFFFF;
+  --accent:#F5F5F5; --accent-ink:#111111;
+  --hot:#FF4D7D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F5F5F5; --ring:#111111;
+  --float-shadow:0 4px 16px rgba(0,0,0,.5); color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -139,6 +160,8 @@ input[type=number].num{width:70px;height:30px;border:1px solid var(--line);borde
 
 /* layers */
 .layers{display:flex;flex-direction:column;gap:2px}
+.lhead{display:flex;align-items:center;gap:6px}
+.lhead .btn{margin-left:auto;height:24px;text-transform:none;letter-spacing:0;font-weight:500}
 .layer{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;cursor:pointer;min-width:0}
 .layer:hover{background:var(--panel-2)}
 .layer.on{background:var(--panel-2);box-shadow:inset 0 0 0 1.5px var(--ink)}
@@ -209,11 +232,18 @@ input[type=number].num{width:70px;height:30px;border:1px solid var(--line);borde
 .empty{color:var(--muted);font-size:13px;padding:14px;border:1px dashed var(--line);border-radius:10px;text-align:center;margin-top:12px}
 
 /* font popover */
-.pop{position:fixed;z-index:50;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:min(320px,calc(100vw - 24px));max-height:min(520px,70vh);display:flex;flex-direction:column}
+.pop{position:fixed;z-index:50;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);width:min(360px,calc(100vw - 24px));max-height:min(520px,70vh);display:flex;flex-direction:column}
 .pop .ph-head{padding:10px;border-bottom:1px solid var(--line)}
 .pop .list{overflow:auto;padding:6px}
 .pop .grp{font-size:11px;letter-spacing:.06em;color:var(--muted);padding:10px 8px 4px;text-transform:uppercase}
-.fopt{display:flex;justify-content:space-between;align-items:baseline;width:100%;padding:7px 8px;border-radius:7px;font-size:21px;line-height:1.25;text-align:left;gap:8px}
+.frow{display:flex;align-items:center;gap:2px}
+.fstar,.fdel{flex:none;width:28px;height:28px;border-radius:7px;display:grid;place-items:center;color:var(--muted);font-size:16px;line-height:1}
+.fstar[aria-pressed="true"]{color:#E0A800}
+.fstar:hover,.fdel:hover{background:var(--panel-2);color:var(--ink)}
+.fdel svg.i{width:14px;height:14px}
+.fdel.arm{background:var(--hot);color:#fff}
+.fopt{display:flex;justify-content:space-between;align-items:baseline;flex:1;min-width:0;padding:7px 8px;border-radius:7px;font-size:21px;line-height:1.25;text-align:left;gap:8px}
+.fopt span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
 .fopt small{font:12px var(--body);color:var(--muted);white-space:nowrap}
 .fopt:hover,.fopt.on{background:var(--panel-2)}
 
@@ -394,6 +424,179 @@ input[type=number].num.wide{width:96px}
   .stage{height:min(52vh,calc(56.25vw + 90px))}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+/* ================= design layer (overrides the base rules above) ================= */
+body{color:var(--text);font:14px/1.5 var(--body)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:4px;box-shadow:0 0 0 4px var(--ring)}
+h2,h3,strong,b{color:var(--ink)}
+
+/* top bar: white, hairline, text links */
+.top{gap:4px;padding-block:10px;border-bottom:1px solid var(--line)}
+.logo{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em;color:var(--ink);margin-right:14px}
+.logo-mark{width:32px;height:22px;border-radius:4px;background:var(--brand-yellow);box-shadow:none}
+.logo-mark::after{left:12px;top:6px;border-left:9px solid #111111;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.sep{background:var(--line)}
+
+/* buttons: pills. default = secondary grey, .primary = near-black, .emph = blue (one per screen) */
+.btn{height:36px;padding:0 16px;border-radius:64px;border:0;background:var(--sec);color:var(--ink);font-weight:700;font-size:13.5px;transition:background-color .12s}
+.btn:hover{background:var(--sec-hover)}
+.btn:active{background:var(--sec-pressed)}
+.btn.primary{background:var(--primary);color:var(--on-primary);filter:none}
+.btn.primary:hover{background:var(--primary-hover);filter:none}
+.btn.primary:active{background:var(--primary-pressed)}
+.btn.emph{background:var(--emph);color:var(--on-emph)}
+.btn.emph:hover{background:var(--emph-hover)}
+.btn.emph:active{background:var(--emph-pressed)}
+.btn.ghost{background:transparent;color:var(--text);font-weight:400}
+.btn.ghost:hover{background:transparent;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.btn.ghost:active{color:var(--ink)}
+.btn.icon{width:36px;padding:0}
+.btn.icon.ghost:hover,.top .btn.ghost.icon:hover{background:var(--sec);text-decoration:none}
+.top .btn.ghost{height:40px;padding:0 12px}
+.top .btn.ghost[aria-pressed="true"]{background:transparent;color:var(--ink);font-weight:700;box-shadow:inset 0 -2px 0 var(--ink);border-radius:0}
+.btn.sm{height:32px;padding:0 14px;font-size:13px}
+.btn[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
+.btn.danger{color:var(--hot)}
+.btn.ghost.danger:hover{color:var(--hot)}
+.btn:disabled{opacity:.35}
+.sizebtn{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--faint);font-weight:400}
+.sizebtn:hover{background:transparent;box-shadow:inset 0 0 0 1px var(--ink)}
+.menu{border-radius:8px;border:0;box-shadow:var(--float-shadow),0 0 0 1px var(--line);padding:8px}
+.menu button{border-radius:4px;color:var(--text);padding:10px 12px}
+.menu button:hover{background:var(--sec);color:var(--ink)}
+
+/* tool rail: grey labels, the open one in near-black with a bar */
+.rail{gap:0;padding:8px 0;border-right:1px solid var(--line)}
+.rail button{border-radius:0;padding:10px 2px;color:var(--text);font-size:11.5px;position:relative}
+.rail button span.ic{border-radius:64px;width:40px;height:30px}
+.rail button:hover{color:var(--ink)}
+.rail button:hover span.ic{background:var(--sec)}
+.rail button[aria-selected="true"]{color:var(--ink);font-weight:700}
+.rail button[aria-selected="true"] span.ic{background:var(--primary);color:var(--on-primary)}
+
+/* panels */
+.drawer,.insp{padding:20px 20px 48px}
+.drawer{border-right:1px solid var(--line)}
+.insp{border-left:1px solid var(--line)}
+.drawer h2{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:-.01em;margin:0 0 16px}
+.drawer h3,.insp h3,.szgrp h3,.mh{font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink);font-weight:700;margin:24px 0 8px}
+.insp-title{font-family:var(--display);font-weight:700;font-size:18px;color:var(--ink)}
+.hint{color:var(--muted);font-size:12.5px;line-height:1.55}
+.divider{margin:24px 0 0}
+.chip{border-radius:4px;background:var(--sec);color:var(--text);font-weight:400}
+
+/* fields: white, 1px grey frame, 4px corners; frame darkens on hover, near-black on focus */
+.txt,.sel,textarea.txt,input[type=number].num,.previews-head input,.fontbtn{background:var(--panel);border:1px solid var(--faint);border-radius:4px;color:var(--ink)}
+.txt,.sel{height:40px;padding:0 12px}
+.txt:hover,.sel:hover,textarea.txt:hover,input[type=number].num:hover,.fontbtn:hover{border-color:var(--text)}
+.txt:focus,.sel:focus,textarea.txt:focus,input[type=number].num:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1px var(--ink)}
+input[type=number].num{height:32px;font:400 13px var(--mono);font-variant-numeric:tabular-nums}
+.fontbtn{height:44px;padding:0 12px}
+.field>label,.lbl{font-size:13px;color:var(--text)}
+.lbl output{font:700 12.5px var(--mono);color:var(--ink)}
+input[type=range]{accent-color:var(--primary)}
+.tog{color:var(--text);font-size:13px}
+.tog input{accent-color:var(--primary);width:16px;height:16px}
+
+/* toggles: pill groups, the chosen one filled near-black */
+.seg{border:0;border-radius:64px;padding:3px;gap:2px;background:var(--sec)}
+.seg button{height:30px;border-radius:64px;font-size:12.5px;color:var(--text);padding:0 10px}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);font-weight:700;box-shadow:none}
+.seg.grid3,.seg.grid2{border-radius:20px}
+.seg.grid3 button,.seg.grid2 button{border-radius:64px}
+.chips button{height:32px;padding:0 14px;border-radius:64px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:13px}
+.chips button:hover{border-color:var(--ink);background:var(--panel)}
+.chips button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+
+/* colours */
+.clr{gap:6px}
+.clr .sw{width:24px;height:24px;box-shadow:inset 0 0 0 1px rgba(128,128,128,.45)}
+.clr .sw:hover{transform:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.18),0 0 0 2px var(--panel),0 0 0 3px var(--ink)}
+.clr input[type=color]{border-color:var(--faint);border-radius:4px}
+.clr .eyed{border-radius:64px;border-color:var(--line);width:30px;height:26px}
+
+/* stage */
+.stage{background-color:var(--mat);background-image:none}
+.canvas-wrap{box-shadow:var(--float-shadow)}
+.dims{color:var(--muted);font:400 12px var(--mono)}
+.drop-hint{background:rgba(0,88,163,.08);border:2px dashed var(--emph);color:var(--ink)}
+.drawchip{background:var(--primary);color:var(--on-primary);border-radius:64px;font-weight:700}
+.vbar{padding-top:12px}
+.vtab{height:32px;border-radius:64px;border:0;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);font-weight:700;padding:0 8px 0 14px}
+.vtab[aria-selected="true"]{background:var(--primary);color:var(--on-primary);box-shadow:none}
+.vtab.arm{background:var(--hot);color:#fff}
+.vadd{height:32px;border-radius:64px;border:0;background:transparent;color:var(--text);padding:0 12px}
+.vadd:hover{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.previews{border-top:1px solid var(--line)}
+.previews-head strong{font-size:14px}
+.previews-head input{height:34px}
+.pv .lab{font-size:12px;color:var(--muted);letter-spacing:0}
+.pv-thumb{border-radius:8px}
+
+/* drawer contents: flat, no card shadows */
+.tpl{border-radius:4px;box-shadow:none}
+.tpl:hover{outline:2px solid var(--ink);outline-offset:2px}
+.addtext button{border:0;border-radius:4px;background:var(--sec);padding:12px 14px}
+.addtext button:hover{background:var(--sec-hover);border:0}
+.preset{border-radius:4px;box-shadow:none}
+.shapes button{border-radius:4px;background:var(--sec)}
+.shapes button:hover{outline:0;background:var(--sec-hover)}
+.icons button{border-radius:4px}
+.emojis button{border-radius:4px}
+.emojis button:hover{background:var(--sec)}
+.ph{border-radius:4px}
+.ph .acts button{border-radius:64px;background:rgba(17,17,17,.85)}
+.ph .lic{border-radius:4px}
+.lib .it{border-radius:4px}
+.dz{border:1px dashed var(--faint);border-radius:4px;color:var(--text);padding:24px 16px}
+.dz.over{border-color:var(--emph);background:rgba(0,88,163,.06)}
+.empty{border:0;background:var(--sec);border-radius:4px;color:var(--text)}
+.bgs button{border-radius:4px}
+.frames button{border-radius:2px}
+.szopt{border-radius:4px;border:1px solid var(--line)}
+.szopt[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--panel)}
+.szbox i{border-color:var(--text);border-radius:2px}
+
+/* layers */
+.layer{border-radius:4px;padding:6px 8px}
+.layer:hover{background:var(--sec)}
+.layer.on{background:var(--sec);box-shadow:inset 3px 0 0 var(--ink)}
+.layer.on .nm{color:var(--ink);font-weight:700}
+.layer .lk{border-radius:4px;background:var(--sec)}
+.layer button{border-radius:64px}
+.layer button:hover{background:var(--sec-hover)}
+
+/* floating surfaces: soft shadow, 8px corners */
+.modal{background:rgba(17,17,17,.5)}
+.dlg{border-radius:8px;box-shadow:var(--float-shadow);padding:24px}
+.dlg h2{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em;color:var(--ink)}
+.dlg .acts{margin-top:24px}
+.pop{border-radius:8px;border:0;box-shadow:var(--float-shadow),0 0 0 1px var(--line)}
+.fopt{border-radius:4px}
+.fopt:hover,.fopt.on{background:var(--sec)}
+.fopt.on small{color:var(--ink);font-weight:700}
+.fstar,.fdel{border-radius:64px}
+.fstar[aria-pressed="true"]{color:var(--ink)}
+.toast{background:var(--primary);color:var(--on-primary);border-radius:4px;box-shadow:var(--float-shadow);font-size:14px;padding:12px 18px}
+.kbd{font:400 11.5px var(--mono);border:1px solid var(--line);border-bottom-width:1px;border-radius:4px;background:var(--panel);color:var(--ink)}
+.exp-prev{border-radius:4px}
+.meter{font:700 13px var(--body)}
+.sev{border-radius:4px;font-weight:700}
+.sev.bad{background:var(--hot)}
+.sev.warn{background:var(--caution)}
+.sev.ok{background:var(--ok)}
+.sev.info{background:var(--text)}
+.chk-list li{border-radius:4px;background:var(--sec)}
+.i18n-wrap{border-radius:4px}
+.i18n th{background:var(--sec);color:var(--ink)}
+.i18n textarea{border:1px solid var(--faint);border-radius:4px}
+.cut-view{border-radius:4px}
+.bar{border-radius:64px;background:var(--sec)}
+.bar i{background:var(--emph)}
+.steps summary{color:var(--ink)}
+.mycol{border-radius:64px}
+.menu-sep{background:var(--line);margin:6px 4px}
 </style>
 </head>
 <body>
@@ -477,7 +680,7 @@ input[type=number].num.wide{width:96px}
         <button role="menuitem" id="settingsBtn"><svg class="i"><use href="#i-key"/></svg>설정 (사진 키 · 내 색 · 드라이브)</button>
       </div>
     </div>
-    <button class="btn primary" id="exportBtn"><svg class="i"><use href="#i-down"/></svg>내보내기</button>
+    <button class="btn emph" id="exportBtn"><svg class="i"><use href="#i-down"/></svg>내보내기</button>
     <input type="file" id="projFile" accept=".json,application/json" hidden>
   </header>
 
@@ -520,9 +723,9 @@ input[type=number].num.wide{width:96px}
         <p class="hint" style="margin-top:0">글자를 선택한 상태면 그 글자에, 아니면 새 글자로 넣어요.</p>
         <div class="presets" id="presetGrid" style="margin-top:8px"></div>
         <h3>글꼴 직접 올리기</h3>
-        <p class="hint" style="margin-top:0">눈누 등에서 받은 TTF·OTF·WOFF 파일을 올리면 이 브라우저에 저장돼요. 상업적 사용 허용 여부는 폰트마다 확인하세요.</p>
+        <p class="hint" style="margin-top:0">TTF·OTF·WOFF 파일이나 <b>받은 ZIP 그대로</b> 올리면 이 브라우저에 저장돼요. Bold·Light처럼 굵기만 다른 파일은 한 글꼴로 묶어요. 상업적 사용 허용 여부는 폰트마다 확인하세요.</p>
         <button class="btn sm" id="fontUpBtn" style="margin-top:8px"><svg class="i"><use href="#i-upload"/></svg>폰트 파일 올리기</button>
-        <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2" multiple hidden>
+        <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2,.ttc,.zip" multiple hidden>
       </div>
 
       <!-- photo -->
@@ -627,6 +830,8 @@ input[type=number].num.wide{width:96px}
           <div style="font-size:12px">캔버스에 바로 끌어다 놓거나 <span class="kbd">Ctrl</span>+<span class="kbd">V</span>로 붙여넣어도 돼요</div>
         </div>
         <input type="file" id="upFile" accept="image/*" multiple hidden>
+        <label class="tog" style="margin-top:10px"><input type="checkbox" id="upLock">올린 이미지는 바로 자리 고정 (잠그기)</label>
+        <p class="hint" style="margin-top:4px">여러 장을 한 번에 올리면 겹치지 않게 칸을 나눠 놓아요. 잠근 이미지는 눌러도 선택되지 않아서, 다른 걸 옮기다 같이 움직이지 않아요.</p>
         <h3>보관함 <span class="chip" id="libCount">0</span></h3>
         <div class="lib" id="libGrid"></div>
         <div class="empty" id="libEmpty">올린 이미지는 이 브라우저에 보관돼서 다음에도 바로 쓸 수 있어요.</div>
@@ -707,6 +912,7 @@ input[type=number].num.wide{width:96px}
           <span class="kbd">Ctrl D</span><span>복제</span>
           <span class="kbd">Ctrl C · V</span><span>복사 · 붙여넣기 (이미지도)</span>
           <span class="kbd">Delete</span><span>지우기</span>
+          <span class="kbd">Ctrl L</span><span>잠그기 · 풀기 (잠근 건 눌러도 안 잡혀요)</span>
           <span class="kbd">← → ↑ ↓</span><span>1px 이동 (Shift는 10px)</span>
         </div>
       </div>
@@ -716,6 +922,7 @@ input[type=number].num.wide{width:96px}
         <div class="insp-title">텍스트 <span class="chip" id="selHint" hidden>선택한 글자에만 적용</span></div>
         <div class="field"><label for="tText">내용</label><textarea class="txt" id="tText" rows="2"></textarea></div>
         <div class="field"><span class="lbl">글꼴</span><button class="fontbtn" id="tFont"><span id="tFontName">검은고딕</span><small>바꾸기</small></button></div>
+        <div class="field" id="tWeightF" hidden><label for="tWeight">굵기</label><select class="sel" id="tWeight"></select></div>
         <div class="field"><span class="lbl">크기 <span class="row"><input type="number" class="num" id="tSizeN" min="8" max="600"></span></span><input type="range" id="tSize" min="12" max="400"></div>
         <div class="row" style="margin-top:10px">
           <div class="seg" style="flex:1">
@@ -793,7 +1000,7 @@ input[type=number].num.wide{width:96px}
       <!-- multi -->
       <div id="pMulti" hidden>
         <div class="insp-title"><span id="multiN">2</span>개 선택됨</div>
-        <div class="row" style="margin-top:10px"><button class="btn sm" id="groupBtn">한 덩어리로 묶기</button></div>
+        <div class="row" style="margin-top:10px"><button class="btn sm" id="groupBtn">한 덩어리로 묶기</button><button class="btn sm" id="multiLock"><svg class="i"><use href="#i-lock"/></svg>모두 잠그기</button></div>
       </div>
       <div id="pGroup" hidden>
         <div class="insp-title">묶음</div>
@@ -831,7 +1038,7 @@ input[type=number].num.wide{width:96px}
       </div>
 
       <div class="divider"></div>
-      <h3>레이어 <span class="chip" id="layerCount">0</span></h3>
+      <h3 class="lhead">레이어 <span class="chip" id="layerCount">0</span><button class="btn sm ghost" id="unlockAll" hidden>잠금 모두 풀기</button></h3>
       <div class="layers" id="layerList"></div>
     </aside>
   </div>
@@ -857,7 +1064,7 @@ input[type=number].num.wide{width:96px}
     <div class="acts">
       <button class="btn" id="expClose">닫기</button>
       <button class="btn" id="expCopy"><svg class="i"><use href="#i-copy"/></svg>이미지 복사</button>
-      <button class="btn primary" id="expGo"><svg class="i"><use href="#i-down"/></svg>내려받기</button>
+      <button class="btn emph" id="expGo"><svg class="i"><use href="#i-down"/></svg>내려받기</button>
     </div>
   </div>
 </div>
@@ -3009,16 +3216,33 @@ const sizeName = d => SIZES[d.size] ? SIZES[d.size].n : '직접 지정';
 const isYT = d => Math.abs(d.w / d.h - 16 / 9) < 0.02;
 const SWATCHES = ['#FFFFFF','#111111','#FFE600','#FFB800','#FF7A00','#EE3124','#FF5DA2','#8B5CF6','#2563EB','#00C2FF','#22C55E','#A3E635'];
 // f: family · n: name shown · l: main language · s: style group · c: Google Fonts query (null = loaded elsewhere) · x: other languages covered
-const F = (f, n, l, s, c, x) => ({ f, n, l, s, c: c === undefined ? f.replace(/ /g, '+') : c, x: x || [] });
+const wsOf = c => { const m = String(c || '').match(/wght@([\d;]+)/); return m ? m[1].split(';').map(Number) : [400]; };
+const F = (f, n, l, s, c, x) => { c = c === undefined ? f.replace(/ /g, '+') : c; return { id: f, f, n, l, s, c, x: x || [], ws: wsOf(c) }; };
+// Korean fonts hosted by 눈누 (noonnu) on jsDelivr: [family, name, style, [[weight, repo@tag/file], …]]
+const NOONNU = 'https://cdn.jsdelivr.net/gh/projectnoonnu/';
+const KR_WEB = [["S-Core Dream", "에스코어드림", "본문용", [[100, "noonfonts_six@1.3/S-CoreDream-1Thin.woff"], [200, "noonfonts_six@1.3/S-CoreDream-2ExtraLight.woff"], [300, "noonfonts_six@1.3/S-CoreDream-3Light.woff"], [400, "noonfonts_six@1.3/S-CoreDream-4Regular.woff"], [500, "noonfonts_six@1.3/S-CoreDream-5Medium.woff"], [600, "noonfonts_six@1.3/S-CoreDream-6Bold.woff"], [700, "noonfonts_six@1.3/S-CoreDream-7ExtraBold.woff"], [800, "noonfonts_six@1.3/S-CoreDream-8Heavy.woff"], [900, "noonfonts_six@1.3/S-CoreDream-9Black.woff"]]], ["Gmarket Sans", "G마켓 산스", "제목용", [[300, "noonfonts_2001@v1.4/GmarketSansLight.woff"], [500, "noonfonts_2001@v1.4/GmarketSansMedium.woff"], [700, "noonfonts_2001@v1.4/GmarketSansBold.woff"]]], ["Bookk Myungjo", "부크크 명조", "명조", [[300, "noonfonts_2302@v1.1/BookkMyungjo-Lt.woff2"], [700, "noonfonts_2302@v1.1/BookkMyungjo-Bd.woff2"]]], ["Bookk Gothic", "부크크 고딕", "본문용", [[300, "noonfonts_2302@v1.1/BookkGothic-Lt.woff2"], [700, "noonfonts_2302@v1.1/BookkGothic-Bd.woff2"]]], ["GangwonEdu All", "강원교육모두", "본문용", [[300, "noonfonts_2201-2@v1.0/GangwonEdu_OTFLightA.woff"], [700, "noonfonts_2201-2@v1.0/GangwonEdu_OTFBoldA.woff"]]], ["GangwonEdu Power", "강원교육튼튼", "제목용", [[800, "noonfonts_2201-2@v1.0/GangwonEduPowerExtraBoldA.woff"]]], ["GangwonEdu Saeeum", "강원교육새음", "손글씨", [[500, "noonfonts_2201-2@v1.0/GangwonEduSaeeum_OTFMediumA.woff"]]], ["GangwonEdu Hyeonok", "강원교육현옥샘", "손글씨", [[500, "noonfonts_2201-2@v1.0/GangwonEduHyeonokT_OTFMediumA.woff"]]], ["Hakgyoansim Godeunjemok", "학교안심 곧은제목", "제목용", [[500, "noonfonts_2307-2@v1.0/HakgyoansimGodeunjemokM.woff2"], [700, "noonfonts_2307-2@v1.0/HakgyoansimGodeunjemokB.woff2"]]], ["Hakgyoansim Wooju", "학교안심 우주", "제목용", [[400, "noonfonts_2307-2@v1.0/HakgyoansimWoojuR.woff2"]]], ["Hakgyoansim Ggooreogi", "학교안심 꾸러기", "제목용", [[400, "noonfonts_2307-2@v1.0/HakgyoansimGgooreogiR.woff2"]]], ["Hakgyoansim Bareondotum", "학교안심 바른돋움", "본문용", [[400, "noonfonts_2307-2@v1.0/HakgyoansimBareondotumR.woff2"], [700, "noonfonts_2307-2@v1.0/HakgyoansimBareondotumB.woff2"]]], ["Hakgyoansim Santteutdotum", "학교안심 산뜻돋움", "본문용", [[300, "noonfonts_2307-2@v1.0/HakgyoansimSantteutdotumL.woff2"], [500, "noonfonts_2307-2@v1.0/HakgyoansimSantteutdotumM.woff2"]]], ["Hakgyoansim Bareonbatang", "학교안심 바른바탕", "명조", [[400, "noonfonts_2307-2@v1.0/HakgyoansimBareonbatangR.woff2"], [700, "noonfonts_2307-2@v1.0/HakgyoansimBareonbatangB.woff2"]]], ["Hakgyoansim Santteutbatang", "학교안심 산뜻바탕", "명조", [[300, "noonfonts_2307-2@v1.0/HakgyoansimSantteutbatangL.woff2"], [500, "noonfonts_2307-2@v1.0/HakgyoansimSantteutbatangM.woff2"]]], ["Hakgyoansim Malgeunnal", "학교안심 맑은날", "손글씨", [[500, "noonfonts_2307-2@v1.0/HakgyoansimMalgeunnalM.woff2"], [700, "noonfonts_2307-2@v1.0/HakgyoansimMalgeunnalB.woff2"]]], ["Hakgyoansim Gaeulsopung", "학교안심 가을소풍", "손글씨", [[300, "noonfonts_2307-2@v1.0/HakgyoansimGaeulsopungL.woff2"], [700, "noonfonts_2307-2@v1.0/HakgyoansimGaeulsopungB.woff2"]]], ["Hakgyoansim Doldam", "학교안심 돌담", "손글씨", [[300, "noonfonts_2307-2@v1.0/HakgyoansimDoldamL.woff2"], [500, "noonfonts_2307-2@v1.0/HakgyoansimDoldamM.woff2"], [700, "noonfonts_2307-2@v1.0/HakgyoansimDoldamB.woff2"]]], ["Hakgyoansim Butpen", "학교안심 붓펜", "손글씨", [[300, "noonfonts_2307-2@v1.0/HakgyoansimButpenL.woff2"], [500, "noonfonts_2307-2@v1.0/HakgyoansimButpenM.woff2"], [700, "noonfonts_2307-2@v1.0/HakgyoansimButpenB.woff2"]]], ["Hakgyoansim Bunpil", "학교안심 분필", "손글씨", [[400, "noonfonts_2307-2@v1.0/HakgyoansimBunpilR.woff2"]]], ["Hakgyoansim Bombanghak", "학교안심 봄방학", "손글씨", [[400, "noonfonts_2307-2@v1.0/HakgyoansimBombanghakR.woff2"]]], ["Cafe24 Ssurround", "카페24 써라운드", "제목용", [[700, "noonfonts_2105_2@v1.1/Cafe24Ssurround.woff"]]], ["Cafe24 Ssurround Air", "카페24 써라운드 에어", "본문용", [[400, "noonfonts_2105_2@v1.1/Cafe24SsurroundAir.woff"]]], ["Cafe24 Ohsquare", "카페24 아네모네", "제목용", [[700, "noonfonts_2001@v1.4/Cafe24Ohsquare.woff"]]], ["Cafe24 Ohsquare Air", "카페24 아네모네 에어", "본문용", [[400, "noonfonts_2202@v1.0/Cafe24Ohsquareair.woff"]]], ["Cafe24 Supermagic", "카페24 슈퍼매직", "제목용", [[400, "noonfonts_2307-2@v1.0/Cafe24Supermagic-Regular-v1.0.woff2"], [700, "noonfonts_2307-2@v1.0/Cafe24Supermagic-Bold-v1.0.woff2"]]], ["Cafe24 Dangdanghae", "카페24 당당해", "제목용", [[400, "noonfonts_2001@v1.4/Cafe24Dangdanghae.woff"]]], ["Cafe24 Danjunghae", "카페24 단정해", "본문용", [[400, "noonfonts_twelve@v1.2/Cafe24Danjunghae.woff"]]], ["Cafe24 ClassicType", "카페24 클래식타입", "명조", [[400, "noonfonts_2210-2@v1.0/Cafe24ClassicType-Regular.woff2"]]], ["Cafe24 Simplehae", "카페24 심플해", "손글씨", [[400, "noonfonts_twelve@v1.2/Cafe24Simplehae.woff"]]], ["Cafe24 Shiningstar", "카페24 빛나는별", "손글씨", [[400, "noonfonts_twelve@v1.2/Cafe24Shiningstar.woff"]]], ["Cafe24 Syongsyong", "카페24 숑숑", "손글씨", [[400, "noonfonts_twelve@v1.2/Cafe24Syongsyong.woff"]]], ["Cafe24 Ssukssuk", "카페24 쑥쑥", "손글씨", [[400, "noonfonts_twelve@v1.2/Cafe24Ssukssuk.woff"]]], ["Cafe24 Oneprettynight", "카페24 고운밤", "손글씨", [[400, "noonfonts_twelve@v1.2/Cafe24Oneprettynight.woff"]]], ["Cafe24 Dongdong", "카페24 동동", "손글씨", [[400, "noonfonts_twelve@v1.2/Cafe24Dongdong.woff"]]], ["Jalnan", "여기어때 잘난체", "제목용", [[700, "noonfonts_four@v1.4/JalnanOTF00.woff"]]], ["SB Aggro", "SB 어그로", "제목용", [[300, "noonfonts_2108@v1.2/SBAggroL.woff"], [500, "noonfonts_2108@v1.2/SBAggroM.woff"], [700, "noonfonts_2108@v1.2/SBAggroB.woff"]]], ["Tmon Monsori", "티몬 몬소리", "제목용", [[700, "noonfonts_two@v1.0/TmonMonsori.woff"]]], ["Recipekorea", "레시피코리아", "제목용", [[700, "noonfonts_2001@v1.4/Recipekorea.woff"]]], ["BM Euljiro", "배민 을지로체", "제목용", [[400, "noonfonts_twelve@v1.2/BMEULJIRO.woff"]]], ["BM Euljiro 10 Years Later", "배민 을지로10년후", "제목용", [[400, "noonfonts_20-10@v1.2/BMEuljiro10yearslater.woff"]]], ["BM Hanna Pro", "배민 한나Pro", "제목용", [[400, "noonfonts_seven@1.2/BMHANNAPro.woff"]]], ["BM Hanna Air", "배민 한나Air", "본문용", [[400, "noonfonts_four@v1.4/BMHANNAAir.woff"]]], ["CookieRun", "쿠키런", "제목용", [[400, "noonfonts_2001@v1.4/CookieRun-Regular.woff"], [700, "noonfonts_twelve@v1.2/CookieRunOTF-Bold00.woff"], [900, "noonfonts_twelve@v1.2/CookieRunOTF-Black00.woff"]]], ["Lotteria Chab", "롯데리아 촵땡겨체", "제목용", [[400, "noonfonts_2302@v1.1/LOTTERIACHAB.woff2"]]], ["Lotteria Ddag", "롯데리아 딱붙어체", "제목용", [[400, "noonfonts_2302@v1.1/LOTTERIADDAG.woff2"]]], ["ONE Mobile POP", "원스토어 모바일POP", "제목용", [[400, "noonfonts_2105_2@v1.1/ONE-Mobile-POP.woff"]]], ["ONE Mobile Title", "원스토어 모바일 제목", "제목용", [[400, "noonfonts_2105_2@v1.1/ONE-Mobile-Title.woff"]]], ["Maplestory", "메이플스토리", "제목용", [[300, "noonfonts_20-04@v2.3/MaplestoryOTFLight.woff"], [700, "noonfonts_20-04@v2.3/MaplestoryOTFBold.woff"]]], ["Tmoney RoundWind", "티머니 둥근바람", "제목용", [[400, "noonfonts_20-07@v1.1/TmoneyRoundWindRegular.woff"], [800, "noonfonts_20-07@v1.1/TmoneyRoundWindExtraBold.woff"]]], ["Geekble Malang", "긱블 말랑이", "제목용", [[400, "noonfonts_2302_01@v1.0/GeekbleMalang2WOFF2.woff2"]]], ["SUIT", "SUIT", "본문용", [[100, "noonfonts_2201-2@v1.0/SUIT-Thin.woff"], [200, "noonfonts_2201-2@v1.0/SUIT-ExtraLight.woff"], [300, "noonfonts_2201-2@v1.0/SUIT-Light.woff"], [400, "noonfonts_2201-2@v1.0/SUIT-Regular.woff"], [500, "noonfonts_2201-2@v1.0/SUIT-Medium.woff"], [600, "noonfonts_2201-2@v1.0/SUIT-SemiBold.woff"], [700, "noonfonts_2201-2@v1.0/SUIT-Bold.woff"], [800, "noonfonts_2201-2@v1.0/SUIT-ExtraBold.woff"], [900, "noonfonts_2201-2@v1.0/SUIT-Heavy.woff"]]], ["Spoqa Han Sans Neo", "스포카 한 산스 Neo", "본문용", [[100, "noonfonts_2108@v1.2/SpoqaHanSansNeo-Thin.woff"], [300, "noonfonts_2108@v1.2/SpoqaHanSansNeo-Light.woff"], [400, "noonfonts_2108@v1.2/SpoqaHanSansNeo-Regular.woff"], [500, "noonfonts_2108@v1.2/SpoqaHanSansNeo-Medium.woff"], [700, "noonfonts_2108@v1.2/SpoqaHanSansNeo-Bold.woff"]]], ["NEXON Lv1 Gothic", "넥슨 Lv1 고딕", "본문용", [[300, "noonfonts_20-04@v2.3/NEXON Lv1 Gothic OTF Light.woff"], [400, "noonfonts_20-04@v2.3/NEXON Lv1 Gothic OTF.woff"], [700, "noonfonts_20-04@v2.3/NEXON Lv1 Gothic OTF Bold.woff"]]], ["TheJamsil", "잠실체", "본문용", [[100, "noonfonts_2302_01@v1.0/TheJamsil1Thin.woff2"], [300, "noonfonts_2302_01@v1.0/TheJamsil2Light.woff2"], [400, "noonfonts_2302_01@v1.0/TheJamsil3Regular.woff2"], [500, "noonfonts_2302_01@v1.0/TheJamsil4Medium.woff2"], [700, "noonfonts_2302_01@v1.0/TheJamsil5Bold.woff2"], [800, "noonfonts_2302_01@v1.0/TheJamsil6ExtraBold.woff2"]]], ["Kimjungchul Gothic", "김정철 고딕", "본문용", [[300, "noonfonts_2302_01@v1.0/KimjungchulGothic-Light.woff2"], [400, "noonfonts_2302_01@v1.0/KimjungchulGothic-Regular.woff2"], [700, "noonfonts_2302_01@v1.0/KimjungchulGothic-Bold.woff2"]]], ["Elice DigitalBaeum", "엘리스 디지털배움체", "본문용", [[400, "noonfonts_2105_2@v1.1/EliceDigitalBaeum_Regular.woff"], [700, "noonfonts_2105_2@v1.1/EliceDigitalBaeum_Bold.woff"]]], ["NanumSquareRound", "나눔스퀘어라운드", "본문용", [[400, "noonfonts_two@v1.0/NanumSquareRound.woff"]]], ["Seoul Namsan", "서울남산체", "본문용", [[500, "noonfonts_two@v1.0/SeoulNamsanM.woff"]]], ["Seoul Hangang", "서울한강체", "명조", [[500, "noonfonts_two@v1.0/SeoulHangangM.woff"]]], ["Chosunilbo Myungjo", "조선일보명조", "명조", [[400, "noonfonts_one@v1.0/Chosunilbo_myungjo.woff"]]], ["MaruBuri", "마루부리", "명조", [[400, "noonfonts_20-10@v1.2/MaruBuri-Regular.woff"]]], ["Kimjungchul Myungjo", "김정철 명조", "명조", [[300, "noonfonts_2302_01@v1.0/KimjungchulMyungjo-Light.woff2"], [400, "noonfonts_2302_01@v1.0/KimjungchulMyungjo-Regular.woff2"], [700, "noonfonts_2302_01@v1.0/KimjungchulMyungjo-Bold.woff2"]]], ["Kimjungchul Script", "김정철 손글씨", "손글씨", [[300, "noonfonts_2302_01@v1.0/KimjungchulScript-Light.woff2"], [400, "noonfonts_2302_01@v1.0/KimjungchulScript-Regular.woff2"], [700, "noonfonts_2302_01@v1.0/KimjungchulScript-Bold.woff2"]]], ["Gamtan Road Batang", "감탄로 바탕", "명조", [[100, "noonfonts_2402_1@v1.0/GamtanRoadBatangThinTTF.woff2"], [400, "noonfonts_2402_1@v1.0/GamtanRoadBatangRegularTTF.woff2"], [700, "noonfonts_2402_1@v1.0/GamtanRoadBatangBoldTTF.woff2"]]], ["Gamtan Road Dotum", "감탄로 돋움", "본문용", [[100, "noonfonts_2402_1@v1.0/GamtanRoadDotumThinTTF.woff2"], [400, "noonfonts_2402_1@v1.0/GamtanRoadDotumRegularTTF.woff2"], [700, "noonfonts_2402_1@v1.0/GamtanRoadDotumBoldTTF.woff2"]]]];
+// Noto as one family that covers every language: the font stack puts the text's own language first.
+const NOTO = {
+  sans: { ko: 'Noto Sans KR', ja: 'Noto Sans JP', zhs: 'Noto Sans SC', zht: 'Noto Sans TC', latin: 'Noto Sans', th: 'Noto Sans Thai', ar: 'Noto Sans Arabic', hi: 'Noto Sans Devanagari' },
+  serif: { ko: 'Noto Serif KR', ja: 'Noto Serif JP', zhs: 'Noto Serif SC', zht: 'Noto Serif TC', latin: 'Noto Serif', th: 'Noto Serif Thai', ar: 'Noto Naskh Arabic', hi: 'Noto Serif Devanagari' },
+};
+const NOTO_ORDER = ['ko', 'ja', 'zhs', 'zht', 'latin', 'th', 'ar', 'hi'];
+function notoStack(kind, lang) { const m = NOTO[kind]; const g = (lang === 'vi' || lang === 'ru') ? 'latin' : lang; const first = m[g] ? g : 'ko'; return [first, ...NOTO_ORDER.filter(x => x !== first)].map(k => `"${m[k]}"`).join(', '); }
+const notoQ = (fam, w) => fam.replace(/ /g, '+') + ':wght@' + w;
+const ALL_LANGS = ['latin', 'ja', 'zhs', 'zht', 'vi', 'th', 'ar', 'hi', 'ru'];
+const NOTO_ENTRIES = [
+  { id: 'noto-sans', stack: 'sans', f: notoStack('sans', 'ko'), n: '노토 산스 (모든 언어)', l: 'ko', s: '본문용', x: ALL_LANGS, ws: [300, 400, 500, 700, 900], c: Object.values(NOTO.sans).map(f => notoQ(f, '300;400;500;700;900')) },
+  { id: 'noto-serif', stack: 'serif', f: notoStack('serif', 'ko'), n: '노토 세리프 (모든 언어)', l: 'ko', s: '명조', x: ALL_LANGS, ws: [400, 500, 700, 900], c: Object.values(NOTO.serif).map(f => notoQ(f, f === 'Noto Naskh Arabic' ? '400;500;700' : '400;500;700;900')) },
+];
 const FONTS = [
   F('Black Han Sans','검은고딕','ko','제목용'), F('Do Hyeon','도현','ko','제목용'), F('Jua','주아','ko','제목용'),
   F('Gasoek One','가석','ko','제목용'), F('Bagel Fat One','베이글','ko','제목용'), F('Gugi','구기','ko','제목용'),
   F('Black And White Picture','흑백사진','ko','제목용'), F('Orbit','오르빗','ko','제목용'), F('Moirai One','모이라이','ko','제목용'),
-  F('Pretendard','프리텐다드','ko','본문용',null,['latin']), F('Noto Sans KR','본고딕','ko','본문용','Noto+Sans+KR:wght@400;700;900'),
+  F('Pretendard','프리텐다드','ko','본문용',null,['latin']), F('Noto Sans KR','본고딕 KR','ko','본문용','Noto+Sans+KR:wght@400;700;900'),
   F('Nanum Gothic','나눔고딕','ko','본문용','Nanum+Gothic:wght@400;700;800'), F('Gothic A1','고딕 A1','ko','본문용','Gothic+A1:wght@400;700;900'),
   F('IBM Plex Sans KR','IBM 플렉스','ko','본문용','IBM+Plex+Sans+KR:wght@400;700'), F('Gowun Dodum','고운돋움','ko','본문용'),
   F('Sunflower','해바라기','ko','본문용','Sunflower:wght@500;700'),
-  F('Noto Serif KR','본명조','ko','명조','Noto+Serif+KR:wght@400;700;900'), F('Nanum Myeongjo','나눔명조','ko','명조','Nanum+Myeongjo:wght@400;700;800'),
+  F('Noto Serif KR','본명조 KR','ko','명조','Noto+Serif+KR:wght@400;700;900'), F('Nanum Myeongjo','나눔명조','ko','명조','Nanum+Myeongjo:wght@400;700;800'),
   F('Hahmlet','함렛','ko','명조','Hahmlet:wght@400;700;900'), F('Gowun Batang','고운바탕','ko','명조','Gowun+Batang:wght@400;700'),
   F('Song Myung','송명','ko','명조'), F('Diphylleia','산하엽','ko','명조'),
   F('Nanum Pen Script','나눔펜','ko','손글씨'), F('Nanum Brush Script','나눔붓','ko','손글씨'), F('Gaegu','개구','ko','손글씨','Gaegu:wght@400;700'),
@@ -3026,6 +3250,8 @@ const FONTS = [
   F('Poor Story','서툰이야기','ko','손글씨'), F('Single Day','싱글데이','ko','손글씨'), F('Cute Font','귀여운','ko','손글씨'),
   F('Yeon Sung','연성','ko','손글씨'), F('Stylish','스타일리시','ko','손글씨'), F('East Sea Dokdo','동해독도','ko','손글씨'),
   F('Dokdo','독도','ko','손글씨'), F('Kirang Haerang','기랑해랑','ko','손글씨'),
+  ...NOTO_ENTRIES,
+  ...KR_WEB.map(([f, n, st, faces]) => ({ id: f, f, n, l: 'ko', s: st, c: null, faces, x: [], ws: [...new Set(faces.map(x => x[0]))].sort((a, b) => a - b) })),
   // Latin (English, Indonesian, Malay, Filipino, Spanish…)
   F('Anton','Anton','latin','제목용',undefined,['vi']), F('Bebas Neue','Bebas Neue','latin','제목용'), F('Bungee','Bungee','latin','제목용',undefined,['vi']),
   F('Luckiest Guy','Luckiest Guy','latin','제목용'), F('Bangers','Bangers','latin','제목용',undefined,['vi']), F('Archivo Black','Archivo Black','latin','제목용'),
@@ -3061,8 +3287,9 @@ const FONTS = [
   F('Kalam','Kalam','hi','손글씨','Kalam:wght@400;700',['latin']),
   F('Rubik Mono One','Rubik Mono One','ru','제목용',undefined,['latin']),
 ];
-const LANGS = [['all','전체'],['ko','한국어'],['latin','English·Indonesia'],['ja','日本語'],['zhs','简体中文'],['zht','繁體中文'],['vi','Tiếng Việt'],['th','ไทย'],['ar','العربية'],['hi','हिन्दी'],['ru','Русский'],['mine','내 글꼴']];
+const LANGS = [['mine','내 글꼴'],['fav','★ 즐겨찾기'],['all','전체'],['ko','한국어'],['latin','English·Indonesia'],['ja','日本語'],['zhs','简体中文'],['zht','繁體中文'],['vi','Tiếng Việt'],['th','ไทย'],['ar','العربية'],['hi','हिन्दी'],['ru','Русский']];
 const LANG_NAME = Object.fromEntries(LANGS);
+FONTS.find(x => x.id === 'Pretendard').ws = [100, 200, 300, 400, 500, 600, 700, 800, 900];
 const SAMPLE = { ko: '가나다 썸네일', latin: 'Thumbnail 123', ja: 'サムネイル 見出し', zhs: '缩略图 大标题', zht: '縮圖 大標題', vi: 'Tiếng Việt hay', th: 'ภาพปก วิดีโอ', ar: 'صورة مصغرة', hi: 'थंबनेल शीर्षक', ru: 'Привет, мир', mine: '가나다 Abc' };
 function detectLang(t) {
   t = t || '';
@@ -3076,28 +3303,41 @@ function detectLang(t) {
   if (/[一-鿿]/.test(t)) return lsGet('tg.flang') === 'zht' ? 'zht' : 'zhs';
   return /[a-z]/i.test(t) ? 'latin' : null;
 }
-const userFonts = []; // {name}
-const fontEntry = f => FONTS.find(x => x.f === f);
-const fontLabel = f => (fontEntry(f) || { n: f }).n;
-const fontLinked = new Set();
-function linkFont(fam) {
-  const e = fontEntry(fam);
-  if (!e || !e.c || fontLinked.has(fam)) return;
-  fontLinked.add(fam);
-  const l = document.createElement('link'); l.rel = 'stylesheet'; l.crossOrigin = 'anonymous';
-  l.href = `https://fonts.googleapis.com/css2?family=${e.c}&display=swap`;
-  document.head.appendChild(l);
+const userFonts = []; // {name, ws, faces: [FontFace]}
+function fontEntry(f) {
+  if (!f) return null;
+  const e = FONTS.find(x => x.f === f || x.id === f); if (e) return e;
+  if (f.includes(',')) return FONTS.find(x => x.stack && f.includes(`"${NOTO[x.stack].hi}"`)) || null;
+  const u = userFonts.find(x => x.name === f); return u ? { id: u.name, f: u.name, n: '내 글꼴', l: 'mine', s: '내 글꼴', x: [], ws: u.ws, mine: true } : null;
 }
+const fontLabel = f => (fontEntry(f) || { n: f }).n;
+const cssFam = f => f.includes(',') ? f : `"${f}"`;
+const fontLinked = new Set();
+function linkEntry(e) {
+  if (!e || fontLinked.has(e.id)) return;
+  fontLinked.add(e.id);
+  if (e.faces) { // 눈누 fonts: one FontFace per weight, all under one family name
+    e.faces.forEach(([w, path]) => { try { document.fonts.add(new FontFace(e.f, `url("${NOONNU}${encodeURI(path)}") format("${/\.woff2$/.test(path) ? 'woff2' : 'woff'}")`, { weight: String(w), display: 'swap' })); } catch (er) {} });
+    return;
+  }
+  (Array.isArray(e.c) ? e.c : e.c ? [e.c] : []).forEach(c => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.crossOrigin = 'anonymous';
+    l.href = `https://fonts.googleapis.com/css2?family=${c}&display=swap`; document.head.appendChild(l);
+  });
+}
+function linkFont(fam) { linkEntry(fontEntry(fam)); }
+const wNum = w => w === 'bold' ? 700 : (w === 'normal' || !w) ? 400 : +w || 400;
+const nearestW = (ws, w) => (ws && ws.length ? ws.reduce((a, b) => Math.abs(b - w) < Math.abs(a - w) ? b : a) : w);
 async function ensureFont(fam, weight = 'normal', sample = '가나다ABC') {
   if (!fam) return;
   linkFont(fam);
   await sleep(0);
-  try { await Promise.race([document.fonts.load(`${weight} 64px "${fam}"`, sample || '가'), sleep(4000)]); } catch (e) {}
+  try { await Promise.race([document.fonts.load(`${weight} 64px ${cssFam(fam)}`, sample || '가'), sleep(4000)]); } catch (e) {}
 }
 
 /* ---------------- canvas ---------------- */
 fabric.textureSize = 4096;
-fabric.Object.prototype.set({ transparentCorners: false, cornerColor: '#FFFFFF', cornerStrokeColor: '#15171C', borderColor: '#FFB800', cornerSize: 12, cornerStyle: 'circle', borderScaleFactor: 2, padding: 4 });
+fabric.Object.prototype.set({ transparentCorners: false, cornerColor: '#FFFFFF', cornerStrokeColor: '#0058A3', borderColor: '#0058A3', cornerSize: 12, cornerStyle: 'circle', borderScaleFactor: 2, padding: 4 });
 const EXTRA = ['kind', 'meta', 'assetId', 'lockedByUser', 'name', 'outer', 'depth'];
 // IText.fromObject in fabric 5 does not rebuild text-on-path; arcs are rebuilt from meta.arc instead.
 const _itextFrom = fabric.IText.fromObject;
@@ -3145,7 +3385,7 @@ fabric.Pattern.prototype.toObject = function (p) { const o = origPatToObject.cal
 const origImgToObject = fabric.Image.prototype.toObject;
 fabric.Image.prototype.toObject = function (p) { const o = origImgToObject.call(this, p); if (this.assetId) { o.src = 'asset:' + this.assetId; o.assetId = this.assetId; } return o; };
 
-const cv = new fabric.Canvas('c', { preserveObjectStacking: true, backgroundColor: '#ffffff', selectionColor: 'rgba(255,210,31,.12)', selectionBorderColor: '#FFB800', selectionLineWidth: 1.5, stopContextMenu: true, enableRetinaScaling: true });
+const cv = new fabric.Canvas('c', { preserveObjectStacking: true, backgroundColor: '#ffffff', selectionColor: 'rgba(0,88,163,.08)', selectionBorderColor: '#0058A3', selectionLineWidth: 1.5, stopContextMenu: true, enableRetinaScaling: true });
 const doc = { w: 1280, h: 720, size: 'yt', bg: { type: 'solid', c1: '#FFFFFF', c2: '#FFFFFF', dir: 'v' }, bgfx: { dim: 0, blur: 0 }, credits: [] };
 let zoom = 1;
 if (/[?&]debug\b/.test(location.search)) window.__tg = { cv, doc, proj: () => proj };
@@ -3489,26 +3729,69 @@ $$('[data-add]').forEach(b => b.onclick = async () => {
 
 /* user fonts */
 $('#fontUpBtn').onclick = () => $('#fontFile').click();
-$('#fontFile').onchange = async e => {
-  for (const f of e.target.files) {
-    try {
-      const buf = await f.arrayBuffer(); const name = f.name.replace(/\.(ttf|otf|woff2?)$/i, '');
-      await registerUserFont(name, buf); await DB.put('fonts', { id: name, name, buf });
-      toast(`‘${name}’ 글꼴을 추가했어요. 글꼴 목록 맨 위에 있어요.`);
-    } catch (err) { toast(`${f.name}: 글꼴 파일을 읽지 못했어요.`); }
-  }
-  e.target.value = '';
+$('#fontFile').onchange = async e => { await installFontFiles([...e.target.files]); e.target.value = ''; };
+// Weight words at the end of a file name: "GmarketSansTTFBold" → family "GmarketSans", 700.
+const WEIGHT_WORDS = [[/[\s_-]EB$|[a-z]EB$/, 800], [/[\s_-]SB$|[a-z]SB$/, 600], [/[\s_-]EL$|[a-z]EL$/, 200], [/[\s_-]B$|[a-z]B$/, 700], [/[\s_-]M$|[a-z]M$/, 500], [/[\s_-]L$|[a-z]L$/, 300], [/[\s_-]R$|[a-z]R$/, 400], [/[\s_-]T$/, 100], [/(extra|ultra)[\s_-]?light$/i, 200], [/(semi|demi)[\s_-]?bold$/i, 600], [/(extra|ultra)[\s_-]?bold$/i, 800], [/thin$|hairline$/i, 100], [/light$|[\s_-]lt$/i, 300], [/regular$|[\s_-]rg$|[\s_-]book$|normal$/i, 400], [/medium$|[\s_-]md$/i, 500], [/bold$|[\s_-]bd$/i, 700], [/black$|heavy$|[\s_-]bk$/i, 900]];
+function splitFontName(raw) {
+  let base = raw.replace(/\.(ttf|otf|woff2?|ttc)$/i, '').replace(/[\s_-]*\(\d+\)$/, '').replace(/[\s_-]*v?\d+(\.\d+)+$/i, '');
+  let w = 400;
+  for (const [re, wv] of WEIGHT_WORDS) { const m = base.match(re); if (m && base.length - m[0].length >= 2) { w = wv; base = base.slice(0, m.index + (/^[a-z]/.test(m[0]) ? 1 : 0)); break; } }
+  if (w !== 400 || /[\s_-]\d$/.test(base)) base = base.replace(/[\s_-]\d$/, ''); // "S-CoreDream-6Bold"
+  base = base.replace(/[\s_-]*(ttf|otf|woff2?)$/i, '').replace(/[\s_-]+$/, '');
+  return { fam: safeFamily(base || raw), w };
+}
+// FontFace() rejects family names with dots, brackets or words that start with a digit; make them safe.
+function safeFamily(name) {
+  let n = String(name).normalize('NFC').replace(/[^\p{L}\p{N}_\- ]+/gu, ' ').replace(/\s+/g, ' ').trim();
+  n = n.split(' ').map((w, i) => /^-?\d/.test(w) || /^--/.test(w) ? (i ? '\u0000' + w : 'F' + w) : w).join(' ').replace(/ \u0000/g, '-');
+  return n || '내 글꼴';
+}
+function fontKind(buf) {
+  const b = new Uint8Array(buf.slice(0, 4)), t = String.fromCharCode(...b);
+  if (t === 'ttcf') return 'ttc'; if (b[0] === 0x50 && b[1] === 0x4b) return 'zip';
+  if (t === 'wOFF' || t === 'wOF2' || t === 'OTTO' || t === 'true' || (b[0] === 0 && b[1] === 1 && b[2] === 0 && b[3] === 0)) return 'font';
+  return 'unknown';
+}
+async function registerUserFont(fam, buf, w = 400) {
+  const face = new FontFace(fam, buf, { weight: String(w) }); await face.load(); document.fonts.add(face);
+  let u = userFonts.find(x => x.name === fam); if (!u) { u = { name: fam, ws: [], faces: [] }; userFonts.unshift(u); }
+  u.faces = u.faces.filter(f => { if (f.weight === String(w)) { document.fonts.delete(f); return false; } return true; }); u.faces.push(face);
+  if (!u.ws.includes(w)) u.ws = [...u.ws, w].sort((a, b) => a - b);
+  fabric.util.clearFabricFontCache(fam);
+}
+const FONT_ERR = {
+  ttc: '글꼴 모음(.ttc) 파일은 브라우저가 읽을 수 없어요. 같은 글꼴의 TTF·OTF 파일로 받아 주세요.',
+  unknown: '글꼴 파일이 아니에요. TTF·OTF·WOFF·WOFF2나 이 파일들이 든 ZIP을 올려 주세요.',
+  broken: '브라우저의 글꼴 검사를 통과하지 못했어요. 파일이 깨졌거나 오래된 형식이에요. 같은 글꼴의 다른 형식(TTF↔OTF, WOFF)으로 받아 보세요.',
 };
-async function registerUserFont(name, buf) {
-  const face = new FontFace(name, buf); await face.load(); document.fonts.add(face);
-  if (!userFonts.find(u => u.name === name)) userFonts.push({ name });
+async function installFontFiles(files) {
+  const ok = [], bad = [];
+  const one = async (name, buf) => {
+    const kind = fontKind(buf);
+    if (kind === 'zip') { await fromZip(name, buf); return; }
+    if (kind !== 'font') { bad.push([name, FONT_ERR[kind]]); return; }
+    const { fam, w } = splitFontName(name);
+    try { await registerUserFont(fam, buf, w); await DB.put('fonts', { id: fam + '|' + w, name: fam, fam, w, buf, file: name }); ok.push(fam); }
+    catch (e) { console.warn(name, e); bad.push([name, FONT_ERR.broken]); }
+  };
+  const fromZip = async (zname, buf) => {
+    let zip; try { zip = await (await getZip()).loadAsync(buf); } catch (e) { bad.push([zname, '압축 파일을 열지 못했어요. 인터넷 연결을 확인하거나 압축을 풀어서 올려 주세요.']); return; }
+    const ents = Object.values(zip.files).filter(z => !z.dir && !/(^|\/)(__MACOSX|\._)/.test(z.name) && /\.(ttf|otf|woff2?|ttc)$/i.test(z.name));
+    if (!ents.length) { bad.push([zname, '압축 파일 안에 글꼴(TTF·OTF·WOFF)이 없어요.']); return; }
+    for (const z of ents) await one(z.name.split('/').pop(), await z.async('arraybuffer'));
+  };
+  for (const f of files) { try { await one(f.name, await f.arrayBuffer()); } catch (e) { bad.push([f.name, FONT_ERR.broken]); } }
+  const fams = [...new Set(ok)];
+  if (fams.length) toast(`글꼴 ${fams.length}개를 추가했어요: ${fams.slice(0, 3).join(', ')}${fams.length > 3 ? ' 외' : ''}. 글꼴 목록 맨 위 ‘내 글꼴’에 있어요.`, 4200);
+  if (bad.length) setTimeout(() => toast(`${bad[0][0]}: ${bad[0][1]}${bad.length > 1 ? ` (외 ${bad.length - 1}개도 실패)` : ''}`, 6500), fams.length ? 4300 : 0);
+  if (!$('#fontPop').hidden) renderFontList($('#fontQ').value);
 }
 
 /* font picker */
 let fontTarget = null, fontLang = lsGet('tg.flang') || 'ko';
 function openFontPop(anchor) {
   const pop = $('#fontPop'); pop.hidden = false;
-  const guess = fontTarget && detectLang(fontTarget.text); if (guess) fontLang = guess;
+  const guess = fontTarget && detectLang(fontTarget.text); if (guess && !['mine', 'fav'].includes(fontLang)) fontLang = guess;
   const r = anchor.getBoundingClientRect();
   const left = Math.min(window.innerWidth - pop.offsetWidth - 12, Math.max(12, r.right - pop.offsetWidth));
   let top = r.bottom + 6; if (top + pop.offsetHeight > window.innerHeight - 12) top = Math.max(12, r.top - pop.offsetHeight - 6);
@@ -3517,27 +3800,67 @@ function openFontPop(anchor) {
 }
 $('#fontLangs').innerHTML = LANGS.map(([k, n]) => `<button type="button" data-l="${k}">${n}</button>`).join('');
 $('#fontLangs').onclick = e => { const b = e.target.closest('[data-l]'); if (!b) return; fontLang = b.dataset.l; lsSet('tg.flang', fontLang); renderFontList($('#fontQ').value); };
+// Preview fonts load only when their row becomes visible (Korean fonts are 0.3–0.7MB each).
+const fontIO = new IntersectionObserver(ents => ents.forEach(en => {
+  if (!en.isIntersecting) return; const sp = en.target, fam = sp.dataset.pf; fontIO.unobserve(sp);
+  linkFont(fam); sp.style.fontFamily = `${cssFam(fam)}, var(--body)`;
+}), { root: null, rootMargin: '120px' });
+const observeFontRows = () => $$('#fontList [data-pf]').forEach(sp => fontIO.observe(sp));
+const DEFAULT_FAVS = ['Pretendard', 'S-Core Dream', 'Gmarket Sans', 'Bookk Myungjo', 'noto-sans', 'noto-serif', 'GangwonEdu All', 'GangwonEdu Power'];
+let favs = (() => { try { const v = JSON.parse(lsGet('tg.favs')); return Array.isArray(v) ? v : DEFAULT_FAVS.slice(); } catch (e) { return DEFAULT_FAVS.slice(); } })();
+const saveFavs = () => lsSet('tg.favs', JSON.stringify(favs));
+new MutationObserver(observeFontRows).observe(document.getElementById('fontList'), { childList: true });
+const fontDelArm = new Set();
 function renderFontList(q) {
-  const cur = fontTarget && fontTarget.fontFamily;
+  const curE = fontTarget && fontEntry(fontTarget.fontFamily), curId = curE ? curE.id : null;
   q = q.trim().toLowerCase();
   $$('#fontLangs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === fontLang));
-  const rows = [...userFonts.map(u => ({ f: u.name, n: '내 글꼴', l: 'mine', s: '내 글꼴', x: [] })), ...FONTS]
-    .filter(f => q ? (f.f.toLowerCase().includes(q) || f.n.toLowerCase().includes(q)) : (fontLang === 'all' || f.l === fontLang || f.x.includes(fontLang)));
-  const groups = {};
-  rows.forEach(f => { const g = (q || fontLang === 'all') ? LANG_NAME[f.l] : f.s; (groups[g] = groups[g] || []).push(f); });
-  rows.forEach(f => linkFont(f.f));
-  $('#fontList').innerHTML = Object.entries(groups).map(([g, fs]) => `<div class="grp">${esc(g)}</div>` + fs.map(f => {
-    const sample = SAMPLE[(q || fontLang === 'all') ? f.l : fontLang] || SAMPLE.latin;
-    return `<button class="fopt${f.f === cur ? ' on' : ''}" data-f="${esc(f.f)}"><span style="font-family:'${esc(f.f)}',var(--body)">${esc(sample)}</span><small>${esc(f.n)}</small></button>`;
-  }).join('')).join('') || `<p class="hint" style="padding:8px">${fontLang === 'mine' && !q ? '텍스트 탭에서 폰트 파일을 올리면 여기에 보여요.' : '찾는 글꼴이 없어요.'}</p>`;
+  const mine = userFonts.map(u => ({ id: u.name, f: u.name, n: u.ws.length > 1 ? `${u.name} · 굵기 ${u.ws.length}개` : u.name, l: 'mine', s: '내 글꼴', x: [], ws: u.ws, mine: true }));
+  const all = [...mine, ...FONTS];
+  const supports = f => f.mine || fontLang === 'all' || fontLang === 'fav' || f.l === fontLang || f.x.includes(fontLang);
+  let rows;
+  if (q) rows = all.filter(f => f.f.toLowerCase().includes(q) || f.n.toLowerCase().includes(q) || f.id.toLowerCase().includes(q));
+  else if (fontLang === 'mine') rows = mine;
+  else if (fontLang === 'fav') rows = favs.map(id => all.find(f => f.id === id)).filter(Boolean);
+  else rows = all.filter(supports);
+  const groups = new Map([['내 글꼴', []], ['★ 즐겨찾기', []]]);
+  const favRows = rows.filter(f => favs.includes(f.id) && !f.mine).sort((a, b) => favs.indexOf(a.id) - favs.indexOf(b.id));
+  rows.forEach(f => {
+    const g = f.mine ? '내 글꼴' : favs.includes(f.id) ? '★ 즐겨찾기' : (q || fontLang === 'all') ? LANG_NAME[f.l] : f.s;
+    if (g === '★ 즐겨찾기') return; if (!groups.has(g)) groups.set(g, []); groups.get(g).push(f);
+  });
+  groups.set('★ 즐겨찾기', favRows);
+  const sampleFor = f => { const lg = fontLang === 'mine' || fontLang === 'fav' || fontLang === 'all' || q ? f.l : fontLang; return SAMPLE[lg] || SAMPLE.ko; };
+  const html = [...groups].filter(([, fs]) => fs.length).map(([g, fs]) => `<div class="grp">${esc(g)}</div>` + fs.map(f => {
+    const fam = f.stack ? notoStack(f.stack, fontLang === 'all' || fontLang === 'fav' || fontLang === 'mine' ? 'ko' : fontLang) : f.f;
+    const on = favs.includes(f.id);
+    return `<div class="frow"><button class="fopt${f.id === curId ? ' on' : ''}" data-f="${esc(f.id)}"><span data-pf="${esc(fam)}">${esc(sampleFor(f))}</span><small>${esc(f.n)}</small></button>`
+      + `<button class="fstar" data-fav="${esc(f.id)}" aria-pressed="${on}" title="${on ? '즐겨찾기에서 빼기' : '즐겨찾기에 넣기'}" aria-label="즐겨찾기">${on ? '★' : '☆'}</button>`
+      + (f.mine ? `<button class="fdel${fontDelArm.has(f.id) ? ' arm' : ''}" data-fdel="${esc(f.id)}" title="${fontDelArm.has(f.id) ? '한 번 더 누르면 지워요' : '이 글꼴 지우기'}" aria-label="글꼴 지우기"><svg class="i"><use href="#i-${fontDelArm.has(f.id) ? 'trash' : 'x'}"/></svg></button>` : '') + '</div>';
+  }).join('')).join('');
+  fontIO.disconnect();
+  $('#fontList').innerHTML = html || `<p class="hint" style="padding:8px">${fontLang === 'mine' && !q ? '텍스트 탭의 <b>폰트 파일 올리기</b>로 올린 글꼴이 여기 맨 위에 보여요.' : fontLang === 'fav' && !q ? '글꼴 옆 ☆를 누르면 여기에 모여요.' : '찾는 글꼴이 없어요.'}</p>`;
 }
 $('#fontQ').oninput = e => renderFontList(e.target.value);
 $('#fontList').onclick = async e => {
+  const st = e.target.closest('[data-fav]');
+  if (st) { const id = st.dataset.fav; favs = favs.includes(id) ? favs.filter(x => x !== id) : [...favs, id]; saveFavs(); renderFontList($('#fontQ').value); return; }
+  const del = e.target.closest('[data-fdel]');
+  if (del) {
+    const id = del.dataset.fdel;
+    if (!fontDelArm.has(id)) { fontDelArm.add(id); setTimeout(() => { fontDelArm.delete(id); if (!$('#fontPop').hidden) renderFontList($('#fontQ').value); }, 3000); renderFontList($('#fontQ').value); return; }
+    fontDelArm.delete(id);
+    const u = userFonts.find(x => x.name === id); if (u) { u.faces.forEach(f => document.fonts.delete(f)); userFonts.splice(userFonts.indexOf(u), 1); }
+    for (const r of await DB.all('fonts')) if ((r.fam || r.name) === id) await DB.del('fonts', r.id);
+    favs = favs.filter(x => x !== id); saveFavs(); renderFontList($('#fontQ').value); toast(`‘${id}’ 글꼴을 지웠어요. 이 글꼴을 쓴 글자는 기본 글꼴로 보여요.`); return;
+  }
   const b = e.target.closest('.fopt'); if (!b || !fontTarget) return;
-  const fam = b.dataset.f, t = fontTarget;
+  const en = fontEntry(b.dataset.f), t = fontTarget; if (!en) return;
+  const fam = en.stack ? notoStack(en.stack, detectLang(t.text) || 'ko') : en.f;
   $('#fontPop').hidden = true;
-  await ensureFont(fam, t.fontWeight || 'normal', t.text);
-  t.set('fontFamily', fam); fabric.util.clearFabricFontCache(fam); t.initDimensions(); t.setCoords(); cv.requestRenderAll(); commit();
+  const w = nearestW(en.ws, wNum(t.fontWeight)), wv = w === 400 ? 'normal' : w === 700 ? 'bold' : String(w);
+  await ensureFont(fam, wv, t.text);
+  t.set({ fontFamily: fam, fontWeight: wv }); fabric.util.clearFabricFontCache(fam); t.initDimensions(); if (t.meta && t.meta.arc) reArc(t); t.setCoords(); cv.requestRenderAll(); commit();
 };
 $('#tFont').onclick = e => { fontTarget = cv.getActiveObject(); if (fontTarget && fontTarget.type === 'i-text') openFontPop(e.currentTarget); };
 document.addEventListener('pointerdown', e => { const p = $('#fontPop'); if (!p.hidden && !p.contains(e.target) && !e.target.closest('#tFont')) p.hidden = true; });
@@ -3693,15 +4016,28 @@ async function handleImageFile(file, { toLib = true, toCanvas = true } = {}) {
       await DB.put('uploads', { id: uid(), name: file.name || '붙여넣은 이미지', data: d, thumb: c.toDataURL('image/png'), at: Date.now() }).catch(() => {});
       renderLib();
     }
-    if (toCanvas) await addImageData(d, { name: file.name || '내 이미지' });
+    if (toCanvas) return await addImageData(d, { name: file.name || '내 이미지' });
   } catch (e) { toast(`${file.name || '이미지'}: 열지 못했어요.`); }
 }
+// Several images at once: lay them out in a grid instead of piling them in the middle.
+function placeGrid(objs) {
+  const n = objs.length, cols = Math.ceil(Math.sqrt(n * (doc.w / doc.h) / (16 / 9) * 1.4)) || 1, rows = Math.ceil(n / cols), cw = doc.w / cols, ch = doc.h / rows;
+  objs.forEach((o, i) => { const c = i % cols, r = Math.floor(i / cols); const sc = Math.min(cw * 0.92 / o.width, ch * 0.92 / o.height); o.set({ scaleX: sc, scaleY: sc }); o.setPositionByOrigin(new fabric.Point(cw * (c + 0.5), ch * (r + 0.5)), 'center', 'center'); o.setCoords(); });
+}
 async function handleFiles(files) {
+  const added = [];
   for (const f of files) {
-    if (/\.(ttf|otf|woff2?)$/i.test(f.name)) { try { const buf = await f.arrayBuffer(); const name = f.name.replace(/\.(ttf|otf|woff2?)$/i, ''); await registerUserFont(name, buf); await DB.put('fonts', { id: name, name, buf }); toast(`‘${name}’ 글꼴을 추가했어요.`); } catch (e) { toast('글꼴 파일을 읽지 못했어요.'); } }
+    if (/\.(ttf|otf|woff2?|ttc|zip)$/i.test(f.name)) await installFontFiles([f]);
     else if (f.name.endsWith('.json')) openProjectFile(f);
-    else await handleImageFile(f);
+    else { const o = await handleImageFile(f); if (o) added.push(o); }
   }
+  if (!added.length) return;
+  if (added.length > 1) placeGrid(added);
+  const lock = $('#upLock').checked;
+  if (lock) { cv.discardActiveObject(); added.forEach(o => applyLock(o, true)); }
+  else if (added.length > 1) cv.setActiveObject(new fabric.ActiveSelection(added, { canvas: cv }));
+  cv.requestRenderAll(); commit();
+  if (lock) toast(`${added.length}개를 넣고 자리를 고정했어요. 레이어 목록의 자물쇠로 하나씩 풀 수 있어요.`, 3600);
 }
 $('#upBtn').onclick = () => $('#upFile').click();
 $('#upFile').onchange = e => { handleFiles([...e.target.files]); e.target.value = ''; };
@@ -4136,6 +4472,8 @@ $('#tText').onchange = () => commit();
 const setSize = (v, done) => { const t = act(); if (!t) return; v = Math.max(8, Math.min(600, +v || 8)); $('#tSize').value = v; $('#tSizeN').value = v; applyText({ fontSize: v }, done); };
 $('#tSize').oninput = e => setSize(e.target.value, false); $('#tSize').onchange = e => setSize(e.target.value, true);
 $('#tSizeN').onchange = e => setSize(e.target.value, true);
+const W_NAME = { 100: '100 · 아주 가늘게', 200: '200 · 더 가늘게', 300: '300 · 가늘게', 400: '400 · 보통', 500: '500 · 중간', 600: '600 · 조금 굵게', 700: '700 · 굵게', 800: '800 · 더 굵게', 900: '900 · 가장 굵게' };
+$('#tWeight').onchange = async e => { const t = act(); if (!t || t.type !== 'i-text') return; const w = +e.target.value, wv = w === 400 ? 'normal' : w === 700 ? 'bold' : String(w); await ensureFont(t.fontFamily, wv, t.text); applyText({ fontWeight: wv }, true); };
 $('#tBold').onclick = async () => { const t = act(); if (!t) return; const b = t.fontWeight === 'bold' || t.fontWeight >= 700; await ensureFont(t.fontFamily, b ? 'normal' : 'bold', t.text); applyText({ fontWeight: b ? 'normal' : 'bold' }, true); };
 $('#tItalic').onclick = () => { const t = act(); if (!t) return; applyText({ fontStyle: t.fontStyle === 'italic' ? 'normal' : 'italic' }, true); };
 $('#tUnder').onclick = () => { const t = act(); if (!t) return; applyText({ underline: !t.underline }, true); };
@@ -4210,12 +4548,23 @@ $('#shOn').onchange = e => { $('#shBox').hidden = !e.target.checked; if (e.targe
 $('#shB').oninput = $('#shD').oninput = setShadow;
 $('#shB').onchange = $('#shD').onchange = () => commit();
 clrHandlers.shC = (c, done) => { $('#shOn').checked = true; $('#shBox').hidden = false; setShadow(); if (done) commit(); };
+// Locked items stay put and clicks pass through them to whatever is underneath. Unlock from the layer list.
 function applyLock(o, on) {
-  o.set({ lockedByUser: on, lockMovementX: on, lockMovementY: on, lockScalingX: on, lockScalingY: on, lockRotation: on, hasControls: !on, hoverCursor: on ? 'default' : null, editable: !on });
+  o.set({ lockedByUser: on, lockMovementX: on, lockMovementY: on, lockScalingX: on, lockScalingY: on, lockRotation: on, hasControls: !on, hoverCursor: on ? 'default' : null, editable: !on, selectable: !on, evented: !on });
 }
-$('#cLock').onclick = () => each(o => applyLock(o, !o.lockedByUser));
+function toggleLockSelected() {
+  const objs = cv.getActiveObjects(); if (!objs.length) return;
+  const on = !objs.every(o => o.lockedByUser);
+  cv.discardActiveObject(); objs.forEach(o => applyLock(o, on));
+  if (!on && objs.length === 1) cv.setActiveObject(objs[0]);
+  cv.requestRenderAll(); commit();
+  toast(on ? `${objs.length > 1 ? objs.length + '개를' : ''} 잠갔어요. 이제 눌러도 선택되지 않고 아래 요소가 선택돼요. 레이어 목록의 자물쇠로 풀어요.` : '잠금을 풀었어요.', 3600);
+}
+$('#cLock').onclick = toggleLockSelected;
+$('#unlockAll').onclick = () => { cv.getObjects().forEach(o => o.lockedByUser && applyLock(o, false)); cv.requestRenderAll(); commit(); toast('모든 잠금을 풀었어요.'); };
 $('#cDel').onclick = () => removeActive();
 $('#cDup').onclick = () => duplicate();
+$('#multiLock').onclick = toggleLockSelected;
 $('#groupBtn').onclick = () => { const o = act(); if (!o || o.type !== 'activeSelection') return; const g = o.toGroup(); g.set({ kind: 'group' }); cv.requestRenderAll(); commit(); };
 $('#ungroupBtn').onclick = () => { const o = act(); if (!o || o.type !== 'group') return; o.toActiveSelection(); cv.requestRenderAll(); commit(); };
 
@@ -4258,7 +4607,10 @@ function syncPanel() {
   if (type === 'multi') $('#multiN').textContent = o.getObjects().length;
   if (type === 'i-text') {
     if (document.activeElement !== $('#tText')) $('#tText').value = o.text;
-    $('#tFontName').textContent = fontLabel(o.fontFamily); $('#tFontName').style.fontFamily = `'${o.fontFamily}', var(--body)`;
+    $('#tFontName').textContent = fontLabel(o.fontFamily); $('#tFontName').style.fontFamily = `${cssFam(o.fontFamily)}, var(--body)`;
+    const fe = fontEntry(o.fontFamily), wsl = (fe && fe.ws) || [];
+    $('#tWeightF').hidden = wsl.length < 2;
+    if (wsl.length >= 2) { $('#tWeight').innerHTML = wsl.map(w => `<option value="${w}">${W_NAME[w] || w}</option>`).join(''); $('#tWeight').value = nearestW(wsl, wNum(o.fontWeight)); }
     $('#tSize').value = Math.min(400, o.fontSize); $('#tSizeN').value = Math.round(o.fontSize);
     $('#tBold').setAttribute('aria-pressed', o.fontWeight === 'bold' || o.fontWeight >= 700);
     $('#tItalic').setAttribute('aria-pressed', o.fontStyle === 'italic');
@@ -4313,6 +4665,7 @@ function layerName(o) {
 }
 function refreshLayers() {
   const objs = cv.getObjects(), sel = cv.getActiveObjects();
+  $('#unlockAll').hidden = !objs.some(o => o.lockedByUser);
   $('#layerCount').textContent = objs.length;
   $('#layerList').innerHTML = objs.map((o, i) => [o, i]).reverse().map(([o, i]) => {
     const glyph = o.type === 'i-text' ? '<span style="font-family:var(--display);font-size:14px;color:var(--ink)">T</span>' : o.kind === 'emoji' ? `<span style="font-family:var(--emoji);font-size:15px">${esc(o.meta && o.meta.ch)}</span>` : o.type === 'image' ? '<svg class="i" style="width:15px;height:15px"><use href="#i-photo"/></svg>' : '<svg class="i" style="width:15px;height:15px"><use href="#i-shapes"/></svg>';
@@ -4382,6 +4735,7 @@ document.addEventListener('keydown', e => {
   if (!o) return;
   if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); removeActive(); }
   else if (mod && e.key.toLowerCase() === 'd') { e.preventDefault(); duplicate(); }
+  else if (mod && e.key.toLowerCase() === 'l') { e.preventDefault(); toggleLockSelected(); }
   else if (mod && e.key.toLowerCase() === 'c') { o.clone(c => { clip = c; }, EXTRA); }
   else if (e.key.startsWith('Arrow')) {
     e.preventDefault(); if (o.lockedByUser) return; const d = e.shiftKey ? 10 : 1;
@@ -4634,7 +4988,11 @@ $('#tArc').oninput = e => { const t = act(); if (!t || t.type !== 'i-text') retu
   if (t.text.includes('\n') && +e.target.value) { e.target.value = 0; $('#tArcO').textContent = 0; toast('휘기는 한 줄 글자에만 쓸 수 있어요. 줄마다 글자를 따로 만들어 휘어 주세요.', 3600); return; }
   $('#tArcO').textContent = e.target.value; if (t.isEditing) t.exitEditing(); t.meta = Object.assign({}, t.meta, { arc: +e.target.value }); reArc(t); setTextFx({}); };
 $('#tArc').onchange = () => commit();
-cv.on('text:changed', e => { const t = e.target; if (t.meta && t.meta.arc) { reArc(t); cv.requestRenderAll(); } });
+cv.on('text:changed', e => {
+  const t = e.target; const en = fontEntry(t.fontFamily);
+  if (en && en.stack) { const want = notoStack(en.stack, detectLang(t.text) || 'ko'); if (want !== t.fontFamily) { t.set('fontFamily', want); t.initDimensions(); ensureFont(want, t.fontWeight, t.text).then(() => { t.initDimensions(); t.dirty = true; cv.requestRenderAll(); }); } }
+  if (t.meta && t.meta.arc) { reArc(t); cv.requestRenderAll(); }
+});
 
 /* ---------------- text filled with a photo ---------------- */
 function fitTextImage(t) {
@@ -5012,7 +5370,13 @@ const langGroup = code => (I18N.find(x => x[0] === code) || [0, 0, 'latin'])[2];
 function i18nState() { if (!doc.i18n) doc.i18n = { langs: ['ko', 'en', 'ja', 'zhs'], fonts: {}, texts: {}, shrink: true }; return doc.i18n; }
 function ensureTids() { const seen = new Set(); cv.getObjects().forEach(o => { if (o.type !== 'i-text') return; let t = o.meta && o.meta.tid; if (!t || seen.has(t)) { t = uid(); o.meta = Object.assign({}, o.meta, { tid: t }); } seen.add(t); }); }
 function fontFits(f, g, text) { const e = fontEntry(f); if (!e) return detectLang(text) === g; return e.l === g || e.x.includes(g) || (g === 'latin' && ['ko', 'ja', 'zhs', 'zht'].includes(e.l)); }
-function fontFor(o, code) { const st = i18nState(), g = langGroup(code), ch = st.fonts[code]; if (ch && ch !== 'auto') return { f: ch }; if (fontFits(o.fontFamily, g, o.text)) return { f: o.fontFamily, keep: true }; return I18N_DEF[g] || { f: o.fontFamily, keep: true }; }
+function fontFor(o, code) {
+  const st = i18nState(), g = langGroup(code), ch = st.fonts[code];
+  if (ch && ch !== 'auto') { const ce = fontEntry(ch); return { f: ce && ce.stack ? notoStack(ce.stack, g) : (ce ? ce.f : ch) }; }
+  const cur = fontEntry(o.fontFamily); if (cur && cur.stack) return { f: notoStack(cur.stack, g) };
+  if (fontFits(o.fontFamily, g, o.text)) return { f: o.fontFamily, keep: true };
+  return I18N_DEF[g] || { f: o.fontFamily, keep: true };
+}
 async function applyLang(c, code) {
   const st = i18nState();
   for (const o of c.getObjects().filter(x => x.type === 'i-text' && x.meta && x.meta.tid)) {
@@ -5033,7 +5397,7 @@ function renderI18n() {
   $('#i18nLangs').innerHTML = I18N.map(([k, n]) => `<button type="button" data-il="${k}" aria-pressed="${st.langs.includes(k)}">${n}</button>`).join('');
   $('#i18nShrink').checked = st.shrink !== false;
   if (!texts.length) { $('#i18nTable').innerHTML = '<tr><td class="src">글자가 있는 디자인에서 쓸 수 있어요.</td></tr>'; return; }
-  const fontOpts = code => { const g = langGroup(code), cur = st.fonts[code] || 'auto'; return `<option value="auto">자동</option>` + FONTS.filter(f => f.l === g || f.x.includes(g)).map(f => `<option value="${esc(f.f)}"${f.f === cur ? ' selected' : ''}>${esc(f.n)}</option>`).join(''); };
+  const fontOpts = code => { const g = langGroup(code), cur = st.fonts[code] || 'auto'; return `<option value="auto">자동</option>` + FONTS.filter(f => f.l === g || f.x.includes(g)).map(f => `<option value="${esc(f.id)}"${f.id === cur ? ' selected' : ''}>${esc(f.n)}</option>`).join(''); };
   $('#i18nTable').innerHTML = `<tr><th>원래 글자</th>${st.langs.map(k => `<th>${esc((I18N.find(x => x[0] === k) || [k, k])[1])}<select data-ifont="${k}" aria-label="글꼴">${fontOpts(k)}</select></th>`).join('')}</tr>`
     + texts.map(o => `<tr><td class="src">${esc(o.text)}</td>${st.langs.map(k => { const v = (st.texts[o.meta.tid] || {})[k] || ''; const same = detectLang(o.text) === langGroup(k); return `<td><textarea data-tid="${o.meta.tid}" data-lang="${k}" rows="2" dir="${k === 'ar' ? 'rtl' : 'auto'}" placeholder="${same ? '비우면 원래 글자' : '번역 입력'}">${esc(v)}</textarea></td>`; }).join('')}</tr>`).join('');
 }
@@ -5163,7 +5527,7 @@ $('#drvSaveBtn').onclick = async () => {
 async function boot() {
   renderTemplates(); renderPresets();
   ['Black Han Sans', 'Do Hyeon', 'Jua', 'Anton', 'Noto Sans KR', 'Gaegu', 'Nanum Pen Script'].forEach(linkFont);
-  for (const f of await DB.all('fonts')) { try { await registerUserFont(f.name, f.buf); } catch (e) {} }
+  for (const f of await DB.all('fonts')) { try { await registerUserFont(f.fam || f.name, f.buf, f.w || 400); } catch (e) { try { await registerUserFont(safeFamily(f.name), f.buf, f.w || 400); } catch (e2) {} } }
   const savedSrc = lsGet('tg.src'); if (savedSrc && SRC[savedSrc]) photoSrc = savedSrc;
   $('#vTitle').value = lsGet('tg.vtitle') ?? $('#vTitle').value; syncTitle();
   setPv(pvOn && window.innerWidth > 980);
@@ -5171,6 +5535,7 @@ async function boot() {
   $('#guideBtn').setAttribute('aria-pressed', guidesOn); $('#safeOv').hidden = !guidesOn;
   setClr('penC', '#EE3124'); $$('#penMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === 'off'));
   renderVbar(); renderMyColors(); updateSizeUI();
+  $('#upLock').checked = lsGet('tg.uplock') === '1'; $('#upLock').onchange = e => lsSet('tg.uplock', e.target.checked ? '1' : '0');
   fit();
   const cur = await DB.get('kv', 'current');
   if (cur && cur.snap) {
