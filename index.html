@@ -715,9 +715,9 @@ input[type=range]{accent-color:var(--primary)}
       <div data-panel="text" hidden>
         <h2>텍스트</h2>
         <div class="addtext">
-          <button data-add="title"><span style="font-family:'Black Han Sans';font-size:26px">큰 제목 넣기</span></button>
-          <button data-add="sub"><span style="font-family:'Black Han Sans';font-size:19px">부제목 넣기</span></button>
-          <button data-add="small"><span style="font-size:14px">작은 글씨 넣기</span></button>
+          <button data-add="title"><span style="font-family:'Pretendard';font-weight:700;font-size:26px;color:var(--ink)">큰 제목 넣기</span></button>
+          <button data-add="sub"><span style="font-family:'Pretendard';font-weight:600;font-size:19px;color:var(--ink)">부제목 넣기</span></button>
+          <button data-add="small"><span style="font-family:'Pretendard';font-size:14px;color:var(--ink)">작은 글씨 넣기</span></button>
         </div>
         <h3>한 번에 꾸미기</h3>
         <p class="hint" style="margin-top:0">글자를 선택한 상태면 그 글자에, 아니면 새 글자로 넣어요.</p>
@@ -3306,9 +3306,10 @@ function detectLang(t) {
 const userFonts = []; // {name, ws, faces: [FontFace]}
 function fontEntry(f) {
   if (!f) return null;
+  const u = userFonts.find(x => x.name === f); if (u) return { id: u.name, f: u.name, n: u.name, l: 'mine', s: '내 글꼴', x: [], ws: u.ws, mine: true }; // your upload wins over a built-in of the same name
   const e = FONTS.find(x => x.f === f || x.id === f); if (e) return e;
   if (f.includes(',')) return FONTS.find(x => x.stack && f.includes(`"${NOTO[x.stack].hi}"`)) || null;
-  const u = userFonts.find(x => x.name === f); return u ? { id: u.name, f: u.name, n: '내 글꼴', l: 'mine', s: '내 글꼴', x: [], ws: u.ws, mine: true } : null;
+  return null;
 }
 const fontLabel = f => (fontEntry(f) || { n: f }).n;
 const cssFam = f => f.includes(',') ? f : `"${f}"`;
@@ -3722,8 +3723,9 @@ function renderPresets() {
 $('#presetGrid').onclick = e => { const b = e.target.closest('.preset'); if (!b) return; const o = cv.getActiveObject(); applyPreset(TEXT_PRESETS[+b.dataset.i], o && o.type === 'i-text' ? o : null); };
 $$('[data-add]').forEach(b => b.onclick = async () => {
   const k = b.dataset.add;
-  const cfg = k === 'title' ? ['큰 제목을 입력하세요', { fontSize: 120, stroke: '#111111', strokeWidth: 18 }] : k === 'sub' ? ['부제목', { fontSize: 72, stroke: '#111111', strokeWidth: 12 }] : ['작은 설명 글씨', { fontFamily: 'Noto Sans KR', fontWeight: 'bold', fontSize: 40, fill: '#111111' }];
-  await ensureFont(cfg[1].fontFamily || 'Black Han Sans', cfg[1].fontWeight || 'normal', cfg[0]);
+  const plain = { fontFamily: 'Pretendard', fill: '#111111', stroke: null, strokeWidth: 0, shadow: null, textBackgroundColor: '', outer: null, depth: null };
+  const cfg = k === 'title' ? ['큰 제목을 입력하세요', Object.assign({}, plain, { fontSize: 120, fontWeight: 'bold' })] : k === 'sub' ? ['부제목', Object.assign({}, plain, { fontSize: 72, fontWeight: '600' })] : ['작은 설명 글씨', Object.assign({}, plain, { fontSize: 40, fontWeight: 'normal' })];
+  await ensureFont('Pretendard', cfg[1].fontWeight, cfg[0]);
   const t = makeText(cfg[0], cfg[1]); addObj(t);
 });
 
@@ -3764,13 +3766,48 @@ const FONT_ERR = {
   unknown: '글꼴 파일이 아니에요. TTF·OTF·WOFF·WOFF2나 이 파일들이 든 ZIP을 올려 주세요.',
   broken: '브라우저의 글꼴 검사를 통과하지 못했어요. 파일이 깨졌거나 오래된 형식이에요. 같은 글꼴의 다른 형식(TTF↔OTF, WOFF)으로 받아 보세요.',
 };
+// Reads family + weight from inside the font (name table, OS/2), so differently named files of one family group together.
+async function inflateTable(bytes) { const ds = new DecompressionStream('deflate'); const out = await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer(); return new Uint8Array(out); }
+async function fontTables(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf), tag = String.fromCharCode(...u8.slice(0, 4)), want = ['name', 'OS/2'], out = {};
+  if (tag === 'wOFF') {
+    const n = dv.getUint16(12);
+    for (let i = 0; i < n; i++) { const o = 44 + i * 20, t = String.fromCharCode(...u8.slice(o, o + 4)); if (!want.includes(t)) continue;
+      const off = dv.getUint32(o + 4), comp = dv.getUint32(o + 8), orig = dv.getUint32(o + 12); const raw = u8.slice(off, off + comp);
+      out[t] = comp < orig ? await inflateTable(raw) : raw; }
+    return out;
+  }
+  if (tag === 'wOF2') return null; // brotli-packed: fall back to the file name
+  const n = dv.getUint16(4);
+  for (let i = 0; i < n; i++) { const o = 12 + i * 16, t = String.fromCharCode(...u8.slice(o, o + 4)); if (want.includes(t)) out[t] = u8.slice(dv.getUint32(o + 8), dv.getUint32(o + 8) + dv.getUint32(o + 12)); }
+  return out;
+}
+async function fontInfo(buf) {
+  try {
+    const t = await fontTables(buf); if (!t || !t.name) return null;
+    const nm = new DataView(t.name.buffer, t.name.byteOffset, t.name.byteLength), cnt = nm.getUint16(2), so = nm.getUint16(4), recs = {};
+    for (let i = 0; i < cnt; i++) {
+      const o = 6 + i * 12, pid = nm.getUint16(o), eid = nm.getUint16(o + 2), lid = nm.getUint16(o + 4), id = nm.getUint16(o + 6), len = nm.getUint16(o + 8), off = nm.getUint16(o + 10);
+      if (![1, 2, 16, 17].includes(id)) continue; let str = '';
+      if (pid === 3 || pid === 0) { for (let k = 0; k < len; k += 2) str += String.fromCharCode(nm.getUint16(so + off + k)); }
+      else if (pid === 1 && eid === 0) { for (let k = 0; k < len; k++) str += String.fromCharCode(nm.getUint8(so + off + k)); } else continue;
+      const score = (pid === 3 ? 10 : 0) + (lid === 0x412 ? 5 : lid === 0x409 ? 3 : 0);
+      if (!recs[id] || score > recs[id].score) recs[id] = { str: str.trim(), score };
+    }
+    const fam = (recs[16] || recs[1] || {}).str; if (!fam) return null;
+    let w = 400;
+    if (t['OS/2'] && t['OS/2'].byteLength > 6) { const os = new DataView(t['OS/2'].buffer, t['OS/2'].byteOffset, t['OS/2'].byteLength); w = os.getUint16(4); if (w > 0 && w < 10) w *= 100; w = Math.min(900, Math.max(100, Math.round(w / 100) * 100)); }
+    else { const sub = ((recs[17] || recs[2] || {}).str || ''); const m = splitFontName('x' + sub.replace(/\s/g, '')); w = m.w; }
+    return { fam: safeFamily(fam), w };
+  } catch (e) { return null; }
+}
 async function installFontFiles(files) {
   const ok = [], bad = [];
   const one = async (name, buf) => {
     const kind = fontKind(buf);
     if (kind === 'zip') { await fromZip(name, buf); return; }
     if (kind !== 'font') { bad.push([name, FONT_ERR[kind]]); return; }
-    const { fam, w } = splitFontName(name);
+    const { fam, w } = (await fontInfo(buf)) || splitFontName(name);
     try { await registerUserFont(fam, buf, w); await DB.put('fonts', { id: fam + '|' + w, name: fam, fam, w, buf, file: name }); ok.push(fam); }
     catch (e) { console.warn(name, e); bad.push([name, FONT_ERR.broken]); }
   };
@@ -4440,7 +4477,7 @@ $('#iMosaic').onclick = () => openCut('mosaic').catch(e => { console.error(e); t
 /* ---------------- inspector ---------------- */
 const act = () => cv.getActiveObject();
 let lastSel = null; // remembered text selection while editing
-cv.on('text:selection:changed', e => { const t = e.target; lastSel = t && t.selectionStart !== t.selectionEnd ? [t.selectionStart, t.selectionEnd] : null; $('#selHint').hidden = !lastSel; });
+cv.on('text:selection:changed', e => { const t = e.target; lastSel = t && t.selectionStart !== t.selectionEnd ? [t.selectionStart, t.selectionEnd] : null; $('#selHint').hidden = !lastSel; syncStyleButtons(); });
 function textSelRange(t) { if (t && t.isEditing && t.selectionStart !== t.selectionEnd) return [t.selectionStart, t.selectionEnd]; if (t && t.isEditing && lastSel) return lastSel; return null; }
 function applyText(props, done) {
   const t = act(); if (!t || t.type !== 'i-text') return;
@@ -4474,9 +4511,36 @@ $('#tSize').oninput = e => setSize(e.target.value, false); $('#tSize').onchange 
 $('#tSizeN').onchange = e => setSize(e.target.value, true);
 const W_NAME = { 100: '100 · 아주 가늘게', 200: '200 · 더 가늘게', 300: '300 · 가늘게', 400: '400 · 보통', 500: '500 · 중간', 600: '600 · 조금 굵게', 700: '700 · 굵게', 800: '800 · 더 굵게', 900: '900 · 가장 굵게' };
 $('#tWeight').onchange = async e => { const t = act(); if (!t || t.type !== 'i-text') return; const w = +e.target.value, wv = w === 400 ? 'normal' : w === 700 ? 'bold' : String(w); await ensureFont(t.fontFamily, wv, t.text); applyText({ fontWeight: wv }, true); };
-$('#tBold').onclick = async () => { const t = act(); if (!t) return; const b = t.fontWeight === 'bold' || t.fontWeight >= 700; await ensureFont(t.fontFamily, b ? 'normal' : 'bold', t.text); applyText({ fontWeight: b ? 'normal' : 'bold' }, true); };
-$('#tItalic').onclick = () => { const t = act(); if (!t) return; applyText({ fontStyle: t.fontStyle === 'italic' ? 'normal' : 'italic' }, true); };
-$('#tUnder').onclick = () => { const t = act(); if (!t) return; applyText({ underline: !t.underline }, true); };
+// B / I / U: on/off is decided from what they will change — the selected letters while editing, otherwise the
+// whole text including any per-letter styles — so pressing again always undoes it.
+const isBold = w => wNum(w) >= 600, isItal = v => v === 'italic', isUnder = v => !!v;
+function styleState(t, prop, test) {
+  const r = textSelRange(t);
+  if (r) return t.getSelectionStyles(r[0], r[1], true).every(st => test(st[prop]));
+  if (!test(t[prop])) return false;
+  for (const l in t.styles || {}) for (const c in t.styles[l]) { const st = t.styles[l][c]; if (st && prop in st && !test(st[prop])) return false; }
+  return true;
+}
+function boldPair(t) { const e = fontEntry(t.fontFamily), ws = (e && e.ws) || [400, 700]; const on = ws.filter(w => w >= 600); return { on: on.length ? nearestW(on, 700) : 700, off: nearestW(ws.filter(w => w < 600).length ? ws.filter(w => w < 600) : [400], 400) }; }
+const wVal = w => w === 400 ? 'normal' : w === 700 ? 'bold' : String(w);
+async function toggleTextStyle(prop, test, onV, offV) {
+  const t = act(); if (!t || t.type !== 'i-text') return;
+  const v = styleState(t, prop, test) ? offV : onV;
+  if (prop === 'fontWeight') await ensureFont(t.fontFamily, v, t.text);
+  const r = textSelRange(t);
+  if (r) t.setSelectionStyles({ [prop]: v }, r[0], r[1]);
+  else { for (const l in t.styles || {}) for (const c in t.styles[l]) { if (t.styles[l][c]) delete t.styles[l][c][prop]; } t.set(prop, v); }
+  t.initDimensions(); if (t.meta && t.meta.arc) reArc(t); t.setCoords(); t.dirty = true; cv.requestRenderAll(); commit(); syncStyleButtons();
+}
+function syncStyleButtons() {
+  const t = act(); if (!t || t.type !== 'i-text') return;
+  $('#tBold').setAttribute('aria-pressed', styleState(t, 'fontWeight', isBold));
+  $('#tItalic').setAttribute('aria-pressed', styleState(t, 'fontStyle', isItal));
+  $('#tUnder').setAttribute('aria-pressed', styleState(t, 'underline', isUnder));
+}
+$('#tBold').onclick = () => { const t = act(); if (!t) return; const bp = boldPair(t); toggleTextStyle('fontWeight', isBold, wVal(bp.on), wVal(bp.off)); };
+$('#tItalic').onclick = () => toggleTextStyle('fontStyle', isItal, 'italic', 'normal');
+$('#tUnder').onclick = () => toggleTextStyle('underline', isUnder, true, false);
 $('#tAlign').onclick = e => { const b = e.target.closest('[data-al]'); const t = act(); if (!b || !t) return; t.set('textAlign', b.dataset.al); cv.requestRenderAll(); commit(); };
 $('#tSpacing').oninput = e => { $('#tSpacingO').textContent = e.target.value; const t = act(); if (t) { t.set('charSpacing', +e.target.value); t.setCoords(); cv.requestRenderAll(); } };
 $('#tLine').oninput = e => { $('#tLineO').textContent = (+e.target.value).toFixed(2); const t = act(); if (t) { t.set('lineHeight', +e.target.value); t.setCoords(); cv.requestRenderAll(); } };
@@ -4612,9 +4676,7 @@ function syncPanel() {
     $('#tWeightF').hidden = wsl.length < 2;
     if (wsl.length >= 2) { $('#tWeight').innerHTML = wsl.map(w => `<option value="${w}">${W_NAME[w] || w}</option>`).join(''); $('#tWeight').value = nearestW(wsl, wNum(o.fontWeight)); }
     $('#tSize').value = Math.min(400, o.fontSize); $('#tSizeN').value = Math.round(o.fontSize);
-    $('#tBold').setAttribute('aria-pressed', o.fontWeight === 'bold' || o.fontWeight >= 700);
-    $('#tItalic').setAttribute('aria-pressed', o.fontStyle === 'italic');
-    $('#tUnder').setAttribute('aria-pressed', !!o.underline);
+    syncStyleButtons();
     $$('#tAlign button').forEach(b => b.setAttribute('aria-pressed', b.dataset.al === o.textAlign));
     const g = o.meta && o.meta.grad; $('#tGradOn').checked = !!g; $('#tFill2Row').hidden = !g;
     setClr('tFill', g ? g[0] : swatchValue(o.fill)); if (g) setClr('tFill2', g[1]);
@@ -4751,7 +4813,7 @@ document.addEventListener('paste', e => {
   if (img) { e.preventDefault(); handleImageFile(img.getAsFile()); return; }
   if (clip) { e.preventDefault(); duplicate(clip, 28); clip.clone(c => { clip = c; clip.left += 28; clip.top += 28; }, EXTRA); return; }
   const txt = e.clipboardData?.getData('text/plain');
-  if (txt && txt.trim()) { e.preventDefault(); ensureFont('Black Han Sans', 'normal', txt).then(() => addObj(makeText(txt.trim().slice(0, 300), { fontSize: 90, stroke: '#111111', strokeWidth: 14 }))); }
+  if (txt && txt.trim()) { e.preventDefault(); ensureFont('Pretendard', 'bold', txt).then(() => addObj(makeText(txt.trim().slice(0, 300), { fontFamily: 'Pretendard', fontWeight: 'bold', fontSize: 90, fill: '#111111', strokeWidth: 0 }))); }
 });
 
 /* ---------------- tabs ---------------- */
@@ -5527,7 +5589,11 @@ $('#drvSaveBtn').onclick = async () => {
 async function boot() {
   renderTemplates(); renderPresets();
   ['Black Han Sans', 'Do Hyeon', 'Jua', 'Anton', 'Noto Sans KR', 'Gaegu', 'Nanum Pen Script'].forEach(linkFont);
-  for (const f of await DB.all('fonts')) { try { await registerUserFont(f.fam || f.name, f.buf, f.w || 400); } catch (e) { try { await registerUserFont(safeFamily(f.name), f.buf, f.w || 400); } catch (e2) {} } }
+  for (const f of await DB.all('fonts')) {
+    const old = f.fam || f.name, info = (await fontInfo(f.buf)) || { fam: old, w: f.w || 400 };
+    try { await registerUserFont(info.fam, f.buf, info.w); } catch (e) { continue; }
+    if (info.fam !== old) { try { document.fonts.add(new FontFace(old, f.buf, { weight: String(f.w || 400) })); } catch (e) {} } // keep older designs rendering under the earlier name
+  }
   const savedSrc = lsGet('tg.src'); if (savedSrc && SRC[savedSrc]) photoSrc = savedSrc;
   $('#vTitle').value = lsGet('tg.vtitle') ?? $('#vTitle').value; syncTitle();
   setPv(pvOn && window.innerWidth > 980);
