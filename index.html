@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>썸네일 공방</title>
+<title>Design by FC</title>
 <meta name="description" content="무료 사진·이모지·아이콘·한글 웹폰트로 유튜브 섬네일을 만드는 웹 편집기">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,14 +21,14 @@
    yellow only for the mark. Pills for buttons and toggles, 4px for small chips, hairlines instead of boxes,
    soft shadow only on floating surfaces, focus = white 4px ring inside a 2px near-black outline. */
 :root{
-  --bg:#FFFFFF; --panel:#FFFFFF; --panel-2:#F5F5F5; --ink:#111111; --text:#484848; --muted:#767676; --faint:#929292; --line:#DFDFDF;
-  --mat:#F5F5F5; --mat-dot:#F5F5F5;
-  --primary:#111111; --primary-hover:#333333; --primary-pressed:#000000; --on-primary:#FFFFFF;
-  --sec:#F5F5F5; --sec-hover:#DFDFDF; --sec-pressed:#CCCCCC;
-  --emph:#0058A3; --emph-hover:#004F93; --emph-pressed:#003E72; --on-emph:#FFFFFF;
-  --brand-yellow:#FFDB00;
+  --bg:#FFFFFF; --panel:#FFFFFF; --panel-2:#F7F8F9; --ink:#233237; --text:#45495B; --muted:#636978; --faint:#9BA2AE; --line:#DADCE0;
+  --mat:#F7F8F9; --mat-dot:#EDEEF1;
+  --primary:#233237; --primary-hover:#2E3242; --primary-pressed:#0D181E; --on-primary:#FFFFFF;
+  --sec:#EDEEF1; --sec-hover:#DADCE0; --sec-pressed:#C1C7D1;
+  --emph:#FC6589; --emph-hover:#FC7192; --emph-pressed:#E8557A; --on-emph:#0D181E;
+  --brand-yellow:#FC6589;
   --accent:#111111; --accent-ink:#FFFFFF;
-  --hot:#E00751; --ok:#0A8A00; --caution:#F26A2F; --focus:#111111; --ring:#FFFFFF;
+  --hot:#B83600; --ok:#0A8A00; --caution:#F26A2F; --focus:#233237; --ring:#FFFFFF; --on-status:#FFFFFF;
   --float-shadow:0 4px 16px rgba(0,0,0,.1);
   --display:"Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --body:"Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
@@ -38,24 +38,24 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#111111; --panel:#161616; --panel-2:#242424; --ink:#F5F5F5; --text:#CCCCCC; --muted:#A3A3A3; --faint:#7A7A7A; --line:#333333;
-    --mat:#0B0B0B; --mat-dot:#0B0B0B;
-    --primary:#F5F5F5; --primary-hover:#DFDFDF; --primary-pressed:#FFFFFF; --on-primary:#111111;
-    --sec:#242424; --sec-hover:#333333; --sec-pressed:#444444;
-    --emph:#2E7FD0; --emph-hover:#3D8DDB; --emph-pressed:#1F6CB8; --on-emph:#FFFFFF;
+    --bg:#0D181E; --panel:#1E1F2A; --panel-2:#2E3242; --ink:#F7F8F9; --text:#DADCE0; --muted:#C1C7D1; --faint:#9BA2AE; --line:#45495B;
+    --mat:#0D181E; --mat-dot:#1E1F2A;
+    --primary:#F7F8F9; --primary-hover:#EDEEF1; --primary-pressed:#FFFFFF; --on-primary:#233237;
+    --sec:#2E3242; --sec-hover:#3A3F50; --sec-pressed:#45495B;
+    --emph:#FC6589; --emph-hover:#FD7A9B; --emph-pressed:#E8557A; --on-emph:#0D181E;
     --accent:#F5F5F5; --accent-ink:#111111;
-    --hot:#FF4D7D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F5F5F5; --ring:#111111;
+    --hot:#FF7A4D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F7F8F9; --ring:#0D181E; --on-status:#0D181E;
     --float-shadow:0 4px 16px rgba(0,0,0,.5); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#111111; --panel:#161616; --panel-2:#242424; --ink:#F5F5F5; --text:#CCCCCC; --muted:#A3A3A3; --faint:#7A7A7A; --line:#333333;
-  --mat:#0B0B0B; --mat-dot:#0B0B0B;
-  --primary:#F5F5F5; --primary-hover:#DFDFDF; --primary-pressed:#FFFFFF; --on-primary:#111111;
-  --sec:#242424; --sec-hover:#333333; --sec-pressed:#444444;
-  --emph:#2E7FD0; --emph-hover:#3D8DDB; --emph-pressed:#1F6CB8; --on-emph:#FFFFFF;
+  --bg:#0D181E; --panel:#1E1F2A; --panel-2:#2E3242; --ink:#F7F8F9; --text:#DADCE0; --muted:#C1C7D1; --faint:#9BA2AE; --line:#45495B;
+  --mat:#0D181E; --mat-dot:#1E1F2A;
+  --primary:#F7F8F9; --primary-hover:#EDEEF1; --primary-pressed:#FFFFFF; --on-primary:#233237;
+  --sec:#2E3242; --sec-hover:#3A3F50; --sec-pressed:#45495B;
+  --emph:#FC6589; --emph-hover:#FD7A9B; --emph-pressed:#E8557A; --on-emph:#0D181E;
   --accent:#F5F5F5; --accent-ink:#111111;
-  --hot:#FF4D7D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F5F5F5; --ring:#111111;
+  --hot:#FF7A4D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F7F8F9; --ring:#0D181E; --on-status:#0D181E;
   --float-shadow:0 4px 16px rgba(0,0,0,.5); color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -400,6 +400,12 @@ input[type=number].num.wide{width:96px}
 .steps summary{cursor:pointer;color:var(--ink);font-weight:600}
 .steps ol{padding-left:20px;display:grid;gap:6px;margin:10px 0 0}
 .steps code{font:500 12px var(--mono);background:var(--panel-2);padding:2px 6px;border-radius:4px;user-select:all}
+.av-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;margin-top:12px;align-items:start}
+@media (max-width:640px){ .av-grid{grid-template-columns:minmax(0,1fr)} }
+.wf-help{margin:10px 0 0;padding-left:18px;display:grid;gap:4px;font-size:13px;color:var(--text)}
+.wf-help code,#wfIn{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.wf-help code{background:var(--sec);padding:1px 5px;border-radius:4px}
+#wfMsg.err{color:var(--hot)}
 .toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:10px 16px;border-radius:10px;font-size:13.5px;z-index:80;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}
 .kbd{font:500 11px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:var(--panel-2)}
 .keys{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:12.5px;color:var(--muted);margin-top:8px}
@@ -433,12 +439,10 @@ h2,h3,strong,b{color:var(--ink)}
 /* top bar: white, hairline, text links */
 .top{gap:4px;padding-block:10px;border-bottom:1px solid var(--line)}
 .logo{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.01em;color:var(--ink);margin-right:14px}
-.logo-mark{width:32px;height:22px;border-radius:4px;background:var(--brand-yellow);box-shadow:none}
-.logo-mark::after{left:12px;top:6px;border-left:9px solid #111111;border-top:5px solid transparent;border-bottom:5px solid transparent}
 .sep{background:var(--line)}
 
 /* buttons: pills. default = secondary grey, .primary = near-black, .emph = blue (one per screen) */
-.btn{height:36px;padding:0 16px;border-radius:64px;border:0;background:var(--sec);color:var(--ink);font-weight:700;font-size:13.5px;transition:background-color .12s}
+.btn{height:36px;padding:0 16px;border-radius:64px;border:0;background:var(--sec);color:var(--ink);font-weight:700;font-size:13.5px;transition:background-color .2s cubic-bezier(.3,.7,.7,.3)}
 .btn:hover{background:var(--sec-hover)}
 .btn:active{background:var(--sec-pressed)}
 .btn.primary{background:var(--primary);color:var(--on-primary);filter:none}
@@ -520,7 +524,7 @@ input[type=range]{accent-color:var(--primary)}
 .stage{background-color:var(--mat);background-image:none}
 .canvas-wrap{box-shadow:var(--float-shadow)}
 .dims{color:var(--muted);font:400 12px var(--mono)}
-.drop-hint{background:rgba(0,88,163,.08);border:2px dashed var(--emph);color:var(--ink)}
+.drop-hint{background:rgba(252,101,137,.08);border:2px dashed var(--emph);color:var(--ink)}
 .drawchip{background:var(--primary);color:var(--on-primary);border-radius:64px;font-weight:700}
 .vbar{padding-top:12px}
 .vtab{height:32px;border-radius:64px;border:0;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);font-weight:700;padding:0 8px 0 14px}
@@ -550,7 +554,7 @@ input[type=range]{accent-color:var(--primary)}
 .ph .lic{border-radius:4px}
 .lib .it{border-radius:4px}
 .dz{border:1px dashed var(--faint);border-radius:4px;color:var(--text);padding:24px 16px}
-.dz.over{border-color:var(--emph);background:rgba(0,88,163,.06)}
+.dz.over{border-color:var(--emph);background:rgba(252,101,137,.06)}
 .empty{border:0;background:var(--sec);border-radius:4px;color:var(--text)}
 .bgs button{border-radius:4px}
 .frames button{border-radius:2px}
@@ -597,6 +601,23 @@ input[type=range]{accent-color:var(--primary)}
 .steps summary{color:var(--ink)}
 .mycol{border-radius:64px}
 .menu-sep{background:var(--line);margin:6px 4px}
+
+/* readability: every label sits on a background it can be read against (WCAG AA 4.5:1) */
+.hint{font-size:13px}
+.sev,.vtab.arm,.fdel.arm{color:var(--on-status)}
+.sev.warn{color:#0D181E}
+.preset small{display:inline-block;background:rgba(13,24,30,.8);color:#FFFFFF;opacity:1;padding:2px 6px;border-radius:4px;margin-top:4px;font-size:11.5px}
+
+/* artboard video length */
+.vadd{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex:none}
+.vadd .i{width:16px;height:16px}
+.vdur{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text);margin-left:8px;white-space:nowrap;flex:none}
+.vdur input.txt{width:70px;height:30px;padding:0 8px;font-variant-numeric:tabular-nums;text-align:center}
+.av-tl{display:grid;gap:6px;margin-top:6px}
+.tl-row{display:grid;grid-template-columns:minmax(0,1fr) 96px minmax(92px,auto);gap:10px;align-items:center;font-size:13px;color:var(--ink)}
+.tl-row .txt{height:34px;text-align:center;font-variant-numeric:tabular-nums}
+.tl-row .when{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.av-sum{margin-top:8px;font-size:13px;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -645,6 +666,14 @@ input[type=range]{accent-color:var(--primary)}
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
   <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5h10.5a4 4 0 00.6-7.95A6 6 0 006.4 9.1 4.7 4.7 0 007 18.5z"/></symbol>
   <symbol id="i-app" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12l4 4 4-4"/></symbol>
+  <symbol id="i-al-l" viewBox="0 0 24 24"><path d="M4 3v18"/><rect x="7" y="6" width="11" height="4" rx="1"/><rect x="7" y="14" width="7" height="4" rx="1"/></symbol>
+  <symbol id="i-al-ch" viewBox="0 0 24 24"><path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="7.5" y="14" width="9" height="4" rx="1"/></symbol>
+  <symbol id="i-al-r" viewBox="0 0 24 24"><path d="M20 3v18"/><rect x="6" y="6" width="11" height="4" rx="1"/><rect x="10" y="14" width="7" height="4" rx="1"/></symbol>
+  <symbol id="i-al-t" viewBox="0 0 24 24"><path d="M3 4h18"/><rect x="6" y="7" width="4" height="11" rx="1"/><rect x="14" y="7" width="4" height="7" rx="1"/></symbol>
+  <symbol id="i-al-cv" viewBox="0 0 24 24"><path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="7.5" width="4" height="9" rx="1"/></symbol>
+  <symbol id="i-al-b" viewBox="0 0 24 24"><path d="M3 20h18"/><rect x="6" y="6" width="4" height="11" rx="1"/><rect x="14" y="10" width="4" height="7" rx="1"/></symbol>
+  <symbol id="i-dist-h" viewBox="0 0 24 24"><path d="M3 4v16M21 4v16"/><rect x="9.5" y="7" width="5" height="10" rx="1"/></symbol>
+  <symbol id="i-dist-v" viewBox="0 0 24 24"><path d="M4 3h16M4 21h16"/><rect x="7" y="9.5" width="10" height="5" rx="1"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/></symbol>
   <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v12a1 1 0 01-1 1H6a1 1 0 01-1-1z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></symbol>
   <symbol id="i-new" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M12 9v6M9 12h6"/></symbol>
@@ -652,7 +681,7 @@ input[type=range]{accent-color:var(--primary)}
 
 <div class="app">
   <header class="top">
-    <div class="logo"><span class="logo-mark" aria-hidden="true"></span>썸네일 공방</div>
+    <div class="logo">Design by FC</div>
     <button class="btn sizebtn" id="sizeBtn" title="캔버스 크기 바꾸기"><span id="sizeLbl">유튜브 섬네일 · 1280×720</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
     <span class="sep hide-sm"></span>
     <button class="btn icon ghost" id="undoBtn" title="되돌리기 (Ctrl+Z)" aria-label="되돌리기"><svg class="i"><use href="#i-undo"/></svg></button>
@@ -666,6 +695,7 @@ input[type=range]{accent-color:var(--primary)}
     <button class="btn ghost" id="feedBtn" title="다른 영상들 사이에 놓고 보기"><svg class="i"><use href="#i-feed"/></svg><span class="lbl-hide">피드 비교</span></button>
     <button class="btn ghost" id="batchBtn" title="글자만 바꿔 여러 장 만들기"><svg class="i"><use href="#i-stack"/></svg><span class="lbl-hide">여러 장</span></button>
     <button class="btn ghost" id="i18nBtn" title="같은 디자인을 여러 언어로"><svg class="i"><use href="#i-globe"/></svg><span class="lbl-hide">언어별</span></button>
+    <button class="btn ghost" id="vidMakeBtn" title="음성 파일과 합쳐 영상(MP4) 만들기"><svg class="i"><use href="#i-film"/></svg><span class="lbl-hide">영상 만들기</span></button>
     <div class="menu-wrap">
       <button class="btn ghost" id="fileBtn" aria-haspopup="true" aria-expanded="false"><svg class="i"><use href="#i-folder"/></svg><span class="lbl-hide">파일</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
       <div class="menu" id="fileMenu" hidden role="menu">
@@ -702,13 +732,11 @@ input[type=range]{accent-color:var(--primary)}
       <!-- templates -->
       <div data-panel="tpl">
         <h2>템플릿</h2>
-        <p class="hint">누르면 지금 시안을 바꿔요. 바꾼 뒤에도 <span class="kbd">Ctrl</span>+<span class="kbd">Z</span>로 되돌릴 수 있어요.</p>
+        <p class="hint">누르면 지금 아트보드를 바꿔요. 바꾼 뒤에도 <span class="kbd">Ctrl</span>+<span class="kbd">Z</span>로 되돌릴 수 있어요.</p>
         <h3>내 템플릿</h3>
         <div class="search" style="margin-top:0"><input class="txt" id="myTplName" placeholder="예: 우리 채널 기본형"><button class="btn sm primary" id="myTplSave">지금 디자인 저장</button></div>
         <div class="tpls" id="myTplGrid" style="margin-top:10px"></div>
         <p class="hint" id="myTplEmpty">채널 고정 스타일을 저장해 두면 다음 편은 글자만 바꾸면 돼요.</p>
-        <h3>기본 템플릿</h3>
-        <div class="tpls" id="tplGrid"></div>
       </div>
 
       <!-- text -->
@@ -724,7 +752,8 @@ input[type=range]{accent-color:var(--primary)}
         <div class="presets" id="presetGrid" style="margin-top:8px"></div>
         <h3>글꼴 직접 올리기</h3>
         <p class="hint" style="margin-top:0">TTF·OTF·WOFF 파일이나 <b>받은 ZIP 그대로</b> 올리면 이 브라우저에 저장돼요. Bold·Light처럼 굵기만 다른 파일은 한 글꼴로 묶어요. 상업적 사용 허용 여부는 폰트마다 확인하세요.</p>
-        <button class="btn sm" id="fontUpBtn" style="margin-top:8px"><svg class="i"><use href="#i-upload"/></svg>폰트 파일 올리기</button>
+        <div class="row" style="margin-top:8px"><button class="btn sm" id="fontUpBtn"><svg class="i"><use href="#i-upload"/></svg>폰트 파일 올리기</button><button class="btn sm" id="wfOpen"><svg class="i"><use href="#i-globe"/></svg>웹폰트 추가</button></div>
+        <p class="hint">웹폰트 추가: 눈누의 ‘웹폰트로 사용’ 코드, 구글 폰트 이름이나 주소, CSS 링크를 붙여넣어요. 파일을 올리지 않아도 돼요.</p>
         <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2,.ttc,.zip" multiple hidden>
       </div>
 
@@ -869,7 +898,7 @@ input[type=range]{accent-color:var(--primary)}
     </section>
 
     <section class="stage" id="stage">
-      <div class="vbar" id="vbar" role="tablist" aria-label="시안"></div>
+      <div class="vbar" id="vbar" role="tablist" aria-label="아트보드"></div>
       <div class="fit" id="fitBox">
         <div class="drawchip" id="drawChip" hidden>그리는 중 · <span class="kbd">Esc</span>로 끝내기</div>
         <div class="canvas-wrap" id="canvasWrap">
@@ -1010,6 +1039,18 @@ input[type=range]{accent-color:var(--primary)}
       <!-- common -->
       <div id="pCommon" hidden>
         <div class="divider"></div>
+        <h3>정렬 <span class="chip" id="alBase">캔버스 기준</span></h3>
+        <div class="toolgrid">
+          <button class="btn" data-al="l" title="왼쪽 맞춤" aria-label="왼쪽 맞춤"><svg class="i"><use href="#i-al-l"/></svg></button>
+          <button class="btn" data-al="ch" title="가로 가운데 맞춤" aria-label="가로 가운데 맞춤"><svg class="i"><use href="#i-al-ch"/></svg></button>
+          <button class="btn" data-al="r" title="오른쪽 맞춤" aria-label="오른쪽 맞춤"><svg class="i"><use href="#i-al-r"/></svg></button>
+          <button class="btn" data-dist="h" title="가로 간격 똑같이 (3개 이상)" aria-label="가로 간격 똑같이"><svg class="i"><use href="#i-dist-h"/></svg></button>
+          <button class="btn" data-al="t" title="위쪽 맞춤" aria-label="위쪽 맞춤"><svg class="i"><use href="#i-al-t"/></svg></button>
+          <button class="btn" data-al="cv" title="세로 가운데 맞춤" aria-label="세로 가운데 맞춤"><svg class="i"><use href="#i-al-cv"/></svg></button>
+          <button class="btn" data-al="b" title="아래쪽 맞춤" aria-label="아래쪽 맞춤"><svg class="i"><use href="#i-al-b"/></svg></button>
+          <button class="btn" data-dist="v" title="세로 간격 똑같이 (3개 이상)" aria-label="세로 간격 똑같이"><svg class="i"><use href="#i-dist-v"/></svg></button>
+        </div>
+        <label class="tog" id="alCanvasWrap" style="margin-top:8px"><input type="checkbox" id="alCanvas">여러 개도 캔버스 기준으로 맞추기</label>
         <h3>배치</h3>
         <div class="toolgrid">
           <button class="btn" id="cCenterH" title="가로 가운데" aria-label="가로 가운데"><svg class="i"><use href="#i-ach"/></svg></button>
@@ -2984,6 +3025,63 @@ onnxruntime-web/dist/esm/ort.min.js:
 */
 </script>
 
+<!-- image + audio → video -->
+<div class="modal" id="avModal" hidden role="dialog" aria-modal="true" aria-labelledby="avTitle">
+  <div class="dlg" style="width:min(720px,100%)">
+    <div class="cut-head"><h2 id="avTitle">음성으로 영상 만들기</h2><button class="btn icon ghost" id="avX" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <p class="hint" style="margin-top:0">아트보드를 화면으로, 음성 파일을 소리로 합쳐 MP4 영상을 만들어요. 아트보드마다 길이를 정하면 그 시간만큼 나오고 순서대로 넘어가요. 음성은 없어도 돼요. 파일은 이 컴퓨터 밖으로 나가지 않아요.</p>
+    <div class="av-grid">
+      <img id="avImg" class="exp-prev" alt="영상 첫 화면" style="margin-top:0">
+      <div style="min-width:0">
+        <div class="dz" id="avDz" style="padding:16px">
+          <div>음성 파일을 끌어다 놓거나 (없어도 돼요)</div>
+          <button class="btn sm primary" id="avPick">음성 파일 고르기</button>
+          <div style="font-size:12px">MP3 · WAV · M4A · OGG · FLAC</div>
+        </div>
+        <input type="file" id="avFile" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus" hidden>
+        <div id="avInfo" hidden>
+          <p style="margin:10px 0 6px"><b id="avName"></b> <span class="chip" id="avDur"></span> <button class="btn sm ghost danger" id="avNoAudio">음성 빼기</button></p>
+          <audio id="avAudio" controls style="width:100%"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="row two">
+      <div class="field" id="avModeF"><label for="avMode">화면</label><select class="sel" id="avMode"><option value="seq">아트보드 전부, 순서대로</option><option value="one">아트보드 하나만</option></select></div>
+      <div class="field" id="avVarF"><label for="avVar">쓸 아트보드</label><select class="sel" id="avVar"></select></div>
+      <div class="field"><label for="avQ">화질</label><select class="sel" id="avQ"><option value="1080">1080p (권장)</option><option value="720">720p (가볍게)</option><option value="1440">1440p</option></select></div>
+    </div>
+    <h3 class="mh">아트보드별 길이</h3>
+    <p class="hint" style="margin-top:0">2:12처럼 분:초로 넣어요. 비워 두면 음성 길이에서 남는 시간을 나눠 갖고, 음성이 없으면 5초씩 나와요.</p>
+    <div class="av-tl" id="avTl"></div>
+    <p class="av-sum" id="avSum"></p>
+    <label class="tog" style="margin-top:12px"><input type="checkbox" id="avBar">아래에 재생 진행 막대 넣기</label>
+    <label class="tog" style="margin-top:8px;margin-left:12px"><input type="checkbox" id="avFade" checked>시작·끝 소리 부드럽게 (0.5초)</label>
+    <p class="hint" id="avSize"></p>
+    <div id="avProg" hidden><div class="bar"><i id="avBarI"></i></div><p class="hint" id="avProgT"></p></div>
+    <div class="acts"><button class="btn" id="avCancel">닫기</button><button class="btn emph" id="avGo" disabled><svg class="i"><use href="#i-down"/></svg>영상 만들기</button></div>
+  </div>
+</div>
+
+<!-- add web font -->
+<div class="modal" id="wfModal" hidden role="dialog" aria-modal="true" aria-labelledby="wfTitle">
+  <div class="dlg" style="width:min(620px,100%)">
+    <div class="cut-head"><h2 id="wfTitle">웹폰트 추가</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <p class="hint" style="margin-top:0">아래 중 하나를 붙여넣으세요. 여러 굵기를 한꺼번에 붙여넣으면 한 글꼴로 묶어요.</p>
+    <ul class="wf-help">
+      <li><b>눈누 코드</b>: 글꼴 페이지의 ‘웹폰트로 사용’ 상자에 있는 <code>@font-face {…}</code> 전부</li>
+      <li><b>구글 폰트</b>: 이름(예: <code>Gowun Dodum</code>) 또는 fonts.google.com 주소</li>
+      <li><b>CSS 링크</b>: <code>https://…/font.css</code> 또는 <code>&lt;link …&gt;</code> 한 줄</li>
+    </ul>
+    <div class="field"><label for="wfIn">붙여넣기</label><textarea class="txt" id="wfIn" rows="6" spellcheck="false" placeholder="@font-face {&#10;    font-family: 'GmarketSansMedium';&#10;    src: url('https://…/GmarketSansMedium.woff') format('woff');&#10;    font-weight: normal;&#10;}"></textarea></div>
+    <div class="row two">
+      <div class="field"><label for="wfName">목록에 보일 이름 (선택)</label><input class="txt" id="wfName" placeholder="비우면 글꼴 이름 그대로"></div>
+      <div class="field"><label for="wfLang">주로 쓰는 언어</label><select class="sel" id="wfLang"></select></div>
+    </div>
+    <p class="hint" id="wfMsg"></p>
+    <div class="acts"><button class="btn" data-close>닫기</button><button class="btn primary" id="wfAdd">추가</button></div>
+  </div>
+</div>
+
 <!-- language versions -->
 <div class="modal" id="i18nModal" hidden role="dialog" aria-modal="true" aria-labelledby="i18nTitle">
   <div class="dlg" style="width:min(1140px,100%)">
@@ -3040,10 +3138,10 @@ onnxruntime-web/dist/esm/ort.min.js:
       <label class="tog"><input type="checkbox" id="szLock">비율 고정</label>
     </div>
     <p class="hint" id="szErr" style="color:var(--hot)"></p>
-    <h3 class="mh">지금 디자인은</h3>
+    <div id="szOpts"><h3 class="mh">지금 디자인은</h3>
     <div class="seg" id="szMode"><button data-m="smart">새 비율에 맞춰 재배치</button><button data-m="fit">통째로 맞춰 넣기</button><button data-m="keep">그대로 두기</button></div>
     <p class="hint">재배치는 요소 위치를 새 비율로 옮기고 크기를 알맞게 줄이거나 키워요. 맞춰 넣기는 디자인 전체를 한 덩어리로 줄여 가운데 놓아요.</p>
-    <label class="tog" style="margin-top:10px"><input type="checkbox" id="szNew">새 시안으로 만들기 (지금 시안은 그대로 두고 복제해서 바꿔요)</label>
+    <label class="tog" style="margin-top:10px"><input type="checkbox" id="szNew">새 아트보드로 만들기 (지금 아트보드는 그대로 두고 복제해서 바꿔요)</label></div>
     <div class="acts"><button class="btn" data-close>취소</button><button class="btn primary" id="szApply">적용</button></div>
   </div>
 </div>
@@ -3051,10 +3149,10 @@ onnxruntime-web/dist/esm/ort.min.js:
 <!-- variants board -->
 <div class="modal" id="boardModal" hidden role="dialog" aria-modal="true" aria-labelledby="boardTitle">
   <div class="dlg" style="width:min(1060px,100%)">
-    <div class="cut-head"><h2 id="boardTitle">시안 나란히 보기</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
-    <p class="hint" style="margin-top:0">유튜브 스튜디오의 섬네일 <b>테스트 및 비교</b>에는 최대 3개까지 올릴 수 있어요. 시안을 모두 ZIP으로 받아 그대로 올리세요.</p>
+    <div class="cut-head"><h2 id="boardTitle">아트보드 나란히 보기</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <p class="hint" style="margin-top:0">유튜브 스튜디오의 섬네일 <b>테스트 및 비교</b>에는 최대 3개까지 올릴 수 있어요. 아트보드를 모두 ZIP으로 받아 그대로 올리세요.</p>
     <div class="board" id="board"></div>
-    <div class="acts"><button class="btn" data-close>닫기</button><button class="btn primary" id="boardZip"><svg class="i"><use href="#i-down"/></svg>시안 전부 ZIP으로</button></div>
+    <div class="acts"><button class="btn" data-close>닫기</button><button class="btn primary" id="boardZip"><svg class="i"><use href="#i-down"/></svg>아트보드 전부 ZIP으로</button></div>
   </div>
 </div>
 
@@ -3078,7 +3176,7 @@ onnxruntime-web/dist/esm/ort.min.js:
 <div class="modal" id="feedModal" hidden role="dialog" aria-modal="true" aria-labelledby="feedTitle">
   <div class="dlg" style="width:min(1180px,100%)">
     <div class="cut-head"><h2 id="feedTitle">피드에서 비교</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
-    <p class="hint" style="margin-top:0">경쟁 영상 주소를 넣으면 그 섬네일들 사이에 내 시안을 섞어 보여 줘요. 내 것이 먼저 눈에 들어오는지 보세요.</p>
+    <p class="hint" style="margin-top:0">경쟁 영상 주소를 넣으면 그 섬네일들 사이에 내 아트보드를 섞어 보여 줘요. 내 것이 먼저 눈에 들어오는지 보세요.</p>
     <div class="feed-ctl">
       <textarea class="txt" id="feedUrls" rows="3" placeholder="유튜브 영상 주소를 한 줄에 하나씩 (최대 11개)&#10;https://www.youtube.com/watch?v=...&#10;https://youtu.be/..."></textarea>
       <div class="row">
@@ -3086,7 +3184,7 @@ onnxruntime-web/dist/esm/ort.min.js:
         <div class="seg" id="feedView"><button data-v="pc">PC</button><button data-v="mobile">모바일</button></div>
         <div class="seg" id="feedTheme"><button data-t="light">밝게</button><button data-t="dark">어둡게</button></div>
         <button class="btn sm" id="feedShuffle">섞기</button>
-        <label class="tog"><input type="checkbox" id="feedMark">내 시안 표시</label>
+        <label class="tog"><input type="checkbox" id="feedMark">내 아트보드 표시</label>
       </div>
     </div>
     <div class="feed" id="feed"></div>
@@ -3148,7 +3246,7 @@ onnxruntime-web/dist/esm/ort.min.js:
 </div>
 
 <div class="pop" id="fontPop" hidden>
-  <div class="ph-head"><input class="txt" id="fontQ" placeholder="글꼴 찾기" autocomplete="off"><div class="chips langs" id="fontLangs"></div></div>
+  <div class="ph-head"><div class="row" style="flex-wrap:nowrap"><input class="txt" id="fontQ" placeholder="글꼴 찾기" autocomplete="off"><button class="btn sm" id="wfOpen2" title="웹폰트 추가" style="flex:none">+ 웹폰트</button></div><div class="chips langs" id="fontLangs"></div></div>
   <div class="list" id="fontList"></div>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -3317,10 +3415,12 @@ const fontLinked = new Set();
 function linkEntry(e) {
   if (!e || fontLinked.has(e.id)) return;
   fontLinked.add(e.id);
-  if (e.faces) { // 눈누 fonts: one FontFace per weight, all under one family name
-    e.faces.forEach(([w, path]) => { try { document.fonts.add(new FontFace(e.f, `url("${NOONNU}${encodeURI(path)}") format("${/\.woff2$/.test(path) ? 'woff2' : 'woff'}")`, { weight: String(w), display: 'swap' })); } catch (er) {} });
+  if (e.faces) { // one FontFace per weight, all under one family name (built-in 눈누 paths or full URLs you added)
+    e.faces.forEach(([w, path, st]) => { const url = /^https?:/.test(path) ? path : NOONNU + encodeURI(path); const fmt = /\.woff2(\?|$)/i.test(url) ? 'woff2' : /\.woff(\?|$)/i.test(url) ? 'woff' : /\.otf(\?|$)/i.test(url) ? 'opentype' : /\.ttf(\?|$)/i.test(url) ? 'truetype' : '';
+      try { document.fonts.add(new FontFace(e.f, `url("${url}")${fmt ? ` format("${fmt}")` : ''}`, { weight: String(w), style: st || 'normal', display: 'swap' })); } catch (er) {} });
     return;
   }
+  if (e.css) { e.css.forEach(href => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.crossOrigin = 'anonymous'; l.href = href; document.head.appendChild(l); }); return; }
   (Array.isArray(e.c) ? e.c : e.c ? [e.c] : []).forEach(c => {
     const l = document.createElement('link'); l.rel = 'stylesheet'; l.crossOrigin = 'anonymous';
     l.href = `https://fonts.googleapis.com/css2?family=${c}&display=swap`; document.head.appendChild(l);
@@ -3452,9 +3552,9 @@ function setBgImage(dataURL) {
 
 /* ---------------- history & autosave ---------------- */
 let hist = [], hi = -1, restoring = false, currentProjectId = null;
-const proj = { vars: [{ name: 'A' }], cur: 0 }; // design variants (시안); non-current ones keep their state in .snap
+const proj = { vars: [{ name: 'A' }], cur: 0 }; // design variants (아트보드); non-current ones keep their state in .snap
 function curState() { return { doc: JSON.parse(JSON.stringify(doc)), canvas: cv.toJSON(EXTRA) }; }
-function snapshot() { return JSON.stringify({ doc, canvas: cv.toJSON(EXTRA), vars: proj.vars.map((v, i) => i === proj.cur ? { name: v.name, label: v.label } : v), cur: proj.cur }); }
+function snapshot() { return JSON.stringify({ doc, canvas: cv.toJSON(EXTRA), vars: proj.vars.map((v, i) => i === proj.cur ? { name: v.name, label: v.label, dur: v.dur } : v), cur: proj.cur }); }
 function commit() {
   syncArcs(); syncTextImages(); refreshLayers(); syncPanel();
   if (restoring) return;
@@ -3487,7 +3587,7 @@ async function restore(snapStr, { resetHistory = false } = {}) {
   try {
     const s = JSON.parse(snapStr);
     proj.vars = s.vars && s.vars.length ? s.vars : [{ name: 'A' }];
-    proj.cur = Math.min(s.cur || 0, proj.vars.length - 1); proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label };
+    proj.cur = Math.min(s.cur || 0, proj.vars.length - 1); proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur };
     await loadState(s.doc, s.canvas);
   } catch (e) { console.error(e); toast('작업을 불러오지 못했어요.'); }
   restoring = false;
@@ -3603,95 +3703,6 @@ const iconURL = (id, color) => { const [p, n] = id.split(':'); return `https://a
 const COLOR_SETS = new Set(['fluent-emoji', 'fluent-emoji-flat', 'noto']);
 const isMono = id => !COLOR_SETS.has(id.split(':')[0]);
 
-/* ---------------- templates ---------------- */
-function hl(text, word, style) { const st = {}; text.split('\n').forEach((ln, li) => { const i = ln.indexOf(word); if (i < 0) return; st[li] = {}; for (let k = i; k < i + word.length; k++) st[li][k] = Object.assign({}, style); }); return st; }
-const L = { originX: 'left', originY: 'top' };
-const TEMPLATES = [
-  { n: '리액션', em: '😱', css: 'linear-gradient(135deg,#FFE14D,#FFB300)', ink: '#111', font: 'Black Han Sans',
-    bg: { type: 'grad', c1: '#FFE14D', c2: '#FFB300', dir: 'd' },
-    items: [
-      { t: 'text', text: '이게 진짜\n된다고?!', o: Object.assign({ left: 64, top: 110, fontSize: 158, fill: '#111111', textAlign: 'left', lineHeight: 1.0, styles: hl('이게 진짜\n된다고?!', '된다고?!', { fill: '#E3170A' }) }, L) },
-      { t: 'shape', s: 'round', o: Object.assign({ left: 64, top: 520, width: 300, height: 96, rx: 20, ry: 20, fill: '#111111' }, L) },
-      { t: 'text', text: '직접 해봄', o: { left: 214, top: 568, fontFamily: 'Do Hyeon', fontSize: 64, fill: '#FFE14D' } },
-      { t: 'emoji', ch: '😱', size: 440, x: 960, y: 380 },
-    ] },
-  { n: 'VS 비교', em: '🍜', css: 'linear-gradient(90deg,#2563EB 50%,#EE3124 50%)', ink: '#fff', font: 'Black Han Sans',
-    bg: { type: 'solid', c1: '#111111' },
-    items: [
-      { t: 'shape', s: 'rect', o: Object.assign({ left: 0, top: 0, width: 640, height: 720, fill: '#2563EB' }, L) },
-      { t: 'shape', s: 'rect', o: Object.assign({ left: 640, top: 0, width: 640, height: 720, fill: '#EE3124' }, L) },
-      { t: 'emoji', ch: '🍜', size: 300, x: 320, y: 270 },
-      { t: 'emoji', ch: '🌶️', size: 300, x: 960, y: 270 },
-      { t: 'text', text: '짜장', o: { left: 320, top: 570, fontSize: 150, fill: '#FFFFFF', stroke: '#111111', strokeWidth: 22 } },
-      { t: 'text', text: '짬뽕', o: { left: 960, top: 570, fontSize: 150, fill: '#FFFFFF', stroke: '#111111', strokeWidth: 22 } },
-      { t: 'shape', s: 'circle', o: { left: 640, top: 360, radius: 104, fill: '#FFFFFF', stroke: '#111111', strokeWidth: 12 } },
-      { t: 'text', text: 'VS', o: { left: 640, top: 366, fontFamily: 'Anton', fontSize: 120, fill: '#111111' } },
-    ] },
-  { n: '정보·강의', em: '💻', css: 'linear-gradient(180deg,#0F1B3D,#1E3A8A)', ink: '#fff', font: 'Black Han Sans',
-    bg: { type: 'grad', c1: '#0F1B3D', c2: '#1E3A8A', dir: 'v' },
-    items: [
-      { t: 'shape', s: 'round', o: Object.assign({ left: 64, top: 84, width: 190, height: 66, rx: 12, ry: 12, fill: '#FFD21F' }, L) },
-      { t: 'text', text: '초보용', o: { left: 159, top: 119, fontFamily: 'Do Hyeon', fontSize: 50, fill: '#111111' } },
-      { t: 'text', text: '5분 만에 끝내는\n엑셀 자동화', o: Object.assign({ left: 64, top: 186, fontSize: 112, fill: '#FFFFFF', textAlign: 'left', lineHeight: 1.08, styles: hl('5분 만에 끝내는\n엑셀 자동화', '엑셀 자동화', { fill: '#FFD21F' }) }, L) },
-      { t: 'text', text: '함수 몰라도 따라 하는 순서 그대로', o: Object.assign({ left: 66, top: 470, fontFamily: 'Noto Sans KR', fontWeight: 'bold', fontSize: 40, fill: '#C7D2FE', textAlign: 'left' }, L) },
-      { t: 'emoji', ch: '💻', size: 330, x: 1040, y: 500 },
-    ] },
-  { n: '브이로그', em: '🌊', css: 'linear-gradient(135deg,#FFD6E0,#FFF1C1)', ink: '#3B2A2A', font: 'Gaegu',
-    bg: { type: 'grad', c1: '#FFD6E0', c2: '#FFF1C1', dir: 'd' },
-    items: [
-      { t: 'text', text: '주말 브이로그', o: { left: 640, top: 300, fontFamily: 'Gaegu', fontWeight: 'bold', fontSize: 170, fill: '#3B2A2A', stroke: '#FFFFFF', strokeWidth: 24 } },
-      { t: 'shape', s: 'round', o: { left: 640, top: 470, width: 560, height: 92, rx: 46, ry: 46, fill: '#FFFFFF' } },
-      { t: 'text', text: '혼자 떠난 강릉 1박 2일', o: { left: 640, top: 472, fontFamily: 'Jua', fontSize: 52, fill: '#3B2A2A' } },
-      { t: 'emoji', ch: '☀️', size: 180, x: 170, y: 140 },
-      { t: 'emoji', ch: '📸', size: 170, x: 1110, y: 150 },
-      { t: 'emoji', ch: '🌊', size: 220, x: 1120, y: 590 },
-    ] },
-  { n: 'TOP 5', em: '🔥', css: '#0A0A0A', ink: '#FFD21F', font: 'Anton',
-    bg: { type: 'solid', c1: '#0A0A0A' },
-    items: [
-      { t: 'text', text: '5', o: { left: 1010, top: 380, fontFamily: 'Anton', fontSize: 600, fill: '#FFD21F' } },
-      { t: 'text', text: 'TOP', o: Object.assign({ left: 64, top: 70, fontFamily: 'Anton', fontSize: 170, fill: '#FFFFFF', textAlign: 'left', charSpacing: 40 }, L) },
-      { t: 'text', text: '올해 꼭 사야 할\n가성비 가전', o: Object.assign({ left: 64, top: 330, fontSize: 100, fill: '#FFFFFF', textAlign: 'left', lineHeight: 1.12, styles: hl('올해 꼭 사야 할\n가성비 가전', '가성비', { fill: '#111111', textBackgroundColor: '#FFD21F' }) }, L) },
-      { t: 'emoji', ch: '🔥', size: 150, x: 560, y: 160 },
-    ] },
-  { n: '긴급 공지', em: '⚠️', css: 'linear-gradient(180deg,#EE3124 22%,#fff 22%)', ink: '#111', font: 'Black Han Sans',
-    bg: { type: 'solid', c1: '#FFFFFF' },
-    items: [
-      { t: 'shape', s: 'rect', o: Object.assign({ left: 0, top: 0, width: 1280, height: 150, fill: '#EE3124' }, L) },
-      { t: 'text', text: '긴급 점검', o: Object.assign({ left: 56, top: 75, originY: 'center', fontSize: 92, fill: '#FFFFFF', textAlign: 'left' }, { originX: 'left' }) },
-      { t: 'text', text: '지금 당장\n이 설정 끄세요', o: Object.assign({ left: 56, top: 210, fontSize: 128, fill: '#111111', textAlign: 'left', lineHeight: 1.06, styles: hl('지금 당장\n이 설정 끄세요', '끄세요', { fill: '#EE3124' }) }, L) },
-      { t: 'emoji', ch: '⚠️', size: 300, x: 1090, y: 470 },
-    ] },
-];
-async function applyTemplate(t) {
-  restoring = true;
-  cv.discardActiveObject(); cv.clear(); cv.backgroundImage = null;
-  Object.assign(doc, { size: 'yt', w: 1280, h: 720, bg: Object.assign({ c2: t.bg.c1, dir: 'v' }, t.bg), bgfx: { dim: 0, blur: 0 }, credits: [] });
-  updateSizeUI();
-  const texts = t.items.filter(i => i.t === 'text');
-  await Promise.all(texts.map(i => ensureFont(i.o.fontFamily || 'Black Han Sans', i.o.fontWeight || 'normal', i.text)));
-  for (const it of t.items) {
-    if (it.t === 'text') cv.add(makeText(it.text, it.o));
-    else if (it.t === 'shape') cv.add(makeShape(it.s, it.o));
-  }
-  applyBg(); fit();
-  restoring = false; commit();
-  const ems = t.items.filter(i => i.t === 'emoji');
-  for (const it of ems) {
-    try {
-      const d = await emojiDataURL(it.ch); const id = registerAsset(d); const img = await imageFromData(d);
-      const s = it.size / Math.max(img.width, img.height);
-      img.set({ left: it.x, top: it.y, originX: 'center', originY: 'center', scaleX: s, scaleY: s, assetId: id, kind: 'emoji', meta: { ch: it.ch }, name: it.ch });
-      cv.add(img);
-    } catch (e) {}
-  }
-  cv.requestRenderAll(); if (ems.length) commit();
-}
-function renderTemplates() {
-  $('#tplGrid').innerHTML = TEMPLATES.map((t, i) => `<button class="tpl" data-i="${i}" style="background:${t.css};color:${t.ink}"><em>${t.em}</em><span style="font-family:'${t.font}'">${esc(t.n)}</span></button>`).join('');
-  TEMPLATES.forEach(t => linkFont(t.font));
-}
-$('#tplGrid').onclick = e => { const b = e.target.closest('.tpl'); if (b) applyTemplate(TEMPLATES[+b.dataset.i]); };
 
 /* ---------------- text tab ---------------- */
 const TEXT_PRESETS = [
@@ -3718,7 +3729,7 @@ async function applyPreset(p, t) {
   else { const n = makeText('여기에 제목', Object.assign({ fontSize: 130 }, s)); addObj(n); }
 }
 function renderPresets() {
-  $('#presetGrid').innerHTML = TEXT_PRESETS.map((p, i) => `<button class="preset" data-i="${i}" style="background:${p.bg || '#7E8798'}" title="${esc(p.n)}"><span><span style="${p.css}">가나다</span><small style="color:${p.lc || '#fff'}">${esc(p.n)}</small></span></button>`).join('');
+  $('#presetGrid').innerHTML = TEXT_PRESETS.map((p, i) => `<button class="preset" data-i="${i}" style="background:${p.bg || '#7E8798'}" title="${esc(p.n)}"><span><span style="${p.css}">가나다</span><small>${esc(p.n)}</small></span></button>`).join('');
 }
 $('#presetGrid').onclick = e => { const b = e.target.closest('.preset'); if (!b) return; const o = cv.getActiveObject(); applyPreset(TEXT_PRESETS[+b.dataset.i], o && o.type === 'i-text' ? o : null); };
 $$('[data-add]').forEach(b => b.onclick = async () => {
@@ -3852,8 +3863,9 @@ function renderFontList(q) {
   const curE = fontTarget && fontEntry(fontTarget.fontFamily), curId = curE ? curE.id : null;
   q = q.trim().toLowerCase();
   $$('#fontLangs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === fontLang));
-  const mine = userFonts.map(u => ({ id: u.name, f: u.name, n: u.ws.length > 1 ? `${u.name} · 굵기 ${u.ws.length}개` : u.name, l: 'mine', s: '내 글꼴', x: [], ws: u.ws, mine: true }));
-  const all = [...mine, ...FONTS];
+  const mine = [...userFonts.map(u => ({ id: u.name, f: u.name, n: u.ws.length > 1 ? `${u.name} · 굵기 ${u.ws.length}개` : u.name, l: 'mine', s: '내 글꼴', x: [], ws: u.ws, mine: true })),
+    ...FONTS.filter(f => f.web).map(f => Object.assign({}, f, { n: `${f.n} · 웹폰트${f.ws.length > 1 ? ` · 굵기 ${f.ws.length}개` : ''}`, mine: true, wl: f.l, l: 'mine' }))];
+  const all = [...mine, ...FONTS.filter(f => !f.web)];
   const supports = f => f.mine || fontLang === 'all' || fontLang === 'fav' || f.l === fontLang || f.x.includes(fontLang);
   let rows;
   if (q) rows = all.filter(f => f.f.toLowerCase().includes(q) || f.n.toLowerCase().includes(q) || f.id.toLowerCase().includes(q));
@@ -3887,6 +3899,7 @@ $('#fontList').onclick = async e => {
     const id = del.dataset.fdel;
     if (!fontDelArm.has(id)) { fontDelArm.add(id); setTimeout(() => { fontDelArm.delete(id); if (!$('#fontPop').hidden) renderFontList($('#fontQ').value); }, 3000); renderFontList($('#fontQ').value); return; }
     fontDelArm.delete(id);
+    const wf = FONTS.findIndex(f => f.web && f.id === id); if (wf >= 0) { FONTS.splice(wf, 1); saveWebFonts(); }
     const u = userFonts.find(x => x.name === id); if (u) { u.faces.forEach(f => document.fonts.delete(f)); userFonts.splice(userFonts.indexOf(u), 1); }
     for (const r of await DB.all('fonts')) if ((r.fam || r.name) === id) await DB.del('fonts', r.id);
     favs = favs.filter(x => x !== id); saveFavs(); renderFontList($('#fontQ').value); toast(`‘${id}’ 글꼴을 지웠어요. 이 글꼴을 쓴 글자는 기본 글꼴로 보여요.`); return;
@@ -4590,6 +4603,7 @@ $('#sRadius').onchange = () => commit();
 
 /* common */
 const each = fn => { const o = act(); if (!o) return; fn(o); o.setCoords(); cv.requestRenderAll(); commit(); };
+$('#alCanvas').onchange = () => syncPanel();
 $('#cCenterH').onclick = () => each(o => o.setPositionByOrigin(new fabric.Point(doc.w / 2, o.getCenterPoint().y), 'center', 'center'));
 $('#cCenterV').onclick = () => each(o => o.setPositionByOrigin(new fabric.Point(o.getCenterPoint().x, doc.h / 2), 'center', 'center'));
 $('#cFlipH').onclick = () => each(o => o.set('flipX', !o.flipX));
@@ -4629,6 +4643,41 @@ $('#unlockAll').onclick = () => { cv.getObjects().forEach(o => o.lockedByUser &&
 $('#cDel').onclick = () => removeActive();
 $('#cDup').onclick = () => duplicate();
 $('#multiLock').onclick = toggleLockSelected;
+// ---- align & distribute: one item → canvas; several → their shared box (or the canvas if asked) ----
+function withSelection(fn) {
+  const objs = cv.getActiveObjects().filter(o => !o.lockedByUser); if (!objs.length) return;
+  const wasMulti = objs.length > 1; cv.discardActiveObject();
+  const boxes = objs.map(o => ({ o, b: o.getBoundingRect(true, true) }));
+  fn(boxes);
+  boxes.forEach(({ o }) => o.setCoords());
+  if (wasMulti) cv.setActiveObject(new fabric.ActiveSelection(objs, { canvas: cv })); else cv.setActiveObject(objs[0]);
+  cv.requestRenderAll(); commit();
+}
+function alignTo(kind) {
+  withSelection(boxes => {
+    const useCanvas = boxes.length === 1 || $('#alCanvas').checked;
+    const L = useCanvas ? 0 : Math.min(...boxes.map(x => x.b.left)), T = useCanvas ? 0 : Math.min(...boxes.map(x => x.b.top));
+    const R = useCanvas ? doc.w : Math.max(...boxes.map(x => x.b.left + x.b.width)), B = useCanvas ? doc.h : Math.max(...boxes.map(x => x.b.top + x.b.height));
+    boxes.forEach(({ o, b }) => {
+      if (kind === 'l') o.left += L - b.left; if (kind === 'r') o.left += R - (b.left + b.width); if (kind === 'ch') o.left += (L + R) / 2 - (b.left + b.width / 2);
+      if (kind === 't') o.top += T - b.top; if (kind === 'b') o.top += B - (b.top + b.height); if (kind === 'cv') o.top += (T + B) / 2 - (b.top + b.height / 2);
+    });
+  });
+}
+function distribute(axis) {
+  const n = cv.getActiveObjects().filter(o => !o.lockedByUser).length;
+  if (n < 3) { toast('간격 맞추기는 3개 이상을 함께 골랐을 때 돼요. Shift를 누른 채 눌러 여러 개를 고르세요.', 3600); return; }
+  withSelection(boxes => {
+    const P = axis === 'h' ? 'left' : 'top', S = axis === 'h' ? 'width' : 'height';
+    boxes.sort((a, b) => (a.b[P] + a.b[S] / 2) - (b.b[P] + b.b[S] / 2));
+    const first = boxes[0].b[P], last = boxes[boxes.length - 1].b[P] + boxes[boxes.length - 1].b[S];
+    const gap = (last - first - boxes.reduce((t, x) => t + x.b[S], 0)) / (boxes.length - 1);
+    let cur = first;
+    boxes.forEach(({ o, b }) => { o[P] += cur - b[P]; cur += b[S] + gap; });
+  });
+}
+$$('[data-al]').forEach(b => { if (b.closest('#tAlign')) return; b.onclick = () => alignTo(b.dataset.al); });
+$$('[data-dist]').forEach(b => b.onclick = () => distribute(b.dataset.dist));
 $('#groupBtn').onclick = () => { const o = act(); if (!o || o.type !== 'activeSelection') return; const g = o.toGroup(); g.set({ kind: 'group' }); cv.requestRenderAll(); commit(); };
 $('#ungroupBtn').onclick = () => { const o = act(); if (!o || o.type !== 'group') return; o.toActiveSelection(); cv.requestRenderAll(); commit(); };
 
@@ -4667,6 +4716,9 @@ function syncPanel() {
   $('#cAngle').value = Math.round(o.angle || 0);
   const sh = o.shadow; $('#shOn').checked = !!sh; $('#shBox').hidden = !sh;
   if (sh) { $('#shB').value = sh.blur; const d = Math.round(Math.hypot(sh.offsetX, sh.offsetY)); $('#shD').value = d; $('#shBO').textContent = sh.blur; $('#shDO').textContent = d; setClr('shC', sh.color); }
+  const nSel = cv.getActiveObjects().length;
+  $('#alBase').textContent = nSel > 1 && !$('#alCanvas').checked ? `${nSel}개끼리` : '캔버스 기준'; $('#alCanvasWrap').hidden = nSel < 2;
+  $$('[data-dist]').forEach(b => b.disabled = nSel < 3);
   const lockBtn = $('#cLock'); lockBtn.querySelector('span').textContent = o.lockedByUser ? '잠금 풀기' : '잠그기'; lockBtn.querySelector('use').setAttribute('href', o.lockedByUser ? '#i-unlock' : '#i-lock');
   if (type === 'multi') $('#multiN').textContent = o.getObjects().length;
   if (type === 'i-text') {
@@ -4833,7 +4885,7 @@ $('.rail').onclick = e => { const b = e.target.closest('[data-tab]'); if (b) sho
 
 /* ---------------- size ---------------- */
 // ---- artboard size dialog ----
-let szPick = null;
+let szPick = null, szArt = false;
 function updateSizeUI() {
   $('#sizeLbl').textContent = `${sizeName(doc)} · ${doc.w}×${doc.h}`;
   const yt = isYT(doc);
@@ -4841,7 +4893,8 @@ function updateSizeUI() {
   $('#badgeBtn').disabled = !yt; if (!yt) $('#tbadge').hidden = true; else $('#tbadge').hidden = $('#badgeBtn').getAttribute('aria-pressed') !== 'true';
   drawSafe();
 }
-function openSize() {
+function openSize(art) {
+  szArt = art === true; $('#sizeTitle').textContent = szArt ? '새 아트보드 크기' : '캔버스 크기'; $('#szOpts').hidden = szArt;
   const groups = {}; Object.entries(SIZES).forEach(([k, v]) => (groups[v.g] = groups[v.g] || []).push([k, v]));
   $('#sizeList').innerHTML = Object.entries(groups).map(([g, list]) => `<div class="szgrp"><h3>${g}</h3><div class="szrow">` + list.map(([k, v]) => {
     const r = Math.min(34 / v.w, 34 / v.h);
@@ -4864,6 +4917,16 @@ function szTyped(which) {
 $('#szW').oninput = () => szTyped('w'); $('#szH').oninput = () => szTyped('h');
 $$('#szMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === 'smart'));
 $('#szMode').onclick = e => { const b = e.target.closest('[data-m]'); if (b) $$('#szMode button').forEach(x => x.setAttribute('aria-pressed', x === b)); };
+async function addArtboard(w, h, key) {
+  if (proj.vars.length >= 5) { toast('아트보드는 5개까지예요. 하나를 지우고 다시 해 주세요.'); return; }
+  cv.discardActiveObject(); if (cv.isDrawingMode) setPen('off');
+  proj.vars[proj.cur].snap = curState();
+  const used = new Set(proj.vars.map(v => v.name)); const name = 'ABCDE'.split('').find(c => !used.has(c));
+  proj.vars.push({ name, label: '' }); proj.cur = proj.vars.length - 1;
+  restoring = true; cv.clear(); cv.backgroundImage = null;
+  Object.assign(doc, { size: key, w, h, bg: { type: 'solid', c1: '#FFFFFF', c2: '#FFFFFF', dir: 'v' }, bgfx: { dim: 0, blur: 0 }, credits: [] });
+  applyBg(); fit(); updateSizeUI(); renderVbar(); restoring = false; commit();
+}
 function scaleTextProps(o, s) {
   o.set({ fontSize: Math.round(o.fontSize * s * 10) / 10, strokeWidth: (o.strokeWidth || 0) * s });
   if (o.styles) Object.values(o.styles).forEach(l => Object.values(l).forEach(st => { if (st.fontSize) st.fontSize *= s; if (st.strokeWidth) st.strokeWidth *= s; }));
@@ -4874,7 +4937,7 @@ function scaleTextProps(o, s) {
 }
 function scaleObj(o, s) { if (o.type === 'i-text') scaleTextProps(o, s); else { o.scaleX *= s; o.scaleY *= s; } }
 async function resizeArtboard(w, h, key, mode, asNew) {
-  if (asNew) { if (proj.vars.length >= 5) { toast('시안은 5개까지예요. 하나를 지우고 다시 해 주세요.'); return; } await addVariant(true); }
+  if (asNew) { if (proj.vars.length >= 5) { toast('아트보드는 5개까지예요. 하나를 지우고 다시 해 주세요.'); return; } await addVariant(true); }
   cv.discardActiveObject();
   const ow = doc.w, oh = doc.h, sx = w / ow, sy = h / oh, s = Math.min(sx, sy);
   cv.getObjects().forEach(o => {
@@ -4892,9 +4955,10 @@ $('#szApply').onclick = async () => {
   if (!(w >= 100 && h >= 100 && w <= 8000 && h <= 8000)) { $('#szErr').textContent = '가로·세로는 100~8000px 사이로 넣어 주세요.'; return; }
   const mode = ($('#szMode [aria-pressed="true"]') || {}).dataset?.m || 'smart';
   $('#sizeModal').hidden = true;
+  if (szArt) { await addArtboard(w, h, szPick || 'custom'); toast(`${w}×${h} 아트보드를 만들었어요. 아트보드 탭에서 골라 쓸 수 있어요.`); return; }
   if (w === doc.w && h === doc.h && !$('#szNew').checked) { doc.size = szPick; updateSizeUI(); commit(); return; }
   await resizeArtboard(w, h, szPick || 'custom', mode, $('#szNew').checked);
-  toast(`${w}×${h}로 바꿨어요.${$('#szNew').checked ? ' 새 시안으로 만들었어요.' : ''}`);
+  toast(`${w}×${h}로 바꿨어요.${$('#szNew').checked ? ' 새 아트보드로 만들었어요.' : ''}`);
 };
 
 // ---- per-format safe areas (shown with 안내선) ----
@@ -5120,61 +5184,93 @@ function loadScript(src) { return scriptCache[src] || (scriptCache[src] = new Pr
 async function getZip() { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'); return new window.JSZip(); }
 const fmtExt = () => expFmt === 'png' ? 'png' : 'jpg';
 
-/* ---------------- variants (시안) ---------------- */
+/* ---------------- variants (아트보드) ---------------- */
 function renderVbar() {
   const many = proj.vars.length > 1;
   const dims = proj.vars.map((v, i) => { const d = i === proj.cur ? doc : (v.snap && v.snap.doc) || doc; return `${d.w}×${d.h}`; });
   const mixed = new Set(dims).size > 1;
-  $('#vbar').innerHTML = proj.vars.map((v, i) => `<button class="vtab${vDelArm === i ? ' arm' : ''}" role="tab" data-v="${i}" aria-selected="${i === proj.cur}">시안 ${esc(v.name)}${v.label ? ` · ${esc(v.label)}` : ''}${mixed ? `<small class="vdim">${dims[i]}</small>` : ''}${many && i === proj.cur ? `<span class="vx" data-vdel="${i}" title="${vDelArm === i ? '한 번 더 누르면 지워요' : '이 시안 지우기'}" aria-label="시안 지우기"><svg class="i"><use href="#i-${vDelArm === i ? 'trash' : 'x'}"/></svg></span>` : ''}</button>`).join('')
-    + (proj.vars.length < 5 ? `<button class="vadd" id="vAdd">+ 시안 복제</button>` : '')
+  $('#vbar').innerHTML = proj.vars.map((v, i) => `<button class="vtab${vDelArm === i ? ' arm' : ''}" role="tab" data-v="${i}" aria-selected="${i === proj.cur}">아트보드 ${i + 1}${v.label ? ` · ${esc(v.label)}` : ''}${mixed ? `<small class="vdim">${dims[i]}</small>` : ''}${v.dur ? `<small class="vdim" title="영상 길이">${fmtDur(v.dur)}</small>` : ''}${many && i === proj.cur ? `<span class="vx" data-vdel="${i}" title="${vDelArm === i ? '한 번 더 누르면 지워요' : '이 아트보드 지우기'}" aria-label="아트보드 지우기"><svg class="i"><use href="#i-${vDelArm === i ? 'trash' : 'x'}"/></svg></span>` : ''}</button>`).join('')
+    + `<label class="vdur" title="영상 만들기에서 이 아트보드가 나오는 시간이에요. 2:12처럼 분:초로 넣고, 비우면 자동이에요.">영상 길이<input id="vDur" class="txt" inputmode="numeric" autocomplete="off" placeholder="자동" value="${proj.vars[proj.cur].dur ? fmtDur(proj.vars[proj.cur].dur) : ''}" aria-label="아트보드 ${proj.cur + 1} 영상 길이"></label>`
+    + (proj.vars.length < 5 ? `<button class="vadd" id="vAdd">+ 복제</button><button class="vadd" id="vNewArt">+ 아트보드</button>` : '')
+    + `<button class="vadd" id="vSave" title="지금 보이는 아트보드를 이미지로 저장"><svg class="i"><use href="#i-down"/></svg> 이 아트보드 저장</button>`
     + (many ? `<button class="vadd" id="vBoard">나란히 보기</button>` : '');
 }
 let vDelArm = -1, vDelT;
+// durations: "2:12", "1:02:03", "132", "2분 12초" → seconds; '' → 0 (auto); NaN when unreadable
+function fmtDur(s) { s = Math.round(s); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
+function parseDur(str) {
+  const t = String(str || '').trim().replace(/\s+/g, ''); if (!t) return 0;
+  let s = NaN, m;
+  if ((m = t.match(/^(\d+):(\d{1,2}):(\d{1,2})$/))) s = +m[1] * 3600 + +m[2] * 60 + +m[3];
+  else if ((m = t.match(/^(\d+):(\d{1,2})$/))) s = +m[1] * 60 + +m[2];
+  else if (/^\d+(\.\d+)?$/.test(t)) s = +t;
+  else if ((m = t.match(/^(?:(\d+)시간)?(?:(\d+)분)?(?:(\d+)초)?$/)) && (m[1] || m[2] || m[3])) s = (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0);
+  return s >= 0 && s <= 4 * 3600 ? Math.round(s) : NaN;
+}
+function setArtDur(i, raw) {
+  const s = parseDur(raw);
+  if (isNaN(s)) { toast('영상 길이는 2:12처럼 분:초로 넣어 주세요. 4시간까지 돼요.'); return false; }
+  if (s) proj.vars[i].dur = s; else delete proj.vars[i].dur;
+  commit(); renderVbar();
+  toast(s ? `아트보드 ${i + 1}은 영상에서 ${fmtDur(s)} 동안 나와요.` : `아트보드 ${i + 1}의 영상 길이를 자동으로 바꿨어요.`);
+  return true;
+}
+$('#vbar').addEventListener('change', e => { if (e.target.id === 'vDur' && !setArtDur(proj.cur, e.target.value)) renderVbar(); });
+$('#vbar').addEventListener('keydown', e => { if (e.target.id === 'vDur' && e.key === 'Enter') e.target.blur(); });
 $('#vbar').onclick = async e => {
   const del = e.target.closest('[data-vdel]');
   if (del) { e.stopPropagation(); const i = +del.dataset.vdel; if (vDelArm === i) { vDelArm = -1; await deleteVariant(i); } else { vDelArm = i; clearTimeout(vDelT); vDelT = setTimeout(() => { vDelArm = -1; renderVbar(); }, 3000); renderVbar(); } return; }
   if (e.target.closest('#vAdd')) return addVariant();
+  if (e.target.closest('#vNewArt')) return openSize(true);
+  if (e.target.closest('#vSave')) return saveArtboard(proj.cur);
   if (e.target.closest('#vBoard')) return openBoard();
   const t = e.target.closest('[data-v]'); if (t) switchVariant(+t.dataset.v);
 };
+async function saveArtboard(i) {
+  try {
+    const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(stateOf(i), outW(stateOf(i).doc));
+    downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `썸네일-아트보드${i + 1}-${stamp()}.${fmtExt()}`);
+    toast(`아트보드 ${i + 1}을 저장했어요.`);
+  } catch (e) { console.error(e); toast('이 아트보드를 저장하지 못했어요. 다시 해 주세요.'); }
+}
 async function switchVariant(i) {
   if (i === proj.cur || !proj.vars[i] || !proj.vars[i].snap) return;
   cv.discardActiveObject(); if (cv.isDrawingMode) setPen('off');
   proj.vars[proj.cur].snap = curState();
-  const t = proj.vars[i].snap; proj.vars[i] = { name: proj.vars[i].name, label: proj.vars[i].label }; proj.cur = i;
+  const t = proj.vars[i].snap; proj.vars[i] = { name: proj.vars[i].name, label: proj.vars[i].label, dur: proj.vars[i].dur }; proj.cur = i;
   restoring = true; await loadState(t.doc, t.canvas); restoring = false;
   renderVbar(); commit();
 }
 async function addVariant(quiet) {
   const used = new Set(proj.vars.map(v => v.name)); const name = 'ABCDE'.split('').find(c => !used.has(c));
-  proj.vars.push({ name, snap: curState(), label: proj.vars[proj.cur].label });
-  await switchVariant(proj.vars.length - 1); if (!quiet) toast(`시안 ${name}를 만들었어요. 지금 시안을 복제한 거라 여기서 바꿔 보세요.`);
+  proj.vars.push({ name, snap: curState(), label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur });
+  await switchVariant(proj.vars.length - 1); if (!quiet) toast(`아트보드 ${proj.vars.length}를 만들었어요. 지금 아트보드를 복제한 거라 여기서 바꿔 보세요.`);
 }
 async function deleteVariant(i) {
   if (proj.vars.length < 2) return;
   if (i === proj.cur) {
     const j = i > 0 ? i - 1 : 1; const t = proj.vars[j].snap;
-    proj.vars.splice(i, 1); proj.cur = j > i ? j - 1 : j; proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label };
+    proj.vars.splice(i, 1); proj.cur = j > i ? j - 1 : j; proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur };
     restoring = true; await loadState(t.doc, t.canvas); restoring = false;
   } else { proj.vars.splice(i, 1); if (i < proj.cur) proj.cur--; }
-  renderVbar(); commit(); toast('시안을 지웠어요. Ctrl+Z로 되돌릴 수 있어요.');
+  renderVbar(); commit(); toast('아트보드를 지웠어요. Ctrl+Z로 되돌릴 수 있어요.');
 }
 async function openBoard() {
   $('#boardModal').hidden = false; cv.discardActiveObject(); cv.renderAll();
-  $('#board').innerHTML = proj.vars.map((v, i) => `<div class="bcard"><div class="bhead"><strong>시안 ${esc(v.name)}${i === proj.cur ? ' <span class="chip">편집 중</span>' : ''}</strong><div class="row"><button class="btn sm" data-edit="${i}">이 시안 편집</button><button class="btn sm" data-dl="${i}"><svg class="i"><use href="#i-down"/></svg></button></div></div><div class="bimg"><img data-b="${i}" alt="시안 ${esc(v.name)}"></div><div class="bmini"><img data-bm="${i}" alt=""><span class="hint" style="margin:0">휴대폰 크기</span></div></div>`).join('');
+  $('#board').innerHTML = proj.vars.map((v, i) => `<div class="bcard"><div class="bhead"><strong>아트보드 ${i + 1}${i === proj.cur ? ' <span class="chip">편집 중</span>' : ''}</strong><div class="row"><button class="btn sm" data-edit="${i}">이 아트보드 편집</button><button class="btn sm" data-dl="${i}"><svg class="i"><use href="#i-down"/></svg></button></div></div><div class="bimg"><img data-b="${i}" alt="아트보드 ${i + 1}"></div><div class="bmini"><img data-bm="${i}" alt=""><span class="hint" style="margin:0">휴대폰 크기</span></div></div>`).join('');
   for (let i = 0; i < proj.vars.length; i++) {
     try { const c = i === proj.cur ? renderOut(640) : await renderState(proj.vars[i].snap, 640); const u = c.toDataURL('image/jpeg', 0.88); $(`[data-b="${i}"]`).src = u; $(`[data-bm="${i}"]`).src = u; } catch (e) { console.error(e); }
   }
 }
 $('#board').onclick = async e => {
   const ed = e.target.closest('[data-edit]'); if (ed) { $('#boardModal').hidden = true; await switchVariant(+ed.dataset.edit); return; }
-  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `썸네일-시안${proj.vars[i].name}-${stamp()}.${fmtExt()}`); }
+  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `썸네일-아트보드${i + 1}-${stamp()}.${fmtExt()}`); }
 };
 async function zipVariants() {
   try {
-    toast('시안을 묶는 중이에요…'); const zip = await getZip();
-    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); zip.file(`썸네일-시안${proj.vars[i].name}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
-    downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-시안-${stamp()}.zip`); toast('시안을 ZIP으로 내려받았어요.');
+    toast('아트보드를 묶는 중이에요…'); const zip = await getZip();
+    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); zip.file(`썸네일-아트보드${i + 1}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-아트보드-${stamp()}.zip`); toast('아트보드를 ZIP으로 내려받았어요.');
   } catch (e) { console.error(e); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 }
 $('#boardZip').onclick = zipVariants;
@@ -5359,7 +5455,7 @@ function renderFeed() {
     const av = AV_COLORS[hashN(x.ch, AV_COLORS.length)];
     const sub = x.mine ? `${esc(x.ch)} · 조회수 1.2만회 · 3일 전` : `${esc(x.ch)} · 조회수 ${1 + hashN(x.id, 90)}만회 · ${1 + hashN(x.id + 'd', 11)}일 전`;
     return `<div class="fcard${x.mine ? ' mine' : ''}${x.mine && $('#feedMark').checked ? ' mark' : ''}"><div class="fthumb"><img src="${img}" alt="" ${x.mine ? '' : `data-yt="${x.id}"`}><b>${dur}</b></div><div class="fmeta"><span class="fav" style="background:${av}">${esc((x.ch || '?').slice(0, 1))}</span><div style="min-width:0"><div class="ftitle">${esc(x.title)}</div><div class="fsub">${sub}</div></div></div></div>`;
-  }).join('') + (feedItems.length ? '' : `<p class="hint" style="grid-column:1/-1;margin:0;color:var(--f-mut)">위에 경쟁 영상 주소를 넣고 <b>불러오기</b>를 누르면 그 사이에 내 시안이 섞여 보여요.</p>`);
+  }).join('') + (feedItems.length ? '' : `<p class="hint" style="grid-column:1/-1;margin:0;color:var(--f-mut)">위에 경쟁 영상 주소를 넣고 <b>불러오기</b>를 누르면 그 사이에 내 아트보드이 섞여 보여요.</p>`);
   f.querySelectorAll('img[data-yt]').forEach(im => im.addEventListener('load', () => { if (im.naturalWidth <= 120 && !im.dataset.fb) { im.dataset.fb = 1; im.src = `https://i.ytimg.com/vi/${im.dataset.yt}/mqdefault.jpg`; } }));
 }
 let feedView = lsGet('tg.feedv') || 'pc', feedTheme = lsGet('tg.feedt') || 'light';
@@ -5425,6 +5521,265 @@ $('#chkList').onclick = e => { const b = e.target.closest('[data-chk]'); if (!b)
 $('#checkBtn').onclick = () => { $('#checkModal').hidden = false; runCheck(); };
 $('#chkRe').onclick = runCheck;
 
+/* ---------------- image + audio → MP4 ---------------- */
+const AV = { buf: null, name: '', busy: false, cancel: false, url: null };
+const AV_DEFAULT = 5; // seconds for an artboard with no length when there's no audio to fill
+const artDims = i => i === proj.cur ? doc : ((proj.vars[i].snap && proj.vars[i].snap.doc) || doc);
+function avDims(d) { const p = +$('#avQ').value, k = p / Math.min(d.w, d.h); const ev = n => Math.max(2, Math.round(n / 2) * 2); let W = ev(d.w * k), H = ev(d.h * k); const cap = 3840; if (Math.max(W, H) > cap) { const r = cap / Math.max(W, H); W = ev(W * r); H = ev(H * r); } return { W, H }; }
+function avMode() { return proj.vars.length < 2 ? 'one' : $('#avMode').value; }
+// the timeline: which artboard shows from when to when
+function avPlan() {
+  const idxs = avMode() === 'one' ? [Math.min(+($('#avVar').value || proj.cur), proj.vars.length - 1)] : proj.vars.map((_, i) => i);
+  const A = AV.buf ? AV.buf.duration : 0;
+  const set = idxs.map(i => proj.vars[i].dur || 0), fixed = set.reduce((a, b) => a + b, 0), nAuto = set.filter(x => !x).length;
+  const autoLen = nAuto ? (A > fixed + 0.5 ? (A - fixed) / nAuto : AV_DEFAULT) : 0;
+  let t = 0; const segs = idxs.map((i, k) => { const len = set[k] || autoLen; const sg = { i, s: t, e: t + len, auto: !set[k] }; t += len; return sg; });
+  return { segs, T: t, A, ...avDims(artDims(idxs[0])) };
+}
+async function avFrame(i, W, H) {
+  const d = artDims(i), k = Math.min(W / d.w, H / d.h), rw = Math.max(2, Math.round(d.w * k));
+  if (i === proj.cur) { cv.discardActiveObject(); cv.renderAll(); }
+  const src = i === proj.cur ? renderOut(rw) : await renderState(proj.vars[i].snap, rw);
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = '#000'; x.fillRect(0, 0, W, H);
+  const dw = Math.round(d.w * k), dh = Math.round(d.h * k); x.drawImage(src, Math.round((W - dw) / 2), Math.round((H - dh) / 2), dw, dh); return c;
+}
+let avPrevT, avPrevKey = '';
+function avRefresh() {
+  const pl = avPlan(), many = proj.vars.length > 1;
+  $('#avModeF').hidden = !many; $('#avVarF').hidden = !many || avMode() !== 'one';
+  $('#avTl').innerHTML = pl.segs.map(g => `<div class="tl-row"><span><b>아트보드 ${g.i + 1}</b>${proj.vars[g.i].label ? ' · ' + esc(proj.vars[g.i].label) : ''}</span><input class="txt" data-avdur="${g.i}" inputmode="numeric" autocomplete="off" aria-label="아트보드 ${g.i + 1} 길이" placeholder="${g.auto ? '자동 ' + fmtDur(g.e - g.s) : ''}" value="${g.auto ? '' : fmtDur(g.e - g.s)}"><span class="when">${fmtDur(g.s)} – ${fmtDur(g.e)}</span></div>`).join('');
+  let sum = `총 길이 <b>${fmtDur(pl.T)}</b>`;
+  if (!pl.A) sum += ' · 소리 없는 영상이에요';
+  else if (pl.A > pl.T + 0.5) sum += ` · 음성 ${fmtDur(pl.A)} 중 앞 ${fmtDur(pl.T)}만 들어가요`;
+  else if (pl.A < pl.T - 0.5) sum += ` · 음성이 끝난 뒤 ${fmtDur(pl.T - pl.A)}은 소리 없이 나와요`;
+  $('#avSum').innerHTML = sum;
+  const sizes = new Set(pl.segs.map(g => { const d = artDims(g.i); return d.w + '×' + d.h; }));
+  $('#avSize').textContent = `영상 크기 ${pl.W}×${pl.H} · 예상 크기 약 ${Math.max(1, Math.round(pl.T * (0.06 + (pl.A ? 0.024 : 0))))}MB` + (sizes.size > 1 ? ' · 비율이 다른 아트보드는 검은 여백을 두고 가운데 놓아요' : '');
+  if (!AV.busy) $('#avGo').disabled = !(pl.T > 0);
+  const key = pl.segs[0].i + '|' + pl.W + '|' + pl.H;
+  if (key !== avPrevKey) { avPrevKey = key; clearTimeout(avPrevT); avPrevT = setTimeout(async () => { const w = 640, h = Math.max(2, Math.round(640 * pl.H / pl.W / 2) * 2); $('#avImg').src = (await avFrame(pl.segs[0].i, w, h)).toDataURL('image/jpeg', 0.85); }, 60); }
+}
+function openAV() {
+  $('#avVar').innerHTML = proj.vars.map((v, i) => `<option value="${i}"${i === proj.cur ? ' selected' : ''}>아트보드 ${i + 1}${v.label ? ' · ' + esc(v.label) : ''}</option>`).join('');
+  $('#avMode').value = proj.vars.length > 1 ? 'seq' : 'one';
+  $('#avProg').hidden = true; $('#avModal').hidden = false; avPrevKey = ''; avRefresh();
+}
+$('#vidMakeBtn').onclick = openAV;
+$('#avMode').onchange = $('#avVar').onchange = $('#avQ').onchange = avRefresh;
+$('#avTl').addEventListener('change', e => { const f = e.target.closest('[data-avdur]'); if (!f) return; setArtDur(+f.dataset.avdur, f.value); avRefresh(); });
+$('#avTl').addEventListener('keydown', e => { if (e.target.matches('[data-avdur]') && e.key === 'Enter') e.target.blur(); });
+$('#avX').onclick = $('#avCancel').onclick = () => { if (AV.busy) { AV.cancel = true; return; } $('#avModal').hidden = true; $('#avAudio').pause(); };
+$('#avPick').onclick = () => $('#avFile').click();
+$('#avNoAudio').onclick = () => { AV.buf = null; AV.name = ''; $('#avAudio').pause(); $('#avAudio').removeAttribute('src'); if (AV.url) URL.revokeObjectURL(AV.url); AV.url = null; $('#avInfo').hidden = true; avRefresh(); };
+$('#avFile').onchange = e => { if (e.target.files[0]) loadAudio(e.target.files[0]); e.target.value = ''; };
+['dragenter', 'dragover'].forEach(ev => $('#avDz').addEventListener(ev, e => { e.preventDefault(); $('#avDz').classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => $('#avDz').addEventListener(ev, e => { e.preventDefault(); $('#avDz').classList.remove('over'); }));
+$('#avDz').addEventListener('drop', e => { const f = [...e.dataTransfer.files].find(f => /^audio\//.test(f.type) || /\.(mp3|wav|m4a|aac|ogg|flac|opus)$/i.test(f.name)); if (f) loadAudio(f); });
+async function loadAudio(file) {
+  $('#avGo').disabled = true; $('#avInfo').hidden = false; $('#avName').textContent = file.name; $('#avDur').textContent = '읽는 중…';
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    AV.buf = await ac.decodeAudioData(await file.arrayBuffer()); ac.close && ac.close();
+    AV.name = file.name.replace(/\.[^.]+$/, '');
+    if (AV.url) URL.revokeObjectURL(AV.url); AV.url = URL.createObjectURL(file); $('#avAudio').src = AV.url;
+    $('#avDur').textContent = fmtDur(AV.buf.duration);
+  } catch (e) { AV.buf = null; $('#avDur').textContent = '읽지 못함'; toast('이 음성 파일을 읽지 못했어요. MP3·WAV·M4A로 바꿔서 올려 주세요.', 4200); }
+  avRefresh();
+}
+async function resample(buf, sr, ch) {
+  if (buf.sampleRate === sr && buf.numberOfChannels === ch) return buf;
+  const oc = new OfflineAudioContext(ch, Math.ceil(buf.duration * sr), sr); const s0 = oc.createBufferSource(); s0.buffer = buf; s0.connect(oc.destination); s0.start(); return oc.startRendering();
+}
+function applyFade(buf, sec, used = buf.length) { const n = Math.min(Math.floor(buf.sampleRate * sec), Math.floor(used / 2)); for (let c = 0; c < buf.numberOfChannels; c++) { const d = buf.getChannelData(c); for (let i = 0; i < n; i++) { const g = i / n; d[i] *= g; d[used - 1 - i] *= g; } } }
+async function pickCodecs(W, H, fps, sr, ch) {
+  let v = null, a = null;
+  if (window.VideoEncoder) for (const [codec, mux] of [['avc1.640028', 'avc'], ['avc1.640033', 'avc'], ['avc1.4d0028', 'avc'], ['avc1.42002a', 'avc'], ['vp09.00.40.08', 'vp9'], ['av01.0.08M.08', 'av1']]) {
+    const cfg = { codec, width: W, height: H, bitrate: Math.round(W * H * 1.6), framerate: fps, latencyMode: 'quality' }; if (mux === 'avc') cfg.avc = { format: 'avc' };
+    try { if ((await VideoEncoder.isConfigSupported(cfg)).supported) { v = { cfg, mux }; break; } } catch (e) {}
+  }
+  if (window.AudioEncoder) for (const [codec, mux] of [['mp4a.40.2', 'aac'], ['opus', 'opus']]) {
+    const cfg = { codec, sampleRate: sr, numberOfChannels: ch, bitrate: 192000 };
+    try { if ((await AudioEncoder.isConfigSupported(cfg)).supported) { a = { cfg, mux }; break; } } catch (e) {}
+  }
+  return { v, a };
+}
+function avProgress(f, t) { $('#avProg').hidden = false; $('#avBarI').style.width = Math.round(f * 100) + '%'; $('#avProgT').textContent = t; }
+function drawBar(ctx, base, W, H, f) { ctx.drawImage(base, 0, 0); const h = Math.max(4, Math.round(H * 0.008)); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fillRect(0, H - h, W, h); ctx.fillStyle = '#FF0000'; ctx.fillRect(0, H - h, W * f, h); }
+$('#avGo').onclick = async () => {
+  if (AV.busy) return;
+  const pl = avPlan(); if (!(pl.T > 0)) return;
+  AV.busy = true; AV.cancel = false; $('#avGo').disabled = true; $('#avCancel').textContent = '취소';
+  const { W, H, T, segs } = pl, bar = $('#avBar').checked, hasAudio = !!AV.buf;
+  const segAt = (t, k) => { while (k < segs.length - 1 && t >= segs[k].e - 1e-6) k++; return k; };
+  try {
+    avProgress(0, '아트보드 그리는 중…');
+    const bases = []; for (const g of segs) bases.push(await avFrame(g.i, W, H));
+    const frame = document.createElement('canvas'); frame.width = W; frame.height = H; const fx = frame.getContext('2d');
+    const ch = hasAudio ? Math.min(2, AV.buf.numberOfChannels) : 2, sr0 = hasAudio && [44100, 48000].includes(AV.buf.sampleRate) ? AV.buf.sampleRate : 48000;
+    const fps = bar ? 15 : 5;
+    const { v, a } = await pickCodecs(W, H, fps, sr0, ch);
+    let blob, ext = 'mp4';
+    if (v && (a || !hasAudio)) {
+      await loadScript('https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.js');
+      const mopt = { target: new Mp4Muxer.ArrayBufferTarget(), video: { codec: v.mux, width: W, height: H, frameRate: fps }, fastStart: 'in-memory', firstTimestampBehavior: 'offset' };
+      if (hasAudio) mopt.audio = { codec: a.mux, numberOfChannels: ch, sampleRate: sr0 };
+      const muxer = new Mp4Muxer.Muxer(mopt);
+      let err = null;
+      const ve = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: e => err = e }); ve.configure(v.cfg);
+      let ae = null;
+      if (hasAudio) {
+        ae = new AudioEncoder({ output: (c, m) => muxer.addAudioChunk(c, m), error: e => err = e }); ae.configure(a.cfg);
+        // the sound track is exactly as long as the artboards: cut a longer recording, pad a shorter one with silence
+        const res = await resample(AV.buf, sr0, ch), N = Math.max(1, Math.round(T * sr0)), used = Math.min(N, res.length);
+        const audio = new AudioBuffer({ length: N, numberOfChannels: ch, sampleRate: sr0 });
+        for (let c = 0; c < ch; c++) audio.getChannelData(c).set(res.getChannelData(c).subarray(0, used));
+        if ($('#avFade').checked) applyFade(audio, 0.5, used);
+        const CH = 4096;
+        for (let off = 0; off < N; off += CH) {
+          const len = Math.min(CH, N - off), data = new Float32Array(len * ch);
+          for (let c = 0; c < ch; c++) data.set(audio.getChannelData(c).subarray(off, off + len), c * len);
+          const ad = new AudioData({ format: 'f32-planar', sampleRate: sr0, numberOfFrames: len, numberOfChannels: ch, timestamp: Math.round(off / sr0 * 1e6), data }); ae.encode(ad); ad.close();
+          if (ae.encodeQueueSize > 64) await new Promise(r => setTimeout(r, 0));
+          if (AV.cancel || err) break;
+        }
+      }
+      const total = Math.max(1, Math.ceil(T * fps)), key = fps * 2;
+      let k = 0, shown = -1, lastKey = -key;
+      for (let i = 0; i < total; i++) {
+        if (AV.cancel || err) break;
+        k = segAt(i / fps, k);
+        const changed = k !== shown;
+        if (bar) drawBar(fx, bases[k], W, H, Math.min(1, i / (total - 1 || 1)));
+        else if (changed) fx.drawImage(bases[k], 0, 0);
+        shown = k;
+        const kf = changed || i - lastKey >= key; if (kf) lastKey = i;
+        const vf = new VideoFrame(frame, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) }); ve.encode(vf, { keyFrame: kf }); vf.close();
+        while (ve.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 1));
+        if (i % 20 === 0) { avProgress(i / total, `영상 만드는 중 ${Math.round(i / total * 100)}% · ${fmtDur(i / fps)} / ${fmtDur(T)} · 아트보드 ${segs[k].i + 1}`); await new Promise(r => setTimeout(r, 0)); }
+      }
+      if (err) throw err;
+      if (AV.cancel) throw new Error('cancel');
+      avProgress(1, '마무리하는 중…'); await ve.flush(); if (ae) await ae.flush(); muxer.finalize(); ve.close(); if (ae) ae.close();
+      blob = new Blob([muxer.target.buffer], { type: 'video/mp4' });
+      if (v.mux !== 'avc' || (a && hasAudio && a.mux !== 'aac')) toast(`이 브라우저에선 ${v.mux.toUpperCase()}${hasAudio ? '·' + a.mux.toUpperCase() : ''} 형식 MP4로 만들었어요. 유튜브엔 올라가지만 일부 오래된 재생기에선 안 열릴 수 있어요.`, 6000);
+    } else {
+      // fallback: record in real time (takes as long as the video)
+      const types = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'];
+      const mime = types.find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t));
+      if (!mime) throw new Error('unsupported');
+      ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+      fx.drawImage(bases[0], 0, 0);
+      const ac = new AudioContext(), dst = ac.createMediaStreamDestination(); let src = null;
+      if (hasAudio) { src = ac.createBufferSource(); src.buffer = AV.buf; src.connect(dst); }
+      const stream = new MediaStream([...frame.captureStream(15).getVideoTracks(), ...(hasAudio ? dst.stream.getAudioTracks() : [])]);
+      const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: Math.round(W * H * 1.6) }); const parts = [];
+      rec.ondataavailable = e => e.data.size && parts.push(e.data);
+      const done = new Promise(r => rec.onstop = r);
+      rec.start(1000); if (src) src.start(); const t0 = ac.currentTime; let k = 0, shown = 0;
+      await new Promise(res => {
+        const tick = () => { const t = ac.currentTime - t0; k = segAt(t, k);
+          if (bar) drawBar(fx, bases[k], W, H, Math.min(1, t / T)); else if (k !== shown) fx.drawImage(bases[k], 0, 0); else fx.fillRect(0, 0, 0, 0);
+          shown = k;
+          avProgress(Math.min(1, t / T), `실시간으로 녹화하는 중 ${fmtDur(t)} / ${fmtDur(T)} (이 브라우저는 영상 길이만큼 걸려요)`);
+          if (AV.cancel || t >= T + 0.2) return res(); requestAnimationFrame(tick); };
+        tick();
+      });
+      if (src) try { src.stop(); } catch (e) {}
+      rec.stop(); await done; ac.close();
+      if (AV.cancel) throw new Error('cancel');
+      blob = new Blob(parts, { type: mime.split(';')[0] });
+    }
+    downloadBlob(blob, `${AV.name || '영상'}-${stamp()}.${ext}`);
+    avProgress(1, `완료 · ${fmtDur(T)} · ${fmtBytes(blob.size)} · ${W}×${H}`); toast('영상을 내려받았어요.');
+  } catch (e) {
+    console.error(e);
+    if (String(e && e.message) === 'cancel') { $('#avProg').hidden = true; toast('영상 만들기를 취소했어요.'); }
+    else avProgress(0, String(e && e.message) === 'unsupported' ? '이 브라우저는 영상 만들기를 지원하지 않아요. 크롬이나 엣지 최신 버전에서 해 주세요.' : '영상을 만들지 못했어요. 화질을 720p로 낮추거나 크롬·엣지 최신 버전에서 다시 해 주세요.');
+  }
+  AV.busy = false; $('#avGo').disabled = false; $('#avCancel').textContent = '닫기';
+};
+
+/* ---------------- add web fonts ---------------- */
+function saveWebFonts() { lsSet('tg.webfonts', JSON.stringify(FONTS.filter(f => f.web).map(({ id, f, n, l, faces, css, c, ws }) => ({ id, f, n, l, faces, css, c, ws })))); }
+function loadWebFonts() { try { (JSON.parse(lsGet('tg.webfonts') || '[]') || []).forEach(w => { if (!FONTS.some(x => x.id === w.id)) FONTS.unshift(Object.assign({ s: '추가한 웹폰트', x: [] }, w, { web: true })); }); } catch (e) {} }
+const absUrl = (u, base) => { try { return new URL(u, base).href; } catch (e) { return u; } };
+const cssW = v => { v = String(v || '400').trim().toLowerCase(); if (v === 'normal') return [400]; if (v === 'bold') return [700]; const m = v.match(/\d+/g); if (!m) return [400]; if (m.length > 1) { const out = []; for (let w = Math.ceil(+m[0] / 100) * 100; w <= +m[1]; w += 100) out.push(w); return out.length ? out : [400]; } return [Math.round(+m[0] / 100) * 100 || 400]; };
+// @font-face blocks → families → faces. Blocks that only differ by a weight word in the family name are merged.
+function parseFontFaceCss(css, base) {
+  const fams = new Map();
+  for (const m of css.matchAll(/@font-face\s*{([^}]*)}/gi)) {
+    const body = m[1];
+    const fam = ((body.match(/font-family\s*:\s*([^;]+)/i) || [])[1] || '').replace(/["']/g, '').split(',')[0].trim(); if (!fam) continue;
+    const urls = [...(body.match(/src\s*:([^;]+)/i) || [, ''])[1].matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi)].map(x => absUrl(x[1].trim(), base));
+    const url = urls.find(u => /\.woff2(\?|$)/i.test(u)) || urls.find(u => /\.woff(\?|$)/i.test(u)) || urls[0]; if (!url) continue;
+    const declW = (body.match(/font-weight\s*:\s*([^;]+)/i) || [])[1], style = /font-style\s*:\s*italic/i.test(body) ? 'italic' : 'normal';
+    let family = fam, ws = cssW(declW);
+    if (!declW || /^\s*(normal|400)\s*$/i.test(declW)) { const sp = splitFontName(fam); if (sp.w !== 400 || sp.fam !== safeFamily(fam)) { family = sp.fam; ws = [sp.w]; } }
+    family = safeFamily(family);
+    if (!fams.has(family)) fams.set(family, []);
+    ws.forEach(w => fams.get(family).push([w, url, style]));
+  }
+  return fams;
+}
+async function googleFont(name) {
+  const tries = [name.trim(), name.trim().replace(/\s+/g, ' ').replace(/\b\w/g, c => c.toUpperCase())];
+  for (const nm of [...new Set(tries)]) {
+    const q = nm.replace(/ /g, '+');
+    const ok = (await Promise.all([100, 200, 300, 400, 500, 600, 700, 800, 900].map(async w => { try { const r = await fetch(`https://fonts.googleapis.com/css2?family=${q}:wght@${w}&display=swap`); return r.ok ? w : null; } catch (e) { return null; } }))).filter(Boolean);
+    if (ok.length) return { f: nm, c: `${q}:wght@${ok.join(';')}`, ws: ok };
+    try { const r = await fetch(`https://fonts.googleapis.com/css2?family=${q}&display=swap`); if (r.ok) return { f: nm, c: q, ws: [400] }; } catch (e) {}
+  }
+  return null;
+}
+function openWebFont() {
+  $('#wfLang').innerHTML = LANGS.filter(([k]) => !['mine', 'fav', 'all'].includes(k)).map(([k, n]) => `<option value="${k}">${n}</option>`).join('');
+  $('#wfIn').value = ''; $('#wfName').value = ''; $('#wfMsg').textContent = ''; $('#wfMsg').className = 'hint'; $('#wfModal').hidden = false; $('#fontPop').hidden = true; setTimeout(() => $('#wfIn').focus(), 30);
+}
+$('#wfOpen').onclick = openWebFont; $('#wfOpen2').onclick = openWebFont;
+$('#wfIn').addEventListener('input', () => { const l = detectLang($('#wfIn').value.replace(/@font-face[\s\S]*$/, '')) ; if (l) $('#wfLang').value = l; });
+function wfMsg(t, err) { $('#wfMsg').textContent = t; $('#wfMsg').className = 'hint' + (err ? ' err' : ''); }
+$('#wfAdd').onclick = async () => {
+  let raw = $('#wfIn').value.trim(); if (!raw) { wfMsg('붙여넣은 내용이 없어요.', true); return; }
+  const lang = $('#wfLang').value || 'ko', label = $('#wfName').value.trim();
+  const linkHref = (raw.match(/<link[^>]+href=["']([^"']+)["']/i) || [])[1]; if (linkHref) raw = linkHref;
+  const importHref = (raw.match(/@import\s+url\(\s*["']?([^"')]+)["']?\s*\)/i) || [])[1]; if (importHref && !/@font-face/i.test(raw)) raw = importHref;
+  wfMsg('확인하는 중…'); $('#wfAdd').disabled = true;
+  const added = [];
+  try {
+    const gUrl = /fonts\.google\.com\/specimen\/([^/?#]+)/i.exec(raw) || /fonts\.googleapis\.com\/css2?\?[^ ]*family=([^&:]+)/i.exec(raw);
+    if (/@font-face/i.test(raw)) {
+      const fams = parseFontFaceCss(raw, location.href);
+      if (!fams.size) throw new Error('@font-face 안에서 글꼴 이름과 주소(url)를 찾지 못했어요.');
+      fams.forEach((faces, fam) => added.push({ f: fam, faces, ws: [...new Set(faces.map(x => x[0]))].sort((a, b) => a - b) }));
+    } else if (gUrl) {
+      const g = await googleFont(decodeURIComponent(gUrl[1]).replace(/\+/g, ' ')); if (!g) throw new Error('구글 폰트에서 이 글꼴을 찾지 못했어요.'); added.push(g);
+    } else if (/^https?:\/\//i.test(raw)) {
+      let css = ''; try { const r = await fetch(raw); if (r.ok) css = await r.text(); } catch (e) {}
+      const fams = css ? parseFontFaceCss(css, raw) : new Map();
+      if (fams.size) fams.forEach((faces, fam) => added.push({ f: fam, faces, ws: [...new Set(faces.map(x => x[0]))].sort((a, b) => a - b) }));
+      else if (label) added.push({ f: label, css: [raw], ws: [400, 700] });
+      else throw new Error('이 주소의 CSS를 읽지 못했어요. ‘목록에 보일 이름’에 CSS 안의 font-family 이름을 정확히 적고 다시 눌러 주세요.');
+    } else {
+      const g = await googleFont(raw); if (!g) throw new Error('구글 폰트에서 이 이름을 찾지 못했어요. 철자와 띄어쓰기(예: Gowun Dodum)를 확인하거나 눈누 코드를 붙여넣어 주세요.'); added.push(g);
+    }
+    const names = [];
+    for (const a of added) {
+      const id = 'web:' + a.f; const i = FONTS.findIndex(x => x.id === id); if (i >= 0) FONTS.splice(i, 1);
+      const entry = Object.assign({ id, n: added.length === 1 && label ? label : a.f, l: lang, s: '추가한 웹폰트', x: lang === 'ko' ? ['latin'] : [], web: true }, a);
+      FONTS.unshift(entry); fontLinked.delete(id); linkEntry(entry);
+      await ensureFont(entry.f, 'normal', SAMPLE[lang] || '가나다 Abc');
+      const okLoad = document.fonts.check(`16px ${cssFam(entry.f)}`, SAMPLE[lang] || 'A') && [...document.fonts].some(ff => ff.family.replace(/["']/g, '') === entry.f && ff.status === 'loaded');
+      names.push(entry.n + (okLoad ? '' : ' (아직 못 불러옴)'));
+    }
+    saveWebFonts();
+    const fail = names.some(n => n.endsWith('(아직 못 불러옴)'));
+    wfMsg(fail ? `추가했지만 글꼴 파일을 받지 못했어요: ${names.join(', ')}. 주소가 맞는지, 그 사이트가 다른 사이트에서 쓰는 걸 막지 않는지(CORS) 확인해 주세요.` : `추가했어요: ${names.join(', ')}. 글꼴 목록 맨 위 ‘내 글꼴’에 있어요.`, fail);
+    if (!fail) { setTimeout(() => { $('#wfModal').hidden = true; }, 1400); toast(`웹폰트 ${names.join(', ')}을(를) 추가했어요.`); }
+  } catch (e) { wfMsg(e.message || '추가하지 못했어요.', true); }
+  $('#wfAdd').disabled = false;
+};
+
 /* ---------------- language versions ---------------- */
 const I18N = [['ko','한국어','ko'],['en','English','latin'],['ja','日本語','ja'],['zhs','简体中文','zhs'],['zht','繁體中文','zht'],['id','Bahasa Indonesia','latin'],['vi','Tiếng Việt','vi'],['th','ไทย','th'],['es','Español','latin'],['pt','Português','latin'],['ar','العربية','ar'],['hi','हिन्दी','hi'],['ru','Русский','ru']];
 const I18N_DEF = { ko: { f: 'Black Han Sans' }, latin: { f: 'Anton' }, ja: { f: 'Dela Gothic One' }, zhs: { f: 'ZCOOL QingKe HuangYou' }, zht: { f: 'Noto Sans TC', w: '900' }, vi: { f: 'Be Vietnam Pro', w: '900' }, th: { f: 'Kanit', w: '700' }, ar: { f: 'Lalezar' }, hi: { f: 'Teko', w: '700' }, ru: { f: 'Russo One' } };
@@ -5473,15 +5828,15 @@ const langName = k => (I18N.find(x => x[0] === k) || [k, k])[1];
 $('#i18nPreview').onclick = async () => {
   const st = i18nState(); if (!st.langs.length) { toast('언어를 하나 이상 골라 주세요.'); return; }
   cv.discardActiveObject(); commit();
-  $('#i18nGrid').innerHTML = st.langs.map(k => `<div class="icard"><img data-ii="${k}" alt="${esc(langName(k))}"><div class="row"><strong style="font-size:13px">${esc(langName(k))}</strong><button class="btn sm" data-iv="${k}">시안으로 열기</button></div></div>`).join('');
+  $('#i18nGrid').innerHTML = st.langs.map(k => `<div class="icard"><img data-ii="${k}" alt="${esc(langName(k))}"><div class="row"><strong style="font-size:13px">${esc(langName(k))}</strong><button class="btn sm" data-iv="${k}">아트보드로 열기</button></div></div>`).join('');
   for (const k of st.langs) { const c = await renderState(curState(), 400, sc => applyLang(sc, k)); $(`[data-ii="${k}"]`).src = c.toDataURL('image/jpeg', 0.85); }
 };
 $('#i18nGrid').onclick = async e => {
   const b = e.target.closest('[data-iv]'); if (!b) return;
-  if (proj.vars.length >= 5) { toast('시안은 5개까지예요. 하나를 지우고 다시 해 주세요.'); return; }
+  if (proj.vars.length >= 5) { toast('아트보드는 5개까지예요. 하나를 지우고 다시 해 주세요.'); return; }
   const k = b.dataset.iv; $('#i18nModal').hidden = true;
   await addVariant(true); proj.vars[proj.cur].label = langName(k); await applyLang(cv, k); cv.requestRenderAll(); renderVbar(); commit();
-  toast(`${langName(k)} 버전을 시안 ${proj.vars[proj.cur].name}로 열었어요. 여기서 자리나 크기를 다듬으세요.`);
+  toast(`${langName(k)} 버전을 아트보드 ${proj.cur + 1}로 열었어요. 여기서 자리나 크기를 다듬으세요.`);
 };
 $('#i18nZip').onclick = async () => {
   const st = i18nState(); if (!st.langs.length) { toast('언어를 하나 이상 골라 주세요.'); return; }
@@ -5587,8 +5942,9 @@ $('#drvSaveBtn').onclick = async () => {
 
 /* ---------------- boot ---------------- */
 async function boot() {
-  renderTemplates(); renderPresets();
+  renderPresets();
   ['Black Han Sans', 'Do Hyeon', 'Jua', 'Anton', 'Noto Sans KR', 'Gaegu', 'Nanum Pen Script'].forEach(linkFont);
+  loadWebFonts();
   for (const f of await DB.all('fonts')) {
     const old = f.fam || f.name, info = (await fontInfo(f.buf)) || { fam: old, w: f.w || 400 };
     try { await registerUserFont(info.fam, f.buf, info.w); } catch (e) { continue; }
@@ -5609,7 +5965,7 @@ async function boot() {
     currentProjectId = cur.projectId || null; DRV.fileId = cur.driveId || null; DRV.fileName = cur.driveName || '';
     await restore(cur.snap, { resetHistory: true });
   } else {
-    await applyTemplate(TEMPLATES[0]);
+    await blank();
     hist = [hist[hi]]; hi = 0; updateUndo();
   }
 }
