@@ -608,6 +608,15 @@ input[type=range]{accent-color:var(--primary)}
 .sev.warn{color:#0D181E}
 .preset small{display:inline-block;background:rgba(13,24,30,.8);color:#FFFFFF;opacity:1;padding:2px 6px;border-radius:4px;margin-top:4px;font-size:11.5px}
 
+/* colour rows: clear swatch + opacity */
+.clr .sw.none{background:linear-gradient(135deg,transparent 45%,#E00751 45%,#E00751 55%,transparent 55%),repeating-conic-gradient(#C1C7D1 0 25%,#FFFFFF 0 50%) 0 0/8px 8px}
+.clr .alpha{display:flex;align-items:center;gap:6px;flex-basis:100%;font-size:12px;color:var(--text);margin-top:2px}
+.clr .alpha input{flex:1;min-width:0}
+.clr .alpha output{font:700 12px var(--mono);color:var(--ink);min-width:26px;text-align:right}
+/* stroke pattern picker */
+.dash-seg{display:grid;grid-template-columns:repeat(4,1fr);border-radius:20px}
+.dash-seg button{height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;padding:0 4px}
+.dash-seg svg{width:34px;height:8px;fill:none;stroke:currentColor;stroke-width:3}
 /* artboard video length */
 .vadd{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex:none}
 .vadd .i{width:16px;height:16px}
@@ -762,8 +771,7 @@ input[type=range]{accent-color:var(--primary)}
         <h2>무료 사진</h2>
         <div class="seg" id="srcSeg">
           <button data-src="pixabay">Pixabay</button>
-          <button data-src="pexels">Pexels</button>
-          <button data-src="openverse">Openverse</button>
+          <button data-src="unsplash">Unsplash</button>
         </div>
         <p class="hint" id="srcNote"></p>
         <div id="keyBox" hidden style="margin-top:10px;padding:12px;border-radius:10px;background:var(--panel-2)">
@@ -1011,6 +1019,10 @@ input[type=range]{accent-color:var(--primary)}
         <div class="field"><span class="lbl">대비 <output id="fxCO">0</output></span><input type="range" id="fxC" min="-60" max="60" value="0"></div>
         <div class="field"><span class="lbl">채도 <output id="fxSO">0</output></span><input type="range" id="fxS" min="-100" max="100" value="0"></div>
         <div class="field"><span class="lbl">흐림 <output id="fxBlO">0</output></span><input type="range" id="fxBl" min="0" max="60" value="0"></div>
+        <div class="field"><span class="lbl">색 입히기 <label class="tog"><input type="checkbox" id="tintOn">켜기</label></span>
+          <div id="tintBox" hidden><div class="clr" data-clr="tintC"></div>
+            <div class="field"><span class="lbl">세기 <output id="tintAO">100</output></span><input type="range" id="tintA" min="5" max="100" value="100"></div>
+            <p class="hint" style="margin:4px 0 0">세기 100이면 로고·아이콘이 모양은 그대로, 한 가지 색으로 바뀌어요. 낮추면 사진에 색만 살짝 물들어요.</p></div></div>
         <div class="row" style="margin-top:12px">
           <button class="btn sm" id="iReset">보정 초기화</button>
           <button class="btn sm" id="iToBg">배경으로 깔기</button>
@@ -1021,8 +1033,10 @@ input[type=range]{accent-color:var(--primary)}
       <!-- shape -->
       <div id="pShape" hidden>
         <div class="insp-title">도형</div>
-        <div class="field"><span class="lbl">채우기 <label class="tog"><input type="checkbox" id="sNoFill">비우기</label></span><div class="clr" data-clr="sFill"></div></div>
-        <div class="field"><span class="lbl">테두리 <output id="sStrokeWO">0</output></span><div class="clr" data-clr="sStroke"></div><input type="range" id="sStrokeW" min="0" max="60" value="0"></div>
+        <div class="field" id="sFillF"><span class="lbl">채우기 <label class="tog"><input type="checkbox" id="sNoFill">비우기</label></span><div class="clr" data-clr="sFill"></div></div>
+        <div class="field"><span class="lbl" id="sStrokeL">테두리</span><div class="clr" data-clr="sStroke"></div><span class="lbl" style="margin-top:8px">굵기 <output id="sStrokeWO">0</output></span><input type="range" id="sStrokeW" min="0" max="60" value="0"></div>
+        <div class="field"><span class="lbl">선 모양</span>
+          <div class="seg dash-seg" id="sDash"><button data-dash="solid" title="실선"><svg viewBox="0 0 40 8"><path d="M2 4h36"/></svg>실선</button><button data-dash="dash" title="파선"><svg viewBox="0 0 40 8"><path d="M2 4h36" stroke-dasharray="7 5"/></svg>파선</button><button data-dash="dot" title="점선"><svg viewBox="0 0 40 8"><path d="M3 4h35" stroke-dasharray="0 6" stroke-linecap="round"/></svg>점선</button><button data-dash="long" title="긴 파선"><svg viewBox="0 0 40 8"><path d="M2 4h36" stroke-dasharray="14 5"/></svg>긴 파선</button></div></div>
         <div class="field" id="sRadiusF"><span class="lbl">모서리 둥글기 <output id="sRadiusO">0</output></span><input type="range" id="sRadius" min="0" max="200" value="0"></div>
       </div>
 
@@ -3211,10 +3225,9 @@ onnxruntime-web/dist/esm/ort.min.js:
 <div class="modal" id="setModal" hidden role="dialog" aria-modal="true" aria-labelledby="setTitle">
   <div class="dlg">
     <h2 id="setTitle">설정</h2>
-    <p class="hint" style="margin-top:0">둘 다 무료예요. 가입 후 키를 받아 붙여넣으면 이 브라우저에 저장돼요. 키가 없어도 Openverse로 검색할 수 있어요.</p>
+    <p class="hint" style="margin-top:0">둘 다 무료예요. 가입 후 키를 받아 붙여넣으면 이 브라우저에 저장돼요. 사진 검색에는 둘 중 하나만 있어도 돼요.</p>
     <div class="field"><label for="setPixabay">Pixabay 키 — <a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">pixabay.com/api/docs</a> 에서 로그인하면 바로 보여요</label><input class="txt" id="setPixabay" autocomplete="off"></div>
-    <div class="field"><label for="setPexels" style="display:none"></label></div>
-    <div class="field"><label for="setPexels">Pexels 키 — <a href="https://www.pexels.com/api/" target="_blank" rel="noopener">pexels.com/api</a> 에서 신청</label><input class="txt" id="setPexels" autocomplete="off"></div>
+    <div class="field"><label for="setUnsplash">Unsplash 키 (Access Key) — <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">unsplash.com/oauth/applications</a> 에서 앱을 만들면 보여요</label><input class="txt" id="setUnsplash" autocomplete="off"></div>
     <h3 class="mh">구글 드라이브 연결</h3>
     <details class="steps"><summary>클라이언트 ID 만드는 법 (처음 한 번, 무료)</summary>
       <ol>
@@ -3628,10 +3641,22 @@ const SHAPES = {
   burst: { n: '쾅 터짐', svg: '<path d="M32 4l5 12 11-7-2 13 13 1-10 9 10 9-13 1 2 13-11-7-5 12-5-12-11 7 2-13-13-1 10-9-10-9 13-1-2-13 11 7z" fill="currentColor"/>', make: o => new fabric.Polygon(starPts(14, 190, 130), Object.assign({ fill: '#FFE600', stroke: '#111111', strokeWidth: 10 }, o)) },
   arrow: { n: '화살표', svg: '<path d="M6 25h30V14l22 18-22 18V39H6z" fill="currentColor"/>', make: o => new fabric.Polygon([{x:0,y:40},{x:200,y:40},{x:200,y:0},{x:320,y:80},{x:200,y:160},{x:200,y:120},{x:0,y:120}], Object.assign({ fill: '#EE3124' }, o)) },
   bubble: { n: '말풍선', svg: '<path d="M14 10h36a6 6 0 016 6v20a6 6 0 01-6 6H28l-10 10 2-10h-6a6 6 0 01-6-6V16a6 6 0 016-6z" fill="currentColor"/>', make: o => new fabric.Path('M 40 0 H 360 Q 400 0 400 40 V 200 Q 400 240 360 240 H 150 L 80 310 L 100 240 H 40 Q 0 240 0 200 V 40 Q 0 0 40 0 Z', Object.assign({ fill: '#FFFFFF', stroke: '#111111', strokeWidth: 8 }, o)) },
+  line: { n: '선', svg: '<path d="M6 32h52" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>', make: o => new fabric.Line([0, 0, 480, 0], Object.assign({ stroke: '#233237', strokeWidth: 10, strokeLineCap: 'round', fill: '', padding: 10 }, o)) },
+  dline: { n: '점선', svg: '<path d="M6 32h52" stroke="currentColor" stroke-width="6" stroke-dasharray="9 7"/>', make: o => { const l = new fabric.Line([0, 0, 480, 0], Object.assign({ stroke: '#233237', strokeWidth: 10, fill: '', padding: 10 }, o)); applyDash(l, 'dash'); return l; } },
   bar: { n: '밑줄 띠', svg: '<rect x="4" y="27" width="56" height="12" rx="3" fill="currentColor"/>', make: o => new fabric.Rect(Object.assign({ width: 560, height: 40, rx: 8, ry: 8, fill: '#FFE600' }, o)) },
 };
+// stroke pattern, scaled to the stroke width so it keeps its look at any thickness
+const DASHES = { solid: null, dash: w => [w * 3, w * 2], dot: w => [0, w * 2], long: w => [w * 7, w * 3] };
+function applyDash(o, kind) {
+  kind = DASHES[kind] !== undefined ? kind : 'solid';
+  const w = Math.max(1, o.strokeWidth || 1);
+  o.set({ strokeDashArray: kind === 'solid' ? null : DASHES[kind](w), strokeLineCap: kind === 'dot' || (kind === 'solid' && o.type === 'line') ? 'round' : 'butt' });
+  o.meta = Object.assign({}, o.meta, { dash: kind }); o.dirty = true;
+}
+const dashOf = o => (o.meta && o.meta.dash) || (o.strokeDashArray && o.strokeDashArray.length ? 'dash' : 'solid');
 function makeShape(kind, o = {}) {
   const s = SHAPES[kind].make(Object.assign({ left: doc.w / 2, top: doc.h / 2, originX: 'center', originY: 'center', strokeUniform: true, strokeLineJoin: 'round', kind: 'shape', meta: { shape: kind } }, o));
+  s.meta = Object.assign({ shape: kind }, s.meta);
   return s;
 }
 function addObj(o, { select = true } = {}) { cv.add(o); if (select) cv.setActiveObject(o); cv.requestRenderAll(); commit(); return o; }
@@ -3916,8 +3941,8 @@ $('#tFont').onclick = e => { fontTarget = cv.getActiveObject(); if (fontTarget &
 document.addEventListener('pointerdown', e => { const p = $('#fontPop'); if (!p.hidden && !p.contains(e.target) && !e.target.closest('#tFont')) p.hidden = true; });
 
 /* ---------------- photo search ---------------- */
-const KEYS = { pixabay: lsGet('tg.key.pixabay') || '', pexels: lsGet('tg.key.pexels') || '' };
-let photoSrc = KEYS.pixabay ? 'pixabay' : KEYS.pexels ? 'pexels' : 'openverse';
+const KEYS = { pixabay: lsGet('tg.key.pixabay') || '', unsplash: lsGet('tg.key.unsplash') || '' };
+let photoSrc = KEYS.pixabay ? 'pixabay' : KEYS.unsplash ? 'unsplash' : 'pixabay';
 let photoPage = 1, photoQuery = '', photoBusy = false;
 const SRC = {
   pixabay: {
@@ -3931,33 +3956,27 @@ const SRC = {
       const d = await r.json();
       return { items: d.hits.map(h => ({ thumb: h.webformatURL, full: h.largeImageURL || h.webformatURL, w: h.webformatWidth, h: h.webformatHeight, credit: `Image by ${h.user} from Pixabay`, link: h.pageURL, lic: 'Pixabay', needAttr: false })), more: page * 30 < Math.min(d.totalHits, 500) };
     } },
-  pexels: {
-    note: 'Pexels 라이선스: 상업적 사용 무료, 출처 표시 필요 없음. 사진만 있어요.',
-    help: 'Pexels는 무료 키가 필요해요. <a href="https://www.pexels.com/api/" target="_blank" rel="noopener">pexels.com/api</a>에서 가입 후 “Your API Key”를 복사해 붙여넣으세요.',
+  unsplash: {
+    note: 'Unsplash 라이선스: 상업적 사용 무료, 출처 표시 필요 없음(해 주면 좋아요). 고화질 사진이 많아요. 영어 검색어가 더 잘 맞아요.',
+    help: 'Unsplash는 무료 키가 필요해요. <a href="https://unsplash.com/join" target="_blank" rel="noopener">가입</a> 후 <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">내 앱 목록</a>에서 <b>New Application</b>을 만들고, 앱 화면의 <b>Access Key</b>를 복사해 붙여넣으세요. 처음엔 1시간에 50번까지 검색돼요.',
     async search(q, page) {
       const ori = { horizontal: 'landscape', vertical: 'portrait' }[$('#photoOri').value] || '';
-      const r = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=30&page=${page}&locale=ko-KR${ori ? '&orientation=' + ori : ''}`, { headers: { Authorization: KEYS.pexels } });
+      const r = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=30&page=${page}&content_filter=high${ori ? '&orientation=' + ori : ''}`, { headers: { Authorization: 'Client-ID ' + KEYS.unsplash, 'Accept-Version': 'v1' } });
+      if (r.status === 403 && /rate limit/i.test(await r.clone().text())) throw new Error('rate');
       if (!r.ok) throw new Error(r.status === 401 || r.status === 403 ? 'key' : 'HTTP ' + r.status);
       const d = await r.json();
-      return { items: d.photos.map(p => ({ thumb: p.src.medium, full: p.src.large2x, w: p.width, h: p.height, credit: `Photo by ${p.photographer} on Pexels`, link: p.url, lic: 'Pexels', needAttr: false })), more: !!d.next_page };
-    } },
-  openverse: {
-    note: 'Openverse: 상업적 사용이 허락된 CC0·퍼블릭 도메인·CC BY 이미지만 찾아요. 키가 필요 없지만 영어 검색어가 잘 맞고, CC BY는 출처 표시가 필요해요.',
-    async search(q, page) {
-      const ori = { horizontal: 'wide', vertical: 'tall' }[$('#photoOri').value] || '';
-      const r = await fetch(`https://api.openverse.org/v1/images/?q=${encodeURIComponent(q)}&license=cc0,pdm,by&page_size=30&page=${page}&mature=false${ori ? '&aspect_ratio=' + ori : ''}`);
-      if (r.status === 429) throw new Error('rate');
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const d = await r.json();
-      return { items: d.results.map(x => { const free = x.license === 'cc0' || x.license === 'pdm'; return { thumb: x.thumbnail || x.url, full: x.url, fallback: x.thumbnail, w: x.width, h: x.height, credit: x.attribution || `${x.title} by ${x.creator} (${x.license})`, link: x.foreign_landing_url, lic: free ? (x.license === 'cc0' ? 'CC0' : '퍼블릭 도메인') : 'CC BY · 출처 필요', needAttr: !free }; }), more: page < (d.page_count || 1) };
-    } },
+      const utm = '?utm_source=design_by_fc&utm_medium=referral';
+      return { items: d.results.map(p => ({ thumb: p.urls.small, full: p.urls.raw + '&w=2560&q=85&fm=jpg&fit=max', w: p.width, h: p.height, credit: `Photo by ${p.user.name} on Unsplash`, link: p.links.html + utm, lic: 'Unsplash', needAttr: false, track: p.links.download_location })), more: page < (d.total_pages || 1) };
+    },
+    // Unsplash asks apps to report each photo that's actually used
+    used(it) { if (it.track) fetch(it.track, { headers: { Authorization: 'Client-ID ' + KEYS.unsplash } }).catch(() => {}); } },
 };
 let photoItems = [];
 function renderSrc() {
   $$('#srcSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.src === photoSrc));
   const s = SRC[photoSrc];
   $('#srcNote').textContent = s.note;
-  const needKey = photoSrc !== 'openverse' && !KEYS[photoSrc];
+  const needKey = !KEYS[photoSrc];
   $('#keyBox').hidden = !needKey; $('#keyHelp').innerHTML = s.help || ''; $('#keyInput').value = '';
   $('#photoType').hidden = photoSrc !== 'pixabay';
 }
@@ -3966,24 +3985,24 @@ $('#keySave').onclick = () => { const v = $('#keyInput').value.trim(); if (!v) r
 const PHOTO_CHIPS = ['놀란 표정', '도시 야경', '노트북', '음식', '바다', '돈', '여행', '고양이'];
 const PHOTO_CHIPS_EN = { '놀란 표정': 'surprised face', '도시 야경': 'city night', '노트북': 'laptop', '음식': 'food', '바다': 'ocean', '돈': 'money', '여행': 'travel', '고양이': 'cat' };
 $('#photoChips').innerHTML = PHOTO_CHIPS.map(c => `<button type="button" data-q="${esc(c)}">${esc(c)}</button>`).join('');
-$('#photoChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('#photoQ').value = photoSrc === 'openverse' ? PHOTO_CHIPS_EN[b.dataset.q] : b.dataset.q; doPhotoSearch(true); };
+$('#photoChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('#photoQ').value = photoSrc === 'unsplash' ? PHOTO_CHIPS_EN[b.dataset.q] : b.dataset.q; doPhotoSearch(true); };
 $('#photoForm').onsubmit = e => { e.preventDefault(); doPhotoSearch(true); };
 $('#photoType').onchange = $('#photoOri').onchange = () => photoQuery && doPhotoSearch(true);
 $('#photoMore').onclick = () => doPhotoSearch(false);
 async function doPhotoSearch(fresh) {
   const q = $('#photoQ').value.trim(); if (!q || photoBusy) return;
-  if (photoSrc !== 'openverse' && !KEYS[photoSrc]) { renderSrc(); toast('먼저 무료 키를 넣거나 Openverse를 골라 주세요.'); return; }
+  if (!KEYS[photoSrc]) { renderSrc(); toast('먼저 위에서 무료 키를 넣어 주세요.'); return; }
   if (fresh) { photoPage = 1; photoItems = []; $('#photoGrid').innerHTML = ''; }
   photoQuery = q; photoBusy = true; $('#photoEmpty').hidden = false; $('#photoEmpty').textContent = '찾는 중…'; $('#photoMore').hidden = true;
   try {
     const { items, more } = await SRC[photoSrc].search(q, photoPage);
     const start = photoItems.length; photoItems.push(...items);
     $('#photoGrid').insertAdjacentHTML('beforeend', items.map((it, i) => `<div class="ph" data-i="${start + i}" title="${esc(it.credit)}"><img src="${esc(it.thumb)}" alt="" loading="lazy" ${it.w ? `width="${it.w}" height="${it.h}"` : ''}><span class="lic">${esc(it.lic)}</span><div class="acts"><button data-act="add">넣기</button><button data-act="bg">배경</button></div></div>`).join(''));
-    $('#photoEmpty').hidden = photoItems.length > 0; $('#photoEmpty').textContent = '결과가 없어요. 다른 낱말로 찾아보세요.' + (photoSrc === 'openverse' ? ' Openverse는 영어로 찾으면 더 많이 나와요.' : '');
+    $('#photoEmpty').hidden = photoItems.length > 0; $('#photoEmpty').textContent = '결과가 없어요. 다른 낱말로 찾아보세요.' + (photoSrc === 'unsplash' ? ' Unsplash는 영어로 찾으면 더 많이 나와요.' : '');
     $('#photoMore').hidden = !more; photoPage++;
   } catch (err) {
     $('#photoEmpty').hidden = false;
-    $('#photoEmpty').textContent = err.message === 'key' ? '키가 맞지 않아요. 위쪽 열쇠 버튼에서 키를 다시 넣어 주세요.' : err.message === 'rate' ? 'Openverse 검색 횟수 제한에 걸렸어요. 잠시 뒤에 다시 하거나 Pixabay 키를 넣어 주세요.' : '검색하지 못했어요. 인터넷 연결을 확인해 주세요.';
+    $('#photoEmpty').textContent = err.message === 'key' ? '키가 맞지 않아요. 위쪽 열쇠 버튼에서 키를 다시 넣어 주세요.' : err.message === 'rate' ? '검색 횟수 제한에 걸렸어요(Unsplash는 처음엔 1시간에 50번). 잠시 뒤에 다시 하거나 Pixabay로 바꿔 주세요.' : '검색하지 못했어요. 인터넷 연결을 확인해 주세요.';
     if (err.message === 'key') { KEYS[photoSrc] = ''; }
   }
   photoBusy = false;
@@ -3997,6 +4016,7 @@ $('#photoGrid').onclick = async e => {
     let d;
     try { d = await fetchImageDataURL(it.full); } catch (er) { if (it.fallback) d = await fetchImageDataURL(it.fallback); else throw er; }
     if (act === 'bg') setBgImage(d); else await addImageData(d, { name: it.lic + ' 사진' });
+    const srcDef = SRC[it.src || photoSrc]; if (srcDef && srcDef.used) srcDef.used(it);
     if (!doc.credits.some(c => c.link === it.link)) { doc.credits.push({ credit: it.credit, link: it.link, needAttr: it.needAttr }); commit(); }
     if (it.needAttr) toast('출처 표시가 필요한 사진이에요. 내보내기 창에서 출처를 복사할 수 있어요.', 4200);
   } catch (er) { toast('사진을 가져오지 못했어요. 다른 사진을 골라 주세요.'); }
@@ -4138,15 +4158,32 @@ function syncBgPanel() {
 /* ---------------- colour controls ---------------- */
 const clrHandlers = {};
 function toHex(c) { try { if (!c || typeof c !== 'string') return '#000000'; return '#' + new fabric.Color(c).toHex().toLowerCase(); } catch (e) { return '#000000'; } }
+// rows whose colour may be see-through or empty
+const CLR_ALPHA = new Set(['tFill', 'tFill2', 'tStroke', 'tBox', 'sFill', 'sStroke', 'penC']);
+function hexA(h, a) { const c = new fabric.Color(h || '#000000').getSource(); return a >= 1 ? toHex(h) : `rgba(${c[0]},${c[1]},${c[2]},${+a.toFixed(2)})`; }
+// the colour a row stands for right now (opacity included)
+function clrVal(k) { const i = document.getElementById('clr_' + k); if (!i) return ''; const al = document.getElementById('clra_' + k); return hexA(i.value, al ? +al.value / 100 : 1); }
 $$('[data-clr]').forEach(el => {
   const k = el.dataset.clr;
   el.innerHTML = `<span class="mine" data-mine></span>` + SWATCHES.map(c => `<button type="button" class="sw" data-c="${c}" style="background:${c}" aria-label="${c}"></button>`).join('') + `<input type="color" aria-label="색 직접 고르기" id="clr_${k}"><button type="button" class="eyed" title="스포이드: 화면에서 색 찍기" aria-label="스포이드"><svg class="i"><use href="#i-drop"/></svg></button><button type="button" class="eyed addc" title="지금 색을 내 채널 색으로 저장" aria-label="내 색으로 저장"><svg class="i"><use href="#i-plus"/></svg></button>`;
-  el.querySelector('.addc').addEventListener('click', () => addMyColor(el.querySelector('input').value));
-  el.querySelector('.eyed').addEventListener('click', async () => { const c = await pickColor(); if (!c) return; const inp = el.querySelector('input'); inp.value = c.toLowerCase(); clrHandlers[k] && clrHandlers[k](c, true); });
-  el.addEventListener('click', e => { const b = e.target.closest('.sw'); if (!b) return; const inp = el.querySelector('input'); inp.value = b.dataset.c.toLowerCase(); clrHandlers[k] && clrHandlers[k](b.dataset.c, true); });
-  const inp = el.querySelector('input');
-  inp.addEventListener('input', () => clrHandlers[k] && clrHandlers[k](inp.value, false));
-  inp.addEventListener('change', () => clrHandlers[k] && clrHandlers[k](inp.value, true));
+  el.querySelector('.addc').addEventListener('click', () => addMyColor(el.querySelector('input[type=color]').value));
+  el.querySelector('.eyed').addEventListener('click', async () => { const c = await pickColor(); if (!c) return; el.querySelector('input[type=color]').value = c.toLowerCase(); const a = document.getElementById('clra_' + k); if (a && +a.value === 0) a.value = 100; clrHandlers[k] && clrHandlers[k](clrVal(k), true); });
+  const inp = el.querySelector('input[type=color]');
+  let al = null;
+  if (CLR_ALPHA.has(k)) {
+    el.insertAdjacentHTML('afterbegin', `<button type="button" class="sw none" data-none title="비우기 (투명)" aria-label="비우기, 투명"></button>`);
+    el.insertAdjacentHTML('beforeend', `<label class="alpha" title="0이면 투명, 100이면 꽉 찬 색">불투명도<input type="range" min="0" max="100" value="100" id="clra_${k}" aria-label="불투명도"><output id="clrao_${k}">100</output></label>`);
+    al = el.querySelector('[data-alpha], #clra_' + k);
+  }
+  const fire = done => { if (al) $('#clrao_' + k).textContent = al.value; clrHandlers[k] && clrHandlers[k](clrVal(k), done); };
+  el.addEventListener('click', e => {
+    if (e.target.closest('[data-none]')) { if (al) al.value = 0; fire(true); return; }
+    const b = e.target.closest('.sw'); if (!b || !b.dataset.c) return;
+    inp.value = b.dataset.c.toLowerCase(); if (al && +al.value === 0) al.value = 100; fire(true);
+  });
+  inp.addEventListener('input', () => { if (al && +al.value === 0) al.value = 100; fire(false); });
+  inp.addEventListener('change', () => fire(true));
+  if (al) { al.addEventListener('input', () => fire(false)); al.addEventListener('change', () => fire(true)); }
 });
 // ---- my channel colours (kept in this browser) ----
 let myColors = []; try { myColors = JSON.parse(lsGet('tg.colors') || '[]'); } catch (e) {}
@@ -4196,7 +4233,12 @@ $('#canvasWrap').addEventListener('pointerdown', e => {
   const hex = '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join('');
   $('#stage').classList.remove('picking'); const f = pickResolve; pickResolve = null; f(hex);
 }, true);
-function setClr(k, c) { const i = document.getElementById('clr_' + k); if (i) i.value = toHex(c); }
+function setClr(k, c) {
+  const i = document.getElementById('clr_' + k); if (!i) return;
+  let a = 1; if (!c) a = 0; else { try { a = new fabric.Color(c).getAlpha(); } catch (e) {} }
+  if (c) i.value = toHex(c);
+  const al = document.getElementById('clra_' + k); if (al) { al.value = Math.round(a * 100); $('#clrao_' + k).textContent = al.value; }
+}
 
 /* ---------------- image pipeline: orig → base (cut out) → display (+ sticker outline) ---------------- */
 function outlineCanvas(img, w, color) {
@@ -4567,12 +4609,23 @@ function setFx(o) {
   if (fx.c) f.push(new fabric.Image.filters.Contrast({ contrast: fx.c / 100 }));
   if (fx.s) f.push(new fabric.Image.filters.Saturation({ saturation: fx.s / 100 }));
   if (fx.bl) f.push(new fabric.Image.filters.Blur({ blur: fx.bl / 100 }));
+  if (fx.tint) f.push(new fabric.Image.filters.BlendColor({ color: fx.tint.c, mode: 'tint', alpha: fx.tint.a }));
   o.filters = f; o.applyFilters(); cv.requestRenderAll();
 }
 [['fxB','b'],['fxC','c'],['fxS','s'],['fxBl','bl']].forEach(([id, k]) => {
   $('#' + id).oninput = e => { const o = act(); if (!o || o.type !== 'image') return; $('#' + id + 'O').textContent = e.target.value; o.meta = Object.assign({}, o.meta, { fx: Object.assign({}, o.meta && o.meta.fx, { [k]: +e.target.value }) }); setFx(o); };
   $('#' + id).onchange = () => commit();
 });
+function setTint(done) {
+  const o = act(); if (!o || o.type !== 'image') return;
+  const on = $('#tintOn').checked; $('#tintBox').hidden = !on;
+  const tint = on ? { c: toHex($('#clr_tintC').value || '#233237'), a: +$('#tintA').value / 100 } : null;
+  o.meta = Object.assign({}, o.meta, { fx: Object.assign({}, o.meta && o.meta.fx, { tint }) }); setFx(o); if (done) commit();
+}
+$('#tintOn').onchange = () => { if ($('#tintOn').checked && !$('#clr_tintC').value) setClr('tintC', '#233237'); setTint(true); };
+$('#tintA').oninput = e => { $('#tintAO').textContent = e.target.value; setTint(false); };
+$('#tintA').onchange = () => setTint(true);
+clrHandlers.tintC = (c, done) => { $('#tintOn').checked = true; setTint(done); };
 $('#iReset').onclick = () => { const o = act(); if (!o || o.type !== 'image') return; o.meta = Object.assign({}, o.meta, { fx: null }); setFx(o); commit(); };
 $('#iToBg').onclick = () => { const o = act(); if (!o || o.type !== 'image') return; const d = assets.get(o.assetId); if (!d) return; cv.remove(o); cv.discardActiveObject(); setBgImage(d); };
 function applyImageShape(o, sh) {
@@ -4586,17 +4639,23 @@ $('#iShape').onclick = e => {
   o.meta = Object.assign({}, o.meta, { shape: b.dataset.sh }); cv.requestRenderAll(); commit();
 };
 clrHandlers.iColor = async (c, done) => {
-  if (!done) return; const o = act(); if (!o || o.kind !== 'icon' || !o.meta) return;
+  if (!done) return; c = toHex(c); const o = act(); if (!o || o.kind !== 'icon' || !o.meta) return;
   try { const d = await fetchImageDataURL(iconURL(o.meta.icon, c), { proxy: false, maxSide: 1024 }); const id = registerAsset(d); await setImageDisplay(o, Object.assign({}, o.meta, { color: c, orig: null, crop: null }), id); commit(); }
   catch (e) { toast('아이콘 색을 바꾸지 못했어요.'); }
 };
 clrHandlers.iconColor = c => { iconColor = c; };
 
 /* shape */
-clrHandlers.sFill = (c, done) => { const o = act(); if (!o) return; $('#sNoFill').checked = false; o.set('fill', c); cv.requestRenderAll(); if (done) commit(); };
+clrHandlers.sFill = (c, done) => { const o = act(); if (!o) return; const clear = new fabric.Color(c).getAlpha() === 0; $('#sNoFill').checked = clear; o.set('fill', clear ? '' : c); cv.requestRenderAll(); if (done) commit(); };
 $('#sNoFill').onchange = e => { const o = act(); if (!o) return; o.set('fill', e.target.checked ? '' : ($('#clr_sFill').value || '#FFD21F')); if (e.target.checked && !o.strokeWidth) { o.set({ stroke: o.stroke || '#EE3124', strokeWidth: 12 }); } cv.requestRenderAll(); commit(); };
-clrHandlers.sStroke = (c, done) => { const o = act(); if (!o) return; const p = { stroke: c }; if (!o.strokeWidth) { p.strokeWidth = 10; } o.set(p); cv.requestRenderAll(); if (done) commit(); };
-$('#sStrokeW').oninput = e => { $('#sStrokeWO').textContent = e.target.value; const o = act(); if (!o) return; o.set({ strokeWidth: +e.target.value, stroke: o.stroke || '#111111' }); cv.requestRenderAll(); };
+clrHandlers.sStroke = (c, done) => { const o = act(); if (!o) return; const p = { stroke: c }; if (!o.strokeWidth || !o.stroke) { p.strokeWidth = 10; $('#sStrokeW').value = 10; $('#sStrokeWO').textContent = 10; } o.set(p); cv.requestRenderAll(); if (done) commit(); };
+$('#sStrokeW').oninput = e => { $('#sStrokeWO').textContent = e.target.value; const o = act(); if (!o) return; o.set({ strokeWidth: Math.max(o.type === 'line' ? 1 : 0, +e.target.value), stroke: o.stroke || '#111111' }); if (dashOf(o) !== 'solid') applyDash(o, dashOf(o)); cv.requestRenderAll(); };
+$('#sDash').onclick = e => {
+  const b = e.target.closest('[data-dash]'); const o = act(); if (!b || !o) return;
+  if (!o.strokeWidth || !o.stroke) { o.set({ strokeWidth: o.stroke && o.strokeWidth ? o.strokeWidth : 10, stroke: o.stroke || '#233237' }); $('#sStrokeW').value = o.strokeWidth; $('#sStrokeWO').textContent = o.strokeWidth; setClr('sStroke', o.stroke); }
+  if (o.stroke && o.strokeWidth) { $('#sStrokeW').value = o.strokeWidth; $('#sStrokeWO').textContent = Math.round(o.strokeWidth); }
+  applyDash(o, b.dataset.dash); $$('#sDash button').forEach(x => x.setAttribute('aria-pressed', x === b)); cv.requestRenderAll(); commit();
+};
 $('#sStrokeW').onchange = () => commit();
 $('#sRadius').oninput = e => { $('#sRadiusO').textContent = e.target.value; const o = act(); if (!o || o.type !== 'rect') return; o.set({ rx: +e.target.value, ry: +e.target.value }); cv.requestRenderAll(); };
 $('#sRadius').onchange = () => commit();
@@ -4706,7 +4765,7 @@ function syncPanel() {
   $('#pDoc').hidden = !!o;
   $('#pText').hidden = type !== 'i-text';
   $('#pImage').hidden = type !== 'image';
-  $('#pShape').hidden = !o || !['rect','circle','triangle','polygon','path'].includes(type);
+  $('#pShape').hidden = !o || !['rect','circle','triangle','polygon','path','line'].includes(type);
   $('#pMulti').hidden = type !== 'multi';
   $('#pGroup').hidden = type !== 'group';
   $('#pCommon').hidden = !o;
@@ -4746,6 +4805,7 @@ function syncPanel() {
   if (type === 'image') {
     const fx = Object.assign({ b: 0, c: 0, s: 0, bl: 0 }, o.meta && o.meta.fx);
     [['fxB','b'],['fxC','c'],['fxS','s'],['fxBl','bl']].forEach(([id, k]) => { $('#' + id).value = fx[k]; $('#' + id + 'O').textContent = fx[k]; });
+    $('#tintOn').checked = !!fx.tint; $('#tintBox').hidden = !fx.tint; if (fx.tint) { setClr('tintC', fx.tint.c); $('#tintA').value = Math.round(fx.tint.a * 100); $('#tintAO').textContent = $('#tintA').value; }
     const shp = (o.meta && o.meta.shape) || 'none'; $$('#iShape button').forEach(b => b.setAttribute('aria-pressed', b.dataset.sh === shp));
     const mm = o.meta || {};
     $('#iOrig').hidden = !mm.orig;
@@ -4762,12 +4822,14 @@ function syncPanel() {
     $('#sNoFill').checked = !o.fill; setClr('sFill', swatchValue(o.fill)); setClr('sStroke', swatchValue(o.stroke));
     $('#sStrokeW').value = o.strokeWidth || 0; $('#sStrokeWO').textContent = Math.round(o.strokeWidth || 0);
     $('#sRadiusF').hidden = type !== 'rect'; if (type === 'rect') { $('#sRadius').value = o.rx || 0; $('#sRadiusO').textContent = Math.round(o.rx || 0); }
+    $('#sFillF').hidden = type === 'line'; $('#sStrokeL').textContent = type === 'line' ? '선 색' : '테두리';
+    const dk = dashOf(o); $$('#sDash button').forEach(x => x.setAttribute('aria-pressed', x.dataset.dash === dk));
   }
   syncing = false;
 }
 
 /* layers */
-const KIND_LABEL = { 'i-text': 'T', image: '이미지', rect: '도형', circle: '도형', triangle: '도형', polygon: '도형', path: '도형', group: '묶음' };
+const KIND_LABEL = { 'i-text': 'T', image: '이미지', rect: '도형', circle: '도형', triangle: '도형', polygon: '도형', path: '도형', line: '선', group: '묶음' };
 function layerName(o) {
   if (o.type === 'i-text') return o.text.replace(/\n/g, ' ').slice(0, 24) || '텍스트';
   if (o.kind === 'emoji') return (o.meta && o.meta.ch) + ' 이모지';
@@ -5088,9 +5150,9 @@ $('#newBlank').onclick = () => { $('#newModal').hidden = true; blank(); };
 $('#newSave').onclick = async () => { $('#newModal').hidden = true; await saveProject(false); blank(); };
 
 /* ---------------- settings ---------------- */
-$('#settingsBtn').onclick = () => { $('#setPixabay').value = KEYS.pixabay; $('#setPexels').value = KEYS.pexels; $('#setGClient').value = lsGet('tg.gclient') || ''; $('#originNow').textContent = location.origin; renderMyColors(); $('#setModal').hidden = false; };
+$('#settingsBtn').onclick = () => { $('#setPixabay').value = KEYS.pixabay; $('#setUnsplash').value = KEYS.unsplash; $('#setGClient').value = lsGet('tg.gclient') || ''; $('#originNow').textContent = location.origin; renderMyColors(); $('#setModal').hidden = false; };
 $('#setClose').onclick = () => $('#setModal').hidden = true;
-$('#setSave').onclick = () => { KEYS.pixabay = $('#setPixabay').value.trim(); KEYS.pexels = $('#setPexels').value.trim(); lsSet('tg.key.pixabay', KEYS.pixabay); lsSet('tg.key.pexels', KEYS.pexels); lsSet('tg.gclient', $('#setGClient').value.trim()); DRV.token = null; $('#setModal').hidden = true; renderSrc(); toast('저장했어요.'); };
+$('#setSave').onclick = () => { KEYS.pixabay = $('#setPixabay').value.trim(); KEYS.unsplash = $('#setUnsplash').value.trim(); lsSet('tg.key.pixabay', KEYS.pixabay); lsSet('tg.key.unsplash', KEYS.unsplash); lsSet('tg.gclient', $('#setGClient').value.trim()); DRV.token = null; $('#setModal').hidden = true; renderSrc(); toast('저장했어요.'); };
 $$('.modal').forEach(m => m.addEventListener('pointerdown', e => { if (e.target === m && m.id !== 'cutModal') m.hidden = true; }));
 
 /* ---------------- text effects controls ---------------- */
@@ -5396,7 +5458,7 @@ function setPen(m) {
   cv.isDrawingMode = m !== 'off'; $('#drawChip').hidden = m === 'off';
   if (m !== 'off') {
     cv.discardActiveObject();
-    const br = new fabric.PencilBrush(cv); const col = $('#clr_penC').value || '#ee3124', w = +$('#penW').value;
+    const br = new fabric.PencilBrush(cv); const col = clrVal('penC') || '#ee3124', w = +$('#penW').value;
     br.decimate = 3; br.strokeLineCap = 'round'; br.strokeLineJoin = 'round';
     if (m === 'hl') { const c = new fabric.Color(col); c.setAlpha(0.42); br.color = c.toRgba(); br.width = w * 2.4; br.strokeLineCap = 'square'; }
     else { br.color = col; br.width = w; }
