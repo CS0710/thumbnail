@@ -617,6 +617,11 @@ input[type=range]{accent-color:var(--primary)}
 .dash-seg{display:grid;grid-template-columns:repeat(4,1fr);border-radius:20px}
 .dash-seg button{height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;padding:0 4px}
 .dash-seg svg{width:34px;height:8px;fill:none;stroke:currentColor;stroke-width:3}
+/* video preview */
+#avCv{display:block;width:100%;height:auto;background:#000;border-radius:4px}
+.av-ctl{display:flex;align-items:center;gap:8px;margin-top:8px}
+.av-ctl input{flex:1;min-width:0}
+.av-ctl span{font:12px var(--mono);color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 /* artboard video length */
 .vadd{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex:none}
 .vadd .i{width:16px;height:16px}
@@ -958,6 +963,12 @@ input[type=range]{accent-color:var(--primary)}
       <div id="pText" hidden>
         <div class="insp-title">텍스트 <span class="chip" id="selHint" hidden>선택한 글자에만 적용</span></div>
         <div class="field"><label for="tText">내용</label><textarea class="txt" id="tText" rows="2"></textarea></div>
+        <div class="field"><label class="tog"><input type="checkbox" id="tBoxFix">상자 너비 고정 · 자동 줄바꿈</label>
+          <div id="tBoxFixF" hidden>
+            <div class="row" style="margin-top:8px"><label class="lbl" for="tBoxW">상자 너비</label><input type="number" class="num wide" id="tBoxW" min="20" max="8000"><span class="lbl">px</span></div>
+            <label class="tog" style="margin-top:8px"><input type="checkbox" id="tBoxChar">글자 단위로 끊기 (띄어쓰기 없는 긴 글자도 줄바꿈)</label>
+            <p class="hint" style="margin:6px 0 0">캔버스에서 상자 양옆 손잡이를 끌면 너비가 바뀌고, 글자는 그 안에서 알아서 줄을 바꿔요.</p>
+          </div></div>
         <div class="field"><span class="lbl">글꼴</span><button class="fontbtn" id="tFont"><span id="tFontName">검은고딕</span><small>바꾸기</small></button></div>
         <div class="field" id="tWeightF" hidden><label for="tWeight">굵기</label><select class="sel" id="tWeight"></select></div>
         <div class="field"><span class="lbl">크기 <span class="row"><input type="number" class="num" id="tSizeN" min="8" max="600"></span></span><input type="range" id="tSize" min="12" max="400"></div>
@@ -3045,7 +3056,10 @@ onnxruntime-web/dist/esm/ort.min.js:
     <div class="cut-head"><h2 id="avTitle">음성으로 영상 만들기</h2><button class="btn icon ghost" id="avX" aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
     <p class="hint" style="margin-top:0">아트보드를 화면으로, 음성 파일을 소리로 합쳐 MP4 영상을 만들어요. 아트보드마다 길이를 정하면 그 시간만큼 나오고 순서대로 넘어가요. 음성은 없어도 돼요. 파일은 이 컴퓨터 밖으로 나가지 않아요.</p>
     <div class="av-grid">
-      <img id="avImg" class="exp-prev" alt="영상 첫 화면" style="margin-top:0">
+      <div class="av-pv" style="min-width:0">
+        <canvas id="avCv" width="640" height="360" aria-label="영상 미리보기"></canvas>
+        <div class="av-ctl"><button class="btn sm primary" id="avPlay">▶ 미리보기</button><input type="range" id="avSeek" min="0" max="1000" value="0" aria-label="미리보기 위치"><span id="avTime">0:00 / 0:00</span></div>
+      </div>
       <div style="min-width:0">
         <div class="dz" id="avDz" style="padding:16px">
           <div>음성 파일을 끌어다 놓거나 (없어도 돼요)</div>
@@ -3581,7 +3595,7 @@ const DRV = { token: null, exp: 0, folder: null, fileId: null, fileName: '' };
 function updateUndo() { $('#undoBtn').disabled = hi <= 0; $('#redoBtn').disabled = hi >= hist.length - 1; }
 async function loadFontsFor(json) {
   const fams = new Map();
-  walkJSON(json, o => { if (o.type === 'i-text' || o.type === 'text' || o.type === 'textbox') { fams.set(o.fontFamily, (fams.get(o.fontFamily) || '') + (o.text || '')); Object.values(o.styles || {}).forEach(l => Object.values(l || {}).forEach(st => st && st.fontFamily && fams.set(st.fontFamily, o.text))); } });
+  walkJSON(json, o => { if (isTxt(o) || o.type === 'text' || o.type === 'textbox') { fams.set(o.fontFamily, (fams.get(o.fontFamily) || '') + (o.text || '')); Object.values(o.styles || {}).forEach(l => Object.values(l || {}).forEach(st => st && st.fontFamily && fams.set(st.fontFamily, o.text))); } });
   await Promise.all([...fams].map(([f, t]) => ensureFont(f, 'normal', (t || '').slice(0, 80))));
 }
 // Loads one variant's state into the main canvas. Callers set `restoring`.
@@ -3611,14 +3625,16 @@ async function undo() { if (hi <= 0) return; hi--; await restore(hist[hi]); upda
 async function redo() { if (hi >= hist.length - 1) return; hi++; await restore(hist[hi]); updateUndo(); }
 $('#undoBtn').onclick = undo; $('#redoBtn').onclick = redo;
 
+function isTxt(o) { return !!o && (o.type === 'i-text' || o.type === 'textbox'); }
 function prepObj(o) {
-  if (o.type === 'i-text') {
-    o.setControlsVisibility({ mt: false, mb: false, ml: false, mr: false });
+  if (isTxt(o)) {
+    // a fixed-width box keeps its side handles: dragging them changes the width and the text re-wraps
+    o.setControlsVisibility(o.type === 'textbox' ? { mt: false, mb: false, ml: true, mr: true } : { mt: false, mb: false, ml: false, mr: false });
     if ((o.outer && o.outer.w) || (o.depth && o.depth.n) || (o.meta && o.meta.arc)) o.objectCaching = false;
     o.initDimensions(); if (o.meta && o.meta.arc) reArc(o); o.setCoords();
   }
   if (o.lockedByUser) applyLock(o, true);
-  if (o.type === 'group') o.getObjects().forEach(c => { if (c.type === 'i-text') c.initDimensions(); });
+  if (o.type === 'group') o.getObjects().forEach(c => { if (isTxt(c)) c.initDimensions(); });
 }
 
 /* ---------------- object factories ---------------- */
@@ -3756,7 +3772,7 @@ async function applyPreset(p, t) {
 function renderPresets() {
   $('#presetGrid').innerHTML = TEXT_PRESETS.map((p, i) => `<button class="preset" data-i="${i}" style="background:${p.bg || '#7E8798'}" title="${esc(p.n)}"><span><span style="${p.css}">가나다</span><small>${esc(p.n)}</small></span></button>`).join('');
 }
-$('#presetGrid').onclick = e => { const b = e.target.closest('.preset'); if (!b) return; const o = cv.getActiveObject(); applyPreset(TEXT_PRESETS[+b.dataset.i], o && o.type === 'i-text' ? o : null); };
+$('#presetGrid').onclick = e => { const b = e.target.closest('.preset'); if (!b) return; const o = cv.getActiveObject(); applyPreset(TEXT_PRESETS[+b.dataset.i], o && isTxt(o) ? o : null); };
 $$('[data-add]').forEach(b => b.onclick = async () => {
   const k = b.dataset.add;
   const plain = { fontFamily: 'Pretendard', fill: '#111111', stroke: null, strokeWidth: 0, shadow: null, textBackgroundColor: '', outer: null, depth: null };
@@ -3937,7 +3953,7 @@ $('#fontList').onclick = async e => {
   await ensureFont(fam, wv, t.text);
   t.set({ fontFamily: fam, fontWeight: wv }); fabric.util.clearFabricFontCache(fam); t.initDimensions(); if (t.meta && t.meta.arc) reArc(t); t.setCoords(); cv.requestRenderAll(); commit();
 };
-$('#tFont').onclick = e => { fontTarget = cv.getActiveObject(); if (fontTarget && fontTarget.type === 'i-text') openFontPop(e.currentTarget); };
+$('#tFont').onclick = e => { fontTarget = cv.getActiveObject(); if (fontTarget && isTxt(fontTarget)) openFontPop(e.currentTarget); };
 document.addEventListener('pointerdown', e => { const p = $('#fontPop'); if (!p.hidden && !p.contains(e.target) && !e.target.closest('#tFont')) p.hidden = true; });
 
 /* ---------------- photo search ---------------- */
@@ -4535,7 +4551,7 @@ let lastSel = null; // remembered text selection while editing
 cv.on('text:selection:changed', e => { const t = e.target; lastSel = t && t.selectionStart !== t.selectionEnd ? [t.selectionStart, t.selectionEnd] : null; $('#selHint').hidden = !lastSel; syncStyleButtons(); });
 function textSelRange(t) { if (t && t.isEditing && t.selectionStart !== t.selectionEnd) return [t.selectionStart, t.selectionEnd]; if (t && t.isEditing && lastSel) return lastSel; return null; }
 function applyText(props, done) {
-  const t = act(); if (!t || t.type !== 'i-text') return;
+  const t = act(); if (!t || !isTxt(t)) return;
   const r = textSelRange(t);
   if (r && Object.keys(props).every(k => ['fill', 'stroke', 'textBackgroundColor', 'fontSize', 'fontWeight', 'fontStyle', 'underline', 'fontFamily'].includes(k))) t.setSelectionStyles(props, r[0], r[1]);
   else t.set(props);
@@ -4559,13 +4575,13 @@ $('#tStrokeW').oninput = e => { $('#tStrokeWO').textContent = e.target.value; co
 $('#tStrokeW').onchange = () => commit();
 $('#tBoxOn').onchange = e => { $('#tBoxRow').hidden = !e.target.checked; applyText({ textBackgroundColor: e.target.checked ? ($('#clr_tBox').value || '#EE3124') : '' }, true); };
 clrHandlers.tBox = (c, done) => { $('#tBoxOn').checked = true; $('#tBoxRow').hidden = false; applyText({ textBackgroundColor: c }, done); };
-$('#tText').oninput = e => { const t = act(); if (!t || t.type !== 'i-text') return; if (t.isEditing) t.exitEditing(); t.set('text', e.target.value || ' '); t.initDimensions(); t.setCoords(); cv.requestRenderAll(); refreshLayersSoon(); };
+$('#tText').oninput = e => { const t = act(); if (!t || !isTxt(t)) return; if (t.isEditing) t.exitEditing(); t.set('text', e.target.value || ' '); t.initDimensions(); t.setCoords(); cv.requestRenderAll(); refreshLayersSoon(); };
 $('#tText').onchange = () => commit();
 const setSize = (v, done) => { const t = act(); if (!t) return; v = Math.max(8, Math.min(600, +v || 8)); $('#tSize').value = v; $('#tSizeN').value = v; applyText({ fontSize: v }, done); };
 $('#tSize').oninput = e => setSize(e.target.value, false); $('#tSize').onchange = e => setSize(e.target.value, true);
 $('#tSizeN').onchange = e => setSize(e.target.value, true);
 const W_NAME = { 100: '100 · 아주 가늘게', 200: '200 · 더 가늘게', 300: '300 · 가늘게', 400: '400 · 보통', 500: '500 · 중간', 600: '600 · 조금 굵게', 700: '700 · 굵게', 800: '800 · 더 굵게', 900: '900 · 가장 굵게' };
-$('#tWeight').onchange = async e => { const t = act(); if (!t || t.type !== 'i-text') return; const w = +e.target.value, wv = w === 400 ? 'normal' : w === 700 ? 'bold' : String(w); await ensureFont(t.fontFamily, wv, t.text); applyText({ fontWeight: wv }, true); };
+$('#tWeight').onchange = async e => { const t = act(); if (!t || !isTxt(t)) return; const w = +e.target.value, wv = w === 400 ? 'normal' : w === 700 ? 'bold' : String(w); await ensureFont(t.fontFamily, wv, t.text); applyText({ fontWeight: wv }, true); };
 // B / I / U: on/off is decided from what they will change — the selected letters while editing, otherwise the
 // whole text including any per-letter styles — so pressing again always undoes it.
 const isBold = w => wNum(w) >= 600, isItal = v => v === 'italic', isUnder = v => !!v;
@@ -4579,7 +4595,7 @@ function styleState(t, prop, test) {
 function boldPair(t) { const e = fontEntry(t.fontFamily), ws = (e && e.ws) || [400, 700]; const on = ws.filter(w => w >= 600); return { on: on.length ? nearestW(on, 700) : 700, off: nearestW(ws.filter(w => w < 600).length ? ws.filter(w => w < 600) : [400], 400) }; }
 const wVal = w => w === 400 ? 'normal' : w === 700 ? 'bold' : String(w);
 async function toggleTextStyle(prop, test, onV, offV) {
-  const t = act(); if (!t || t.type !== 'i-text') return;
+  const t = act(); if (!t || !isTxt(t)) return;
   const v = styleState(t, prop, test) ? offV : onV;
   if (prop === 'fontWeight') await ensureFont(t.fontFamily, v, t.text);
   const r = textSelRange(t);
@@ -4588,7 +4604,7 @@ async function toggleTextStyle(prop, test, onV, offV) {
   t.initDimensions(); if (t.meta && t.meta.arc) reArc(t); t.setCoords(); t.dirty = true; cv.requestRenderAll(); commit(); syncStyleButtons();
 }
 function syncStyleButtons() {
-  const t = act(); if (!t || t.type !== 'i-text') return;
+  const t = act(); if (!t || !isTxt(t)) return;
   $('#tBold').setAttribute('aria-pressed', styleState(t, 'fontWeight', isBold));
   $('#tItalic').setAttribute('aria-pressed', styleState(t, 'fontStyle', isItal));
   $('#tUnder').setAttribute('aria-pressed', styleState(t, 'underline', isUnder));
@@ -4763,7 +4779,7 @@ function syncPanel() {
   const o = act();
   const type = !o ? 'none' : o.type === 'activeSelection' ? 'multi' : o.type;
   $('#pDoc').hidden = !!o;
-  $('#pText').hidden = type !== 'i-text';
+  $('#pText').hidden = type !== 'i-text' && type !== 'textbox';
   $('#pImage').hidden = type !== 'image';
   $('#pShape').hidden = !o || !['rect','circle','triangle','polygon','path','line'].includes(type);
   $('#pMulti').hidden = type !== 'multi';
@@ -4780,7 +4796,9 @@ function syncPanel() {
   $$('[data-dist]').forEach(b => b.disabled = nSel < 3);
   const lockBtn = $('#cLock'); lockBtn.querySelector('span').textContent = o.lockedByUser ? '잠금 풀기' : '잠그기'; lockBtn.querySelector('use').setAttribute('href', o.lockedByUser ? '#i-unlock' : '#i-lock');
   if (type === 'multi') $('#multiN').textContent = o.getObjects().length;
-  if (type === 'i-text') {
+  if (type === 'i-text' || type === 'textbox') {
+    $('#tBoxFix').checked = type === 'textbox'; $('#tBoxFixF').hidden = type !== 'textbox';
+    if (type === 'textbox') { $('#tBoxW').value = Math.round(o.width); $('#tBoxChar').checked = !!o.splitByGrapheme; }
     if (document.activeElement !== $('#tText')) $('#tText').value = o.text;
     $('#tFontName').textContent = fontLabel(o.fontFamily); $('#tFontName').style.fontFamily = `${cssFam(o.fontFamily)}, var(--body)`;
     const fe = fontEntry(o.fontFamily), wsl = (fe && fe.ws) || [];
@@ -4829,9 +4847,9 @@ function syncPanel() {
 }
 
 /* layers */
-const KIND_LABEL = { 'i-text': 'T', image: '이미지', rect: '도형', circle: '도형', triangle: '도형', polygon: '도형', path: '도형', line: '선', group: '묶음' };
+const KIND_LABEL = { 'i-text': 'T', textbox: 'T', image: '이미지', rect: '도형', circle: '도형', triangle: '도형', polygon: '도형', path: '도형', line: '선', group: '묶음' };
 function layerName(o) {
-  if (o.type === 'i-text') return o.text.replace(/\n/g, ' ').slice(0, 24) || '텍스트';
+  if (isTxt(o)) return o.text.replace(/\n/g, ' ').slice(0, 24) || '텍스트';
   if (o.kind === 'emoji') return (o.meta && o.meta.ch) + ' 이모지';
   if (o.kind === 'icon') return '아이콘 · ' + (o.name || '');
   if (o.kind === 'shape') return SHAPES[o.meta && o.meta.shape] ? SHAPES[o.meta.shape].n : '도형';
@@ -4844,7 +4862,7 @@ function refreshLayers() {
   $('#unlockAll').hidden = !objs.some(o => o.lockedByUser);
   $('#layerCount').textContent = objs.length;
   $('#layerList').innerHTML = objs.map((o, i) => [o, i]).reverse().map(([o, i]) => {
-    const glyph = o.type === 'i-text' ? '<span style="font-family:var(--display);font-size:14px;color:var(--ink)">T</span>' : o.kind === 'emoji' ? `<span style="font-family:var(--emoji);font-size:15px">${esc(o.meta && o.meta.ch)}</span>` : o.type === 'image' ? '<svg class="i" style="width:15px;height:15px"><use href="#i-photo"/></svg>' : '<svg class="i" style="width:15px;height:15px"><use href="#i-shapes"/></svg>';
+    const glyph = isTxt(o) ? '<span style="font-family:var(--display);font-size:14px;color:var(--ink)">T</span>' : o.kind === 'emoji' ? `<span style="font-family:var(--emoji);font-size:15px">${esc(o.meta && o.meta.ch)}</span>` : o.type === 'image' ? '<svg class="i" style="width:15px;height:15px"><use href="#i-photo"/></svg>' : '<svg class="i" style="width:15px;height:15px"><use href="#i-shapes"/></svg>';
     return `<div class="layer${sel.includes(o) ? ' on' : ''}${o.visible === false ? ' dim' : ''}" data-i="${i}"><span class="lk">${glyph}</span><span class="nm">${esc(layerName(o))}</span><button data-vis="${i}" aria-label="${o.visible === false ? '보이기' : '숨기기'}" title="${o.visible === false ? '보이기' : '숨기기'}"><svg class="i"><use href="#${o.visible === false ? 'i-eyeoff' : 'i-eye'}"/></svg></button><button data-lock="${i}" aria-label="${o.lockedByUser ? '잠금 풀기' : '잠그기'}" title="${o.lockedByUser ? '잠금 풀기' : '잠그기'}"><svg class="i"><use href="#${o.lockedByUser ? 'i-lock' : 'i-unlock'}"/></svg></button></div>`;
   }).join('') || '<p class="hint" style="margin:0">아직 아무것도 없어요. 왼쪽에서 글자나 사진을 넣어 보세요.</p>';
 }
@@ -4863,12 +4881,31 @@ cv.on('selection:updated', () => { lastSel = null; $('#selHint').hidden = true; 
 cv.on('selection:cleared', () => { lastSel = null; $('#fontPop').hidden = true; refreshLayers(); syncPanel(); });
 cv.on('object:modified', e => {
   const o = e.target;
-  if (o && o.type === 'i-text' && Math.abs(o.scaleX - 1) > 0.001 && Math.abs(o.scaleX - o.scaleY) < 0.001) {
+  if (o && isTxt(o) && Math.abs(o.scaleX - 1) > 0.001 && Math.abs(o.scaleX - o.scaleY) < 0.001) {
     const s = o.scaleX, c = o.getCenterPoint();
     o.set({ scaleX: 1, scaleY: 1 }); scaleTextProps(o, s); o.setPositionByOrigin(c, 'center', 'center'); o.setCoords();
   }
   commit();
 });
+// plain text ⇄ fixed-width wrapping box (same look, same place, same layer)
+async function setTextBox(t, on) {
+  if (!isTxt(t) || (t.type === 'textbox') === on) return t;
+  if (on && t.meta && t.meta.arc) { toast('곡선 글자는 상자 고정을 쓸 수 없어요. 곡선을 먼저 0으로 해 주세요.'); syncPanel(); return t; }
+  if (t.isEditing) t.exitEditing();
+  const data = t.toObject(EXTRA); ['type', 'path', 'width', 'height', 'minWidth', 'splitByGrapheme', 'dynamicMinWidth'].forEach(k => delete data[k]);
+  const c = t.getCenterPoint();
+  const n = on ? new fabric.Textbox(t.text, Object.assign(data, { width: Math.max(40, Math.ceil(t.width)), splitByGrapheme: false }))
+               : new fabric.IText(t.text, data);
+  prepObj(n);
+  const i = cv.getObjects().indexOf(t); restoring = true; cv.remove(t); cv.insertAt(n, i); restoring = false;
+  n.setPositionByOrigin(c, 'center', 'center'); n.setCoords(); cv.setActiveObject(n); cv.requestRenderAll(); commit();
+  return n;
+}
+$('#tBoxFix').onchange = async e => { const t = act(); if (!isTxt(t)) return; await setTextBox(t, e.target.checked); };
+$('#tBoxW').onchange = e => { const t = act(); if (!t || t.type !== 'textbox') return; const w = Math.max(20, Math.min(8000, +e.target.value || t.width)); const c = t.getCenterPoint(); t.set('width', w); t.initDimensions(); t.setPositionByOrigin(c, 'center', 'center'); t.setCoords(); cv.requestRenderAll(); commit(); };
+$('#tBoxChar').onchange = e => { const t = act(); if (!t || t.type !== 'textbox') return; t.set('splitByGrapheme', e.target.checked); t.initDimensions(); t.setCoords(); cv.requestRenderAll(); commit(); };
+cv.on('object:scaling', e => { const o = e.target; if (o && o.type === 'textbox' && !syncing) $('#tBoxW').value = Math.round(o.width); });
+cv.on('object:resizing', e => { const o = e.target; if (o && o.type === 'textbox') $('#tBoxW').value = Math.round(o.width); });
 cv.on('text:changed', e => { if (document.activeElement !== $('#tText')) $('#tText').value = e.target.text; refreshLayersSoon(); });
 cv.on('text:editing:exited', () => { lastSel = null; $('#selHint').hidden = true; commit(); });
 // Smart guides: snap edges and centres to the canvas, other objects and (when 안내선 is on) the thirds.
@@ -4891,7 +4928,7 @@ cv.on('mouse:up', () => drawGuides([]));
 $('#guideBtn').onclick = () => { guidesOn = !guidesOn; lsSet('tg.guides', guidesOn ? '1' : '0'); $('#guideBtn').setAttribute('aria-pressed', guidesOn); $('#safeOv').hidden = !guidesOn; drawSafe(); };
 document.fonts && document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', () => {
   fabric.util.clearFabricFontCache();
-  const fix = o => { if (o.type === 'i-text') { o.initDimensions(); o.setCoords(); o.dirty = true; } if (o.type === 'group') o.getObjects().forEach(fix); };
+  const fix = o => { if (isTxt(o)) { o.initDimensions(); o.setCoords(); o.dirty = true; } if (o.type === 'group') o.getObjects().forEach(fix); };
   cv.getObjects().forEach(fix); cv.requestRenderAll();
 });
 
@@ -4990,6 +5027,7 @@ async function addArtboard(w, h, key) {
   applyBg(); fit(); updateSizeUI(); renderVbar(); restoring = false; commit();
 }
 function scaleTextProps(o, s) {
+  if (o.type === 'textbox') o.set('width', Math.round(o.width * s));
   o.set({ fontSize: Math.round(o.fontSize * s * 10) / 10, strokeWidth: (o.strokeWidth || 0) * s });
   if (o.styles) Object.values(o.styles).forEach(l => Object.values(l).forEach(st => { if (st.fontSize) st.fontSize *= s; if (st.strokeWidth) st.strokeWidth *= s; }));
   if (o.shadow) { o.shadow.blur *= s; o.shadow.offsetX *= s; o.shadow.offsetY *= s; }
@@ -4997,7 +5035,7 @@ function scaleTextProps(o, s) {
   if (o.depth) o.depth = Object.assign({}, o.depth, { n: Math.max(1, Math.round(o.depth.n * s)) });
   o.initDimensions(); if (o.meta && o.meta.arc) reArc(o);
 }
-function scaleObj(o, s) { if (o.type === 'i-text') scaleTextProps(o, s); else { o.scaleX *= s; o.scaleY *= s; } }
+function scaleObj(o, s) { if (isTxt(o)) scaleTextProps(o, s); else { o.scaleX *= s; o.scaleY *= s; } }
 async function resizeArtboard(w, h, key, mode, asNew) {
   if (asNew) { if (proj.vars.length >= 5) { toast('아트보드는 5개까지예요. 하나를 지우고 다시 해 주세요.'); return; } await addVariant(true); }
   cv.discardActiveObject();
@@ -5158,7 +5196,7 @@ $$('.modal').forEach(m => m.addEventListener('pointerdown', e => { if (e.target 
 /* ---------------- text effects controls ---------------- */
 const dirArrow = a => ['→','↘','↓','↙','←','↖','↑','↗'][Math.round(((a % 360) + 360) % 360 / 45) % 8];
 function setTextFx(props, done) {
-  const t = act(); if (!t || t.type !== 'i-text') return;
+  const t = act(); if (!t || !isTxt(t)) return;
   t.set(props); t.objectCaching = !((t.outer && t.outer.w) || (t.depth && t.depth.n) || (t.meta && t.meta.arc)); t.dirty = true; cv.requestRenderAll(); if (done) commit();
 }
 const outerNow = () => $('#t2On').checked ? { w: +$('#t2W').value, c: $('#clr_t2C').value || '#ffe600' } : null;
@@ -5172,7 +5210,7 @@ $('#t3N').oninput = e => { $('#t3NO').textContent = e.target.value; setTextFx({ 
 $('#t3A').oninput = e => { $('#t3AO').textContent = dirArrow(+e.target.value); setTextFx({ depth: depthNow() }); };
 $('#t3N').onchange = $('#t3A').onchange = () => commit();
 clrHandlers.t3C = (c, done) => { if (!$('#t3On').checked) { $('#t3On').checked = true; $('#t3Box').hidden = false; } setTextFx({ depth: depthNow() }, done); };
-$('#tArc').oninput = e => { const t = act(); if (!t || t.type !== 'i-text') return;
+$('#tArc').oninput = e => { const t = act(); if (!t || !isTxt(t)) return;
   if (t.text.includes('\n') && +e.target.value) { e.target.value = 0; $('#tArcO').textContent = 0; toast('휘기는 한 줄 글자에만 쓸 수 있어요. 줄마다 글자를 따로 만들어 휘어 주세요.', 3600); return; }
   $('#tArcO').textContent = e.target.value; if (t.isEditing) t.exitEditing(); t.meta = Object.assign({}, t.meta, { arc: +e.target.value }); reArc(t); setTextFx({}); };
 $('#tArc').onchange = () => commit();
@@ -5190,7 +5228,7 @@ function fitTextImage(t) {
   t.fill.patternTransform = [sc, 0, 0, sc, (tw - iw * sc) * (fi.x ?? 0.5), (th - ih * sc) * (fi.y ?? 0.5)];
   t.fill.repeat = 'no-repeat'; t._fiKey = [tw, th, fi.z, fi.x, fi.y, fi.id].join('|'); t.dirty = true;
 }
-function syncTextImages(c = cv) { c.getObjects().forEach(o => { if (o.type === 'i-text' && o.meta && o.meta.fillImg && o.fill instanceof fabric.Pattern) { const fi = o.meta.fillImg; if (o._fiKey !== [o.width, o.height, fi.z, fi.x, fi.y, fi.id].join('|')) fitTextImage(o); } }); }
+function syncTextImages(c = cv) { c.getObjects().forEach(o => { if (isTxt(o) && o.meta && o.meta.fillImg && o.fill instanceof fabric.Pattern) { const fi = o.meta.fillImg; if (o._fiKey !== [o.width, o.height, fi.z, fi.x, fi.y, fi.id].join('|')) fitTextImage(o); } }); }
 async function setTextImage(t, assetId) {
   const img = await loadImgEl(assets.get(assetId));
   const pat = new fabric.Pattern({ source: img, repeat: 'no-repeat' }); pat.assetId = assetId;
@@ -5199,7 +5237,7 @@ async function setTextImage(t, assetId) {
 }
 let pickTarget = null;
 async function openPick() {
-  pickTarget = act(); if (!pickTarget || pickTarget.type !== 'i-text') return;
+  pickTarget = act(); if (!pickTarget || !isTxt(pickTarget)) return;
   const imgs = cv.getObjects().filter(o => o.type === 'image' && o.assetId);
   const srcId = o => (o.meta && (o.meta.orig || o.meta.base)) || o.assetId;
   $('#pickCanvas').innerHTML = imgs.length ? imgs.map(o => `<div class="it"><img src="${assets.get(srcId(o))}" alt=""><button class="add" data-pa="${srcId(o)}" aria-label="이 사진 쓰기"></button></div>`).join('') : '<p class="hint" style="grid-column:1/-1;margin:0">캔버스에 사진이 없어요.</p>';
@@ -5215,7 +5253,7 @@ $('#pickModal').addEventListener('click', async e => {
 });
 $('#pickFileBtn').onclick = () => $('#pickFile').click();
 $('#pickFile').onchange = async e => { const f = e.target.files[0]; e.target.value = ''; if (!f || !pickTarget) return; const d = await blobToDataURL(f, 2560); $('#pickModal').hidden = true; await setTextImage(pickTarget, registerAsset(d)); syncPanel(); };
-$('#fiOff').onclick = () => { const t = act(); if (!t || t.type !== 'i-text') return; t.set('fill', '#FFFFFF'); t.meta = Object.assign({}, t.meta, { fillImg: null }); cv.requestRenderAll(); commit(); };
+$('#fiOff').onclick = () => { const t = act(); if (!t || !isTxt(t)) return; t.set('fill', '#FFFFFF'); t.meta = Object.assign({}, t.meta, { fillImg: null }); cv.requestRenderAll(); commit(); };
 [['fiZ', 'z', 100], ['fiX', 'x', 100], ['fiY', 'y', 100]].forEach(([id, k, div]) => {
   $('#' + id).oninput = e => { const t = act(); if (!t || !(t.meta && t.meta.fillImg)) return; $('#' + id + 'O').textContent = e.target.value; t.meta = Object.assign({}, t.meta, { fillImg: Object.assign({}, t.meta.fillImg, { [k]: +e.target.value / div }) }); fitTextImage(t); cv.requestRenderAll(); };
   $('#' + id).onchange = () => commit();
@@ -5361,7 +5399,7 @@ $('#myTplGrid').onclick = async e => {
 };
 
 /* ---------------- batch series ---------------- */
-function textLayers() { return cv.getObjects().map((o, i) => [o, i]).filter(([o]) => o.type === 'i-text'); }
+function textLayers() { return cv.getObjects().map((o, i) => [o, i]).filter(([o]) => isTxt(o)); }
 function openBatch() {
   const tl = textLayers(); if (!tl.length) { toast('글자가 있는 디자인에서 쓸 수 있어요.'); return; }
   const opt = tl.map(([o, i]) => `<option value="${i}">${esc(o.text.replace(/\n/g, ' ').slice(0, 28))}</option>`).join('');
@@ -5543,7 +5581,7 @@ function regionAvg(c, b, scale) {
 function runCheck() {
   cv.discardActiveObject(); cv.renderAll();
   const small = renderOut(336).toDataURL('image/jpeg', 0.9); $('#chkSmall').src = small; $('#chkGray').src = small; $('#chkBlur').src = small;
-  const items = []; const texts = cv.getObjects().filter(o => o.type === 'i-text' && o.visible !== false);
+  const items = []; const texts = cv.getObjects().filter(o => isTxt(o) && o.visible !== false);
   const W = 640, scale = W / doc.w;
   if (!texts.length) items.push(['info', '글자가 없어요. 짧은 글자를 함께 넣으면 무슨 영상인지 더 빨리 전달돼요.', null]);
   let cjk = 0, words = 0;
@@ -5606,7 +5644,7 @@ async function avFrame(i, W, H) {
   x.fillStyle = '#000'; x.fillRect(0, 0, W, H);
   const dw = Math.round(d.w * k), dh = Math.round(d.h * k); x.drawImage(src, Math.round((W - dw) / 2), Math.round((H - dh) / 2), dw, dh); return c;
 }
-let avPrevT, avPrevKey = '';
+let avPrevT;
 function avRefresh() {
   const pl = avPlan(), many = proj.vars.length > 1;
   $('#avModeF').hidden = !many; $('#avVarF').hidden = !many || avMode() !== 'one';
@@ -5619,26 +5657,68 @@ function avRefresh() {
   const sizes = new Set(pl.segs.map(g => { const d = artDims(g.i); return d.w + '×' + d.h; }));
   $('#avSize').textContent = `영상 크기 ${pl.W}×${pl.H} · 예상 크기 약 ${Math.max(1, Math.round(pl.T * (0.06 + (pl.A ? 0.024 : 0))))}MB` + (sizes.size > 1 ? ' · 비율이 다른 아트보드는 검은 여백을 두고 가운데 놓아요' : '');
   if (!AV.busy) $('#avGo').disabled = !(pl.T > 0);
-  const key = pl.segs[0].i + '|' + pl.W + '|' + pl.H;
-  if (key !== avPrevKey) { avPrevKey = key; clearTimeout(avPrevT); avPrevT = setTimeout(async () => { const w = 640, h = Math.max(2, Math.round(640 * pl.H / pl.W / 2) * 2); $('#avImg').src = (await avFrame(pl.segs[0].i, w, h)).toDataURL('image/jpeg', 0.85); }, 60); }
+  clearTimeout(avPrevT); avPrevT = setTimeout(() => pvPrepare(pl), 60);
 }
+// ---- preview: plays the timeline (pictures + sound) inside the dialog before anything is encoded ----
+const PV = { key: '', bases: [], segs: [], T: 0, W: 640, H: 360, t: 0, playing: false, raf: 0, t0: 0, tok: 0 };
+async function pvPrepare(pl) {
+  const W = 640, H = Math.max(2, Math.round(640 * pl.H / pl.W / 2) * 2), tok = ++PV.tok;
+  const key = pl.segs.map(g => g.i).join(',') + '|' + W + 'x' + H;
+  if (key !== PV.key) {
+    const bases = []; for (const g of pl.segs) { bases.push(await avFrame(g.i, W, H)); if (tok !== PV.tok) return; }
+    PV.key = key; PV.bases = bases;
+  }
+  PV.segs = pl.segs; PV.T = pl.T; PV.W = W; PV.H = H; PV.t = Math.min(PV.t, PV.T);
+  const c = $('#avCv'); if (c.width !== W || c.height !== H) { c.width = W; c.height = H; }
+  pvDraw(PV.t);
+}
+function pvDraw(t) {
+  if (!PV.bases.length) return;
+  let k = PV.segs.findIndex(g => t < g.e - 1e-6); if (k < 0) k = PV.segs.length - 1;
+  const x = $('#avCv').getContext('2d'), base = PV.bases[k];
+  if ($('#avBar').checked) drawBar(x, base, PV.W, PV.H, PV.T ? Math.min(1, t / PV.T) : 0); else x.drawImage(base, 0, 0);
+  $('#avTime').textContent = `${fmtDur(t)} / ${fmtDur(PV.T)}` + (PV.segs.length > 1 ? ` · 아트보드 ${PV.segs[k].i + 1}` : '');
+  $('#avSeek').value = PV.T ? Math.round(t / PV.T * 1000) : 0;
+}
+function pvStop() { PV.playing = false; cancelAnimationFrame(PV.raf); $('#avAudio').pause(); $('#avPlay').textContent = '▶ 미리보기'; }
+function pvAudioAt(t) { const au = $('#avAudio'); if (!AV.buf) return; if (t < AV.buf.duration - 0.05) { au.currentTime = t; if (PV.playing) au.play().catch(() => {}); } else au.pause(); }
+function pvPlay() {
+  if (PV.playing) return pvStop();
+  if (!PV.bases.length || !(PV.T > 0)) return;
+  if (PV.t >= PV.T - 0.05) PV.t = 0;
+  PV.playing = true; $('#avPlay').textContent = '■ 멈춤'; PV.t0 = performance.now() - PV.t * 1000; pvAudioAt(PV.t);
+  const au = $('#avAudio');
+  const tick = () => {
+    if (!PV.playing) return;
+    // follow the sound while it plays, the clock after it ends (or when there is none)
+    let t = (AV.buf && !au.paused && !au.ended) ? au.currentTime : (performance.now() - PV.t0) / 1000;
+    PV.t0 = performance.now() - t * 1000;
+    if (t >= PV.T) { PV.t = PV.T; pvDraw(PV.T); pvStop(); return; }
+    PV.t = t; pvDraw(t); PV.raf = requestAnimationFrame(tick);
+  };
+  tick();
+}
+$('#avPlay').onclick = pvPlay;
+$('#avSeek').oninput = e => { PV.t = +e.target.value / 1000 * PV.T; PV.t0 = performance.now() - PV.t * 1000; if (PV.playing) pvAudioAt(PV.t); pvDraw(PV.t); };
+$('#avBar').onchange = () => pvDraw(PV.t);
 function openAV() {
   $('#avVar').innerHTML = proj.vars.map((v, i) => `<option value="${i}"${i === proj.cur ? ' selected' : ''}>아트보드 ${i + 1}${v.label ? ' · ' + esc(v.label) : ''}</option>`).join('');
   $('#avMode').value = proj.vars.length > 1 ? 'seq' : 'one';
-  $('#avProg').hidden = true; $('#avModal').hidden = false; avPrevKey = ''; avRefresh();
+  $('#avProg').hidden = true; $('#avModal').hidden = false; pvStop(); PV.key = ''; PV.bases = []; PV.t = 0; avRefresh();
 }
 $('#vidMakeBtn').onclick = openAV;
 $('#avMode').onchange = $('#avVar').onchange = $('#avQ').onchange = avRefresh;
 $('#avTl').addEventListener('change', e => { const f = e.target.closest('[data-avdur]'); if (!f) return; setArtDur(+f.dataset.avdur, f.value); avRefresh(); });
 $('#avTl').addEventListener('keydown', e => { if (e.target.matches('[data-avdur]') && e.key === 'Enter') e.target.blur(); });
-$('#avX').onclick = $('#avCancel').onclick = () => { if (AV.busy) { AV.cancel = true; return; } $('#avModal').hidden = true; $('#avAudio').pause(); };
+$('#avX').onclick = $('#avCancel').onclick = () => { if (AV.busy) { AV.cancel = true; return; } pvStop(); $('#avModal').hidden = true; $('#avAudio').pause(); };
 $('#avPick').onclick = () => $('#avFile').click();
-$('#avNoAudio').onclick = () => { AV.buf = null; AV.name = ''; $('#avAudio').pause(); $('#avAudio').removeAttribute('src'); if (AV.url) URL.revokeObjectURL(AV.url); AV.url = null; $('#avInfo').hidden = true; avRefresh(); };
+$('#avNoAudio').onclick = () => { pvStop(); AV.buf = null; AV.name = ''; $('#avAudio').pause(); $('#avAudio').removeAttribute('src'); if (AV.url) URL.revokeObjectURL(AV.url); AV.url = null; $('#avInfo').hidden = true; avRefresh(); };
 $('#avFile').onchange = e => { if (e.target.files[0]) loadAudio(e.target.files[0]); e.target.value = ''; };
 ['dragenter', 'dragover'].forEach(ev => $('#avDz').addEventListener(ev, e => { e.preventDefault(); $('#avDz').classList.add('over'); }));
 ['dragleave', 'drop'].forEach(ev => $('#avDz').addEventListener(ev, e => { e.preventDefault(); $('#avDz').classList.remove('over'); }));
 $('#avDz').addEventListener('drop', e => { const f = [...e.dataTransfer.files].find(f => /^audio\//.test(f.type) || /\.(mp3|wav|m4a|aac|ogg|flac|opus)$/i.test(f.name)); if (f) loadAudio(f); });
 async function loadAudio(file) {
+  pvStop();
   $('#avGo').disabled = true; $('#avInfo').hidden = false; $('#avName').textContent = file.name; $('#avDur').textContent = '읽는 중…';
   try {
     const ac = new (window.AudioContext || window.webkitAudioContext)();
@@ -5671,7 +5751,7 @@ function drawBar(ctx, base, W, H, f) { ctx.drawImage(base, 0, 0); const h = Math
 $('#avGo').onclick = async () => {
   if (AV.busy) return;
   const pl = avPlan(); if (!(pl.T > 0)) return;
-  AV.busy = true; AV.cancel = false; $('#avGo').disabled = true; $('#avCancel').textContent = '취소';
+  pvStop(); AV.busy = true; AV.cancel = false; $('#avGo').disabled = true; $('#avCancel').textContent = '취소';
   const { W, H, T, segs } = pl, bar = $('#avBar').checked, hasAudio = !!AV.buf;
   const segAt = (t, k) => { while (k < segs.length - 1 && t >= segs[k].e - 1e-6) k++; return k; };
   try {
@@ -5847,7 +5927,7 @@ const I18N = [['ko','한국어','ko'],['en','English','latin'],['ja','日本語'
 const I18N_DEF = { ko: { f: 'Black Han Sans' }, latin: { f: 'Anton' }, ja: { f: 'Dela Gothic One' }, zhs: { f: 'ZCOOL QingKe HuangYou' }, zht: { f: 'Noto Sans TC', w: '900' }, vi: { f: 'Be Vietnam Pro', w: '900' }, th: { f: 'Kanit', w: '700' }, ar: { f: 'Lalezar' }, hi: { f: 'Teko', w: '700' }, ru: { f: 'Russo One' } };
 const langGroup = code => (I18N.find(x => x[0] === code) || [0, 0, 'latin'])[2];
 function i18nState() { if (!doc.i18n) doc.i18n = { langs: ['ko', 'en', 'ja', 'zhs'], fonts: {}, texts: {}, shrink: true }; return doc.i18n; }
-function ensureTids() { const seen = new Set(); cv.getObjects().forEach(o => { if (o.type !== 'i-text') return; let t = o.meta && o.meta.tid; if (!t || seen.has(t)) { t = uid(); o.meta = Object.assign({}, o.meta, { tid: t }); } seen.add(t); }); }
+function ensureTids() { const seen = new Set(); cv.getObjects().forEach(o => { if (!isTxt(o)) return; let t = o.meta && o.meta.tid; if (!t || seen.has(t)) { t = uid(); o.meta = Object.assign({}, o.meta, { tid: t }); } seen.add(t); }); }
 function fontFits(f, g, text) { const e = fontEntry(f); if (!e) return detectLang(text) === g; return e.l === g || e.x.includes(g) || (g === 'latin' && ['ko', 'ja', 'zhs', 'zht'].includes(e.l)); }
 function fontFor(o, code) {
   const st = i18nState(), g = langGroup(code), ch = st.fonts[code];
@@ -5858,7 +5938,7 @@ function fontFor(o, code) {
 }
 async function applyLang(c, code) {
   const st = i18nState();
-  for (const o of c.getObjects().filter(x => x.type === 'i-text' && x.meta && x.meta.tid)) {
+  for (const o of c.getObjects().filter(x => isTxt(x) && x.meta && x.meta.tid)) {
     const val = ((st.texts[o.meta.tid] || {})[code] || '').replace(/\r/g, ''), font = fontFor(o, code);
     if (!val.trim() && font.keep) continue;
     const ctr = o.getCenterPoint(); if (o.path) { o.path = null; o.initDimensions(); } const baseW = o.width;
@@ -5872,7 +5952,7 @@ async function applyLang(c, code) {
   }
 }
 function renderI18n() {
-  const st = i18nState(), texts = cv.getObjects().filter(o => o.type === 'i-text');
+  const st = i18nState(), texts = cv.getObjects().filter(o => isTxt(o));
   $('#i18nLangs').innerHTML = I18N.map(([k, n]) => `<button type="button" data-il="${k}" aria-pressed="${st.langs.includes(k)}">${n}</button>`).join('');
   $('#i18nShrink').checked = st.shrink !== false;
   if (!texts.length) { $('#i18nTable').innerHTML = '<tr><td class="src">글자가 있는 디자인에서 쓸 수 있어요.</td></tr>'; return; }
