@@ -617,6 +617,89 @@ input[type=range]{accent-color:var(--primary)}
 .dash-seg{display:grid;grid-template-columns:repeat(4,1fr);border-radius:20px}
 .dash-seg button{height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;padding:0 4px}
 .dash-seg svg{width:34px;height:8px;fill:none;stroke:currentColor;stroke-width:3}
+/* top bar: document title in the middle */
+.doc-title{display:flex;align-items:center;gap:6px;min-width:0;flex:0 1 auto}
+.doc-title>.i{width:18px;height:18px;color:var(--text);flex:none}
+.doc-title .ttl{height:34px;border:1px solid transparent;border-radius:4px;background:transparent;font:600 15px var(--body);color:var(--ink);padding:0 8px;width:auto;min-width:80px;max-width:360px;field-sizing:content;text-overflow:ellipsis}
+.doc-title .ttl::placeholder{color:var(--muted)}
+.doc-title .ttl:hover{border-color:var(--line)}
+.doc-title .ttl:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1px var(--ink)}
+.doc-title .sizebtn{height:30px;padding:0 10px;font-size:12.5px;background:var(--sec);box-shadow:none;border-radius:4px;flex:none}
+.doc-title .sizebtn:hover{background:var(--sec-hover);box-shadow:none}
+.top{overflow:hidden}
+.top>*{flex-shrink:0}
+.top>.doc-title{flex-shrink:1;min-width:0}
+.doc-title .ttl{min-width:120px}
+/* tool labels give way to the title on narrower screens (icons keep their tooltips) */
+@media (max-width:1760px){ .top .btn .lbl-hide{display:none} .top .btn.ghost{padding:0 10px} }
+/* page strip at the bottom */
+.vbar.pages{flex:none;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:10px 16px 12px;background:var(--panel);border-top:1px solid var(--line);overflow:visible}
+.pg-cards{display:flex;gap:10px;align-items:flex-start;overflow-x:auto;padding:3px 3px 2px}
+.pg{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border-radius:6px;padding:2px}
+.pg-th{height:64px;display:flex;align-items:center;justify-content:center;border-radius:4px;box-shadow:0 0 0 1px var(--line);background:var(--mat);overflow:hidden}
+.pg-th img{height:64px;width:auto;max-width:160px;display:block;object-fit:cover;background:#FFFFFF}
+.pg:hover .pg-th{box-shadow:0 0 0 1px var(--text)}
+.pg.on .pg-th{box-shadow:0 0 0 2px var(--ink)}
+.pg:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.pg-cap{display:flex;gap:5px;align-items:baseline;font-size:12px;color:var(--text);max-width:160px;white-space:nowrap}
+.pg-cap b{color:var(--ink);font-variant-numeric:tabular-nums}
+.pg-cap span{overflow:hidden;text-overflow:ellipsis}
+.pg-cap small{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pg.on .pg-cap{color:var(--ink);font-weight:600}
+.pg .vx{position:absolute;top:-4px;right:-4px;width:22px;height:22px;border-radius:50%;background:var(--panel);box-shadow:0 0 0 1px var(--line);display:grid;place-items:center;color:var(--text)}
+.pg .vx svg.i{width:12px;height:12px}
+.pg.arm .vx{background:var(--hot);color:var(--on-status);box-shadow:none}
+.pg.add{width:64px;height:64px;margin:2px;border:1px dashed var(--faint);border-radius:6px;display:grid;place-items:center;color:var(--text);background:var(--panel);padding:0}
+.pg.add:hover{border-color:var(--ink);color:var(--ink)}
+.pg.add .i{width:22px;height:22px}
+.pg-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;order:-1}
+.pg-f{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text);white-space:nowrap}
+.pg-f input.txt{height:30px;width:160px;padding:0 8px}
+.pg-f.vdur{margin-left:0}
+.pg-f.vdur input.txt{width:70px}
+.pg-sep{width:1px;height:20px;background:var(--line)}
+/* inspector: foldable sections */
+.insp-fold{display:flex;justify-content:flex-end;gap:2px;margin:-8px -6px 2px 0}
+.insp-fold .btn{height:28px;padding:0 8px;font-size:12px}
+details.sec{border-top:1px solid var(--line);margin-top:12px}
+.insp-title + details.sec,.insp-title + .chip + .hint + details.sec{margin-top:12px}
+details.sec>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding:12px 0 10px;font-weight:700;font-size:14px;color:var(--ink);user-select:none}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"";margin-left:auto;margin-right:5px;width:7px;height:7px;border-right:2px solid var(--text);border-bottom:2px solid var(--text);transform:translateY(-2px) rotate(45deg);transition:transform .2s cubic-bezier(.3,.7,.7,.3)}
+details.sec[open]>summary::after{transform:translateY(2px) rotate(-135deg)}
+details.sec>summary:hover::after{border-color:var(--ink)}
+.sec-b{padding-bottom:12px}
+.sec-b>.field:first-child,.sec-b>.toolgrid:first-child,.sec-b>.btn:first-child{margin-top:0}
+#pCommon>.row:last-child{padding-top:4px;border-top:1px solid var(--line)}
+/* My Space */
+.rail button{white-space:nowrap;letter-spacing:-.03em}
+#msSrc{display:grid;grid-template-columns:1fr 1fr;border-radius:20px}
+#msSrc button,#msTab button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#msSrc .i{width:16px;height:16px}
+#msTab{display:grid;grid-template-columns:1fr 1fr}
+.ms-quota{margin-top:12px;display:grid;gap:4px;font-size:12px;color:var(--text)}
+.ms-quota .bar{height:6px}
+.ms-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin-top:12px}
+.ms-grid.img{grid-template-columns:repeat(3,1fr)}
+.ms-card{position:relative;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ms-th{display:block;width:100%;aspect-ratio:16/10;border-radius:4px;overflow:hidden;background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--line);padding:0}
+.ms-grid.img .ms-th{aspect-ratio:1}
+.ms-th img{width:100%;height:100%;object-fit:cover;display:block}
+.ms-th:hover{box-shadow:0 0 0 2px var(--ink)}
+.ms-card.on .ms-th{box-shadow:0 0 0 2px var(--emph)}
+.ms-nm{display:grid;min-width:0;font-size:12.5px}
+.ms-nm .nm{font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-nm small{color:var(--muted);font-size:11.5px}
+.ms-ren{height:28px;font-size:12.5px;padding:0 6px}
+.ms-acts{position:absolute;top:4px;right:4px;display:flex;gap:3px;opacity:0;transition:opacity .2s cubic-bezier(.3,.7,.7,.3)}
+.ms-card:hover .ms-acts,.ms-card:focus-within .ms-acts,.ms-acts .arm{opacity:1}
+.ms-acts button{width:26px;height:26px;border-radius:50%;background:rgba(13,24,30,.78);color:#FFFFFF;display:grid;place-items:center}
+.ms-acts button .i{width:14px;height:14px}
+.ms-acts button.arm{background:var(--hot);color:var(--on-status)}
+.ms-acts:has(.arm){opacity:1}
+@media (hover:none){ .ms-acts{opacity:1} }
+.save-state{color:var(--muted)}
+.save-state.drive{color:var(--ok)}
 /* video preview */
 #avCv{display:block;width:100%;height:auto;background:#000;border-radius:4px}
 .av-ctl{display:flex;align-items:center;gap:8px;margin-top:8px}
@@ -696,7 +779,6 @@ input[type=range]{accent-color:var(--primary)}
 <div class="app">
   <header class="top">
     <div class="logo">Design by FC</div>
-    <button class="btn sizebtn" id="sizeBtn" title="캔버스 크기 바꾸기"><span id="sizeLbl">유튜브 섬네일 · 1280×720</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
     <span class="sep hide-sm"></span>
     <button class="btn icon ghost" id="undoBtn" title="되돌리기 (Ctrl+Z)" aria-label="되돌리기"><svg class="i"><use href="#i-undo"/></svg></button>
     <button class="btn icon ghost" id="redoBtn" title="다시 실행 (Ctrl+Shift+Z)" aria-label="다시 실행"><svg class="i"><use href="#i-redo"/></svg></button>
@@ -704,6 +786,13 @@ input[type=range]{accent-color:var(--primary)}
     <button class="btn ghost hide-sm" id="badgeBtn" aria-pressed="false" title="유튜브 재생시간 표시가 가리는 자리"><svg class="i"><use href="#i-clock"/></svg><span class="lbl-hide">재생시간</span></button>
     <button class="btn ghost hide-sm" id="guideBtn" aria-pressed="false" title="삼등분선과 안전 여백 보기 (켜면 삼등분선에도 붙어요)"><svg class="i"><use href="#i-grid"/></svg><span class="lbl-hide">안내선</span></button>
     <button class="btn ghost hide-sm" id="pvBtn" aria-pressed="true" title="유튜브에서 보이는 크기로 확인"><svg class="i"><use href="#i-monitor"/></svg><span class="lbl-hide">작게 보기</span></button>
+    <div class="grow"></div>
+    <div class="doc-title">
+      <svg class="i" aria-hidden="true"><use href="#i-folder"/></svg>
+      <input id="projTitle" class="ttl" placeholder="제목 없는 디자인" aria-label="작업 이름" spellcheck="false" autocomplete="off" maxlength="80">
+      <button class="btn sizebtn" id="sizeBtn" title="캔버스 크기 바꾸기"><span id="sizeLbl">유튜브 섬네일 · 1280×720</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
+      <button class="btn icon ghost save-state" id="saveState" title="이 브라우저에 자동 저장돼요" aria-label="저장 상태"><svg class="i"><use href="#i-cloud"/></svg></button>
+    </div>
     <div class="grow"></div>
     <button class="btn ghost" id="checkBtn" title="휴대폰에서도 읽히는지 검사"><svg class="i"><use href="#i-check"/></svg><span class="lbl-hide">가독성 검사</span></button>
     <button class="btn ghost" id="feedBtn" title="다른 영상들 사이에 놓고 보기"><svg class="i"><use href="#i-feed"/></svg><span class="lbl-hide">피드 비교</span></button>
@@ -739,7 +828,7 @@ input[type=range]{accent-color:var(--primary)}
       <button role="tab" data-tab="shape"><span class="ic"><svg class="i"><use href="#i-shapes"/></svg></span>도형</button>
       <button role="tab" data-tab="upload"><span class="ic"><svg class="i"><use href="#i-upload"/></svg></span>업로드</button>
       <button role="tab" data-tab="bg"><span class="ic"><svg class="i"><use href="#i-bg"/></svg></span>배경</button>
-      <button role="tab" data-tab="mine"><span class="ic"><svg class="i"><use href="#i-folder"/></svg></span>내 작업</button>
+      <button role="tab" data-tab="mine"><span class="ic"><svg class="i"><use href="#i-cloud"/></svg></span>마이스페이스</button>
     </nav>
 
     <section class="drawer" id="drawer">
@@ -902,16 +991,44 @@ input[type=range]{accent-color:var(--primary)}
 
       <!-- my work -->
       <div data-panel="mine" hidden>
-        <h2>내 작업</h2>
-        <p class="hint" style="margin-top:0">지금 작업은 자동으로 기억돼요. 여러 개를 따로 보관하려면 이름을 붙여 저장하세요. 이 브라우저 안에만 저장되니, 다른 기기로 옮길 땐 위쪽 <b>파일로 저장</b>을 쓰세요.</p>
-        <div class="search"><input class="txt" id="projName" placeholder="작업 이름"><button class="btn sm primary" id="projSave">저장</button></div>
-        <div class="projects" id="projList"></div>
-        <div class="empty" id="projEmpty">아직 저장한 작업이 없어요.</div>
+        <h2>마이스페이스</h2>
+        <div class="seg" id="msSrc"><button data-ms="drive"><svg class="i"><use href="#i-cloud"/></svg>구글 드라이브</button><button data-ms="local"><svg class="i"><use href="#i-monitor"/></svg>이 브라우저</button></div>
+        <div id="msLocal" hidden>
+          <p class="hint" style="margin-top:0">지금 작업은 자동으로 기억돼요. 여러 개를 따로 보관하려면 이름을 붙여 저장하세요. 이 브라우저 안에만 저장되니, 다른 기기로 옮길 땐 위쪽 <b>파일로 저장</b>을 쓰세요.</p>
+          <div class="search"><input class="txt" id="projName" placeholder="작업 이름"><button class="btn sm primary" id="projSave">저장</button></div>
+          <div class="projects" id="projList"></div>
+          <div class="empty" id="projEmpty">아직 저장한 작업이 없어요.</div>
+        </div>
+        <div id="msDrive">
+          <div id="msSetup" hidden>
+            <p class="hint" style="margin-top:12px">내 구글 드라이브를 저장 공간으로 쓰면 작업과 사진이 어느 컴퓨터·휴대폰에서든 그대로 열려요. 처음 한 번 <b>구글 클라이언트 ID</b>를 만들어 넣어야 해요(무료, 10분쯤).</p>
+            <button class="btn primary" id="msGoSet" style="margin-top:4px">설정에서 연결 준비하기</button>
+          </div>
+          <div id="msConnect" hidden>
+            <p class="hint" style="margin-top:12px" id="msConnectMsg">구글 계정으로 로그인하면 드라이브에 <b>Design by FC</b> 폴더가 생기고, 여기에 작업과 사진을 저장해요. 이 편집기는 자기가 만든 파일만 볼 수 있어요.</p>
+            <button class="btn primary" id="msConnBtn" style="margin-top:4px"><svg class="i"><use href="#i-cloud"/></svg>구글 드라이브 연결</button>
+          </div>
+          <div id="msMain" hidden>
+            <div class="ms-quota" id="msQuota" hidden><div class="bar"><i id="msQuotaBar"></i></div><span id="msQuotaT"></span></div>
+            <div class="seg" id="msTab" style="margin-top:12px"><button data-mt="work">작업</button><button data-mt="img">올린 사진</button></div>
+            <div id="msWork">
+              <div class="row" style="margin-top:12px"><button class="btn sm primary" id="msSave"><svg class="i"><use href="#i-save"/></svg>지금 작업 저장</button><button class="btn sm" id="msSaveNew">새 파일로 저장</button></div>
+              <label class="tog" style="margin-top:10px"><input type="checkbox" id="msAuto">고칠 때마다 드라이브에 자동 저장 (1분 간격)</label>
+              <p class="hint" id="msStatus" style="margin:6px 0 0"></p>
+              <div class="ms-grid" id="msWorkList"></div>
+            </div>
+            <div id="msImg" hidden>
+              <div class="row" style="margin-top:12px"><button class="btn sm primary" id="msUpImg"><svg class="i"><use href="#i-upload"/></svg>사진 올리기</button><button class="btn sm" id="msBackup" title="업로드 탭에 있는 이미지를 드라이브에도 올려요">업로드 탭 사진 옮기기</button></div>
+              <input type="file" id="msImgFile" accept="image/*" multiple hidden>
+              <p class="hint" style="margin:6px 0 0">누르면 캔버스에 들어가요. 드라이브에 있으니 다른 기기에서도 보여요.</p>
+              <div class="ms-grid img" id="msImgList"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="stage" id="stage">
-      <div class="vbar" id="vbar" role="tablist" aria-label="아트보드"></div>
       <div class="fit" id="fitBox">
         <div class="drawchip" id="drawChip" hidden>그리는 중 · <span class="kbd">Esc</span>로 끝내기</div>
         <div class="canvas-wrap" id="canvasWrap">
@@ -940,6 +1057,7 @@ input[type=range]{accent-color:var(--primary)}
         </div>
       </div>
       </div>
+      <div class="vbar pages" id="vbar" aria-label="아트보드"></div>
     </section>
 
     <aside class="insp" id="insp" aria-label="속성">
@@ -948,7 +1066,7 @@ input[type=range]{accent-color:var(--primary)}
         <div class="insp-title">캔버스</div>
         <span class="chip" id="docChip">1280 × 720</span>
         <p class="hint">요소를 누르면 여기서 글꼴·색·외곽선·그림자를 바꿀 수 있어요. 글자는 두 번 누르면 바로 고쳐 쓸 수 있고, 일부 글자만 드래그해서 색을 바꿀 수도 있어요.</p>
-        <h3>단축키</h3>
+        <details class="sec" data-sec="keys"><summary>단축키</summary><div class="sec-b">
         <div class="keys">
           <span class="kbd">Ctrl Z</span><span>되돌리기</span>
           <span class="kbd">Ctrl D</span><span>복제</span>
@@ -956,12 +1074,14 @@ input[type=range]{accent-color:var(--primary)}
           <span class="kbd">Delete</span><span>지우기</span>
           <span class="kbd">Ctrl L</span><span>잠그기 · 풀기 (잠근 건 눌러도 안 잡혀요)</span>
           <span class="kbd">← → ↑ ↓</span><span>1px 이동 (Shift는 10px)</span>
-        </div>
+        </div></div></details>
+        
       </div>
 
       <!-- text -->
       <div id="pText" hidden>
         <div class="insp-title">텍스트 <span class="chip" id="selHint" hidden>선택한 글자에만 적용</span></div>
+        <details class="sec" data-sec="tBasic"><summary>글자 · 글꼴</summary><div class="sec-b">
         <div class="field"><label for="tText">내용</label><textarea class="txt" id="tText" rows="2"></textarea></div>
         <div class="field"><label class="tog"><input type="checkbox" id="tBoxFix">상자 너비 고정 · 자동 줄바꿈</label>
           <div id="tBoxFixF" hidden>
@@ -984,14 +1104,19 @@ input[type=range]{accent-color:var(--primary)}
             <button data-al="right" aria-label="오른쪽 정렬">우</button>
           </div>
         </div>
+        </div></details>
+        <details class="sec" data-sec="tColor"><summary>색 · 외곽선</summary><div class="sec-b">
         <div class="field"><span class="lbl">글자색 <label class="tog"><input type="checkbox" id="tGradOn">그라데이션</label></span><div class="clr" data-clr="tFill"></div>
           <div class="clr" data-clr="tFill2" id="tFill2Row" hidden></div></div>
         <div class="field"><span class="lbl">외곽선 <output id="tStrokeWO">0</output></span><div class="clr" data-clr="tStroke"></div><input type="range" id="tStrokeW" min="0" max="60" value="0"></div>
         <div class="field"><span class="lbl">글자 뒤 상자 <label class="tog"><input type="checkbox" id="tBoxOn">켜기</label></span><div class="clr" data-clr="tBox" id="tBoxRow" hidden></div></div>
+        </div></details>
+        <details class="sec" data-sec="tSpace"><summary>간격</summary><div class="sec-b">
         <div class="field"><span class="lbl">자간 <output id="tSpacingO">0</output></span><input type="range" id="tSpacing" min="-200" max="800" step="10"></div>
         <div class="field"><span class="lbl">줄 간격 <output id="tLineO">1.1</output></span><input type="range" id="tLine" min="0.6" max="2.2" step="0.05"></div>
-        <h3>효과</h3>
-        <div class="field" style="margin-top:0"><span class="lbl">바깥 테두리 (이중) <label class="tog"><input type="checkbox" id="t2On">켜기</label></span>
+        </div></details>
+        <details class="sec" data-sec="tFx"><summary>효과 · 휘기</summary><div class="sec-b">
+        <div class="field"><span class="lbl">바깥 테두리 (이중) <label class="tog"><input type="checkbox" id="t2On">켜기</label></span>
           <div id="t2Box" hidden><div class="clr" data-clr="t2C"></div><div class="field"><span class="lbl">두께 <output id="t2WO">10</output></span><input type="range" id="t2W" min="2" max="40" value="10"></div></div></div>
         <div class="field"><span class="lbl">입체 <label class="tog"><input type="checkbox" id="t3On">켜기</label></span>
           <div id="t3Box" hidden><div class="clr" data-clr="t3C"></div>
@@ -1004,15 +1129,19 @@ input[type=range]{accent-color:var(--primary)}
             <div class="field"><span class="lbl">가로 위치 <output id="fiXO">50</output></span><input type="range" id="fiX" min="0" max="100" value="50"></div>
             <div class="field"><span class="lbl">세로 위치 <output id="fiYO">50</output></span><input type="range" id="fiY" min="0" max="100" value="50"></div></div></div>
         <div class="field"><span class="lbl">휘기 <output id="tArcO">0</output></span><input type="range" id="tArc" min="-100" max="100" step="5" value="0"></div>
-        <p class="hint" style="margin-top:4px">휘기는 한 줄 글자에만 돼요.</p>
+        <p class="hint" style="margin-top:4px">휘기는 한 줄 글자에만 돼요.</p></div></details>
+        
       </div>
 
       <!-- image -->
       <div id="pImage" hidden>
         <div class="insp-title">이미지</div>
+        <details class="sec" data-sec="iCut"><summary>누끼 · 가리기</summary><div class="sec-b">
         <button class="btn primary" id="iCut" style="width:100%;margin-top:10px"><svg class="i"><use href="#i-wand"/></svg>누끼 · 배경 지우기</button>
         <button class="btn sm" id="iMosaic" style="width:100%;margin-top:6px">모자이크 · 흐림으로 가리기</button>
         <button class="btn sm ghost" id="iOrig" hidden style="margin-top:6px">원본 이미지로 되돌리기</button>
+        </div></details>
+        <details class="sec" data-sec="iEdge"><summary>테두리 · 빛 · 가장자리</summary><div class="sec-b">
         <div class="field"><span class="lbl">스티커 테두리 <label class="tog"><input type="checkbox" id="olOn">켜기</label></span>
           <div id="olBox" hidden><div class="clr" data-clr="olC"></div>
             <div class="field"><span class="lbl">두께 <output id="olWO">14</output></span><input type="range" id="olW" min="2" max="60" value="14"></div></div></div>
@@ -1023,9 +1152,13 @@ input[type=range]{accent-color:var(--primary)}
         <div class="field"><span class="lbl">가장자리 녹이기</span>
           <div class="seg" id="fdDir"><button data-d="none">없음</button><button data-d="l" aria-label="왼쪽">←</button><button data-d="r" aria-label="오른쪽">→</button><button data-d="t" aria-label="위">↑</button><button data-d="b" aria-label="아래">↓</button><button data-d="all">사방</button></div>
           <div class="field" id="fdAmtF" hidden><span class="lbl">녹이는 폭 <output id="fdAmtO">35</output></span><input type="range" id="fdAmt" min="5" max="90" value="35"></div></div>
+        </div></details>
+        <details class="sec" data-sec="iShape"><summary>색 · 모양</summary><div class="sec-b">
         <div class="field"><span class="lbl">이 사진의 색 <small class="hint" style="margin:0">누르면 내 색에 저장</small></span><div class="clr" id="iPal"></div></div>
         <div class="field"><span class="lbl">모양</span>
           <div class="seg" id="iShape"><button data-sh="none">그대로</button><button data-sh="circle">원</button><button data-sh="round">둥근 사각</button></div></div>
+        </div></details>
+        <details class="sec" data-sec="iFx"><summary>보정 · 색 입히기</summary><div class="sec-b">
         <div class="field"><span class="lbl">밝기 <output id="fxBO">0</output></span><input type="range" id="fxB" min="-60" max="60" value="0"></div>
         <div class="field"><span class="lbl">대비 <output id="fxCO">0</output></span><input type="range" id="fxC" min="-60" max="60" value="0"></div>
         <div class="field"><span class="lbl">채도 <output id="fxSO">0</output></span><input type="range" id="fxS" min="-100" max="100" value="0"></div>
@@ -1038,17 +1171,20 @@ input[type=range]{accent-color:var(--primary)}
           <button class="btn sm" id="iReset">보정 초기화</button>
           <button class="btn sm" id="iToBg">배경으로 깔기</button>
         </div>
+        </div></details>
         <div class="field" id="iconColorField" hidden><span class="lbl">아이콘 색</span><div class="clr" data-clr="iColor"></div></div>
       </div>
 
       <!-- shape -->
       <div id="pShape" hidden>
         <div class="insp-title">도형</div>
+        <details class="sec" data-sec="shape"><summary>채우기 · 테두리 · 선</summary><div class="sec-b">
         <div class="field" id="sFillF"><span class="lbl">채우기 <label class="tog"><input type="checkbox" id="sNoFill">비우기</label></span><div class="clr" data-clr="sFill"></div></div>
         <div class="field"><span class="lbl" id="sStrokeL">테두리</span><div class="clr" data-clr="sStroke"></div><span class="lbl" style="margin-top:8px">굵기 <output id="sStrokeWO">0</output></span><input type="range" id="sStrokeW" min="0" max="60" value="0"></div>
         <div class="field"><span class="lbl">선 모양</span>
           <div class="seg dash-seg" id="sDash"><button data-dash="solid" title="실선"><svg viewBox="0 0 40 8"><path d="M2 4h36"/></svg>실선</button><button data-dash="dash" title="파선"><svg viewBox="0 0 40 8"><path d="M2 4h36" stroke-dasharray="7 5"/></svg>파선</button><button data-dash="dot" title="점선"><svg viewBox="0 0 40 8"><path d="M3 4h35" stroke-dasharray="0 6" stroke-linecap="round"/></svg>점선</button><button data-dash="long" title="긴 파선"><svg viewBox="0 0 40 8"><path d="M2 4h36" stroke-dasharray="14 5"/></svg>긴 파선</button></div></div>
-        <div class="field" id="sRadiusF"><span class="lbl">모서리 둥글기 <output id="sRadiusO">0</output></span><input type="range" id="sRadius" min="0" max="200" value="0"></div>
+        <div class="field" id="sRadiusF"><span class="lbl">모서리 둥글기 <output id="sRadiusO">0</output></span><input type="range" id="sRadius" min="0" max="200" value="0"></div></div></details>
+        
       </div>
 
       <!-- multi -->
@@ -1063,8 +1199,7 @@ input[type=range]{accent-color:var(--primary)}
 
       <!-- common -->
       <div id="pCommon" hidden>
-        <div class="divider"></div>
-        <h3>정렬 <span class="chip" id="alBase">캔버스 기준</span></h3>
+        <details class="sec" data-sec="align"><summary>정렬 <span class="chip" id="alBase">캔버스 기준</span></summary><div class="sec-b">
         <div class="toolgrid">
           <button class="btn" data-al="l" title="왼쪽 맞춤" aria-label="왼쪽 맞춤"><svg class="i"><use href="#i-al-l"/></svg></button>
           <button class="btn" data-al="ch" title="가로 가운데 맞춤" aria-label="가로 가운데 맞춤"><svg class="i"><use href="#i-al-ch"/></svg></button>
@@ -1076,7 +1211,8 @@ input[type=range]{accent-color:var(--primary)}
           <button class="btn" data-dist="v" title="세로 간격 똑같이 (3개 이상)" aria-label="세로 간격 똑같이"><svg class="i"><use href="#i-dist-v"/></svg></button>
         </div>
         <label class="tog" id="alCanvasWrap" style="margin-top:8px"><input type="checkbox" id="alCanvas">여러 개도 캔버스 기준으로 맞추기</label>
-        <h3>배치</h3>
+        </div></details>
+        <details class="sec" data-sec="arrange"><summary>배치 · 순서</summary><div class="sec-b">
         <div class="toolgrid">
           <button class="btn" id="cCenterH" title="가로 가운데" aria-label="가로 가운데"><svg class="i"><use href="#i-ach"/></svg></button>
           <button class="btn" id="cCenterV" title="세로 가운데" aria-label="세로 가운데"><svg class="i"><use href="#i-acv"/></svg></button>
@@ -1087,6 +1223,8 @@ input[type=range]{accent-color:var(--primary)}
           <button class="btn" id="cDown" title="한 칸 뒤로" aria-label="한 칸 뒤로"><svg class="i"><use href="#i-dn"/></svg></button>
           <button class="btn" id="cBottom" title="맨 뒤로" aria-label="맨 뒤로"><svg class="i"><use href="#i-bottom"/></svg></button>
         </div>
+        </div></details>
+        <details class="sec" data-sec="look"><summary>투명도 · 회전 · 그림자</summary><div class="sec-b">
         <div class="field"><span class="lbl">투명도 <output id="cOpO">100</output></span><input type="range" id="cOp" min="5" max="100" value="100"></div>
         <div class="field"><span class="lbl">회전 <span class="row"><input type="number" class="num" id="cAngle" min="-360" max="360" step="1">°</span></span></div>
         <div class="field"><span class="lbl">그림자 <label class="tog"><input type="checkbox" id="shOn">켜기</label></span>
@@ -1096,6 +1234,7 @@ input[type=range]{accent-color:var(--primary)}
             <div class="field"><span class="lbl">거리 <output id="shDO">0</output></span><input type="range" id="shD" min="0" max="60" value="8"></div>
           </div>
         </div>
+        </div></details>
         <div class="row" style="margin-top:16px">
           <button class="btn sm" id="cDup"><svg class="i"><use href="#i-copy"/></svg>복제</button>
           <button class="btn sm" id="cLock"><svg class="i"><use href="#i-lock"/></svg><span>잠그기</span></button>
@@ -1103,9 +1242,9 @@ input[type=range]{accent-color:var(--primary)}
         </div>
       </div>
 
-      <div class="divider"></div>
-      <h3 class="lhead">레이어 <span class="chip" id="layerCount">0</span><button class="btn sm ghost" id="unlockAll" hidden>잠금 모두 풀기</button></h3>
-      <div class="layers" id="layerList"></div>
+      <details class="sec" data-sec="layers"><summary>레이어 <span class="chip" id="layerCount">0</span></summary><div class="sec-b">
+        <button class="btn sm ghost" id="unlockAll" hidden>잠금 모두 풀기</button>
+        <div class="layers" id="layerList"></div></div></details>
     </aside>
   </div>
 </div>
@@ -3579,16 +3718,17 @@ function setBgImage(dataURL) {
 
 /* ---------------- history & autosave ---------------- */
 let hist = [], hi = -1, restoring = false, currentProjectId = null;
-const proj = { vars: [{ name: 'A' }], cur: 0 }; // design variants (아트보드); non-current ones keep their state in .snap
+const proj = { vars: [{ name: 'A' }], cur: 0, title: '' };
+function setProjTitle(t) { proj.title = t || ''; const a = document.getElementById('projTitle'), b = document.getElementById('projName'); if (a && a.value !== proj.title) a.value = proj.title; if (b && b.value !== proj.title) b.value = proj.title; document.title = proj.title ? `${proj.title} · Design by FC` : 'Design by FC'; } // design variants (아트보드); non-current ones keep their state in .snap
 function curState() { return { doc: JSON.parse(JSON.stringify(doc)), canvas: cv.toJSON(EXTRA) }; }
-function snapshot() { return JSON.stringify({ doc, canvas: cv.toJSON(EXTRA), vars: proj.vars.map((v, i) => i === proj.cur ? { name: v.name, label: v.label, dur: v.dur } : v), cur: proj.cur }); }
+function snapshot() { return JSON.stringify({ doc, canvas: cv.toJSON(EXTRA), title: proj.title || '', vars: proj.vars.map((v, i) => i === proj.cur ? { name: v.name, label: v.label, dur: v.dur, title: v.title } : v), cur: proj.cur }); }
 function commit() {
   syncArcs(); syncTextImages(); refreshLayers(); syncPanel();
   if (restoring) return;
   const s = snapshot();
   if (hist[hi] === s) return;
   hist = hist.slice(0, hi + 1); hist.push(s); if (hist.length > 80) hist.shift(); hi = hist.length - 1;
-  updateUndo(); autosave(); schedulePreview();
+  updateUndo(); autosave(); schedulePreview(); scheduleThumb(); DRV.dirty = true;
 }
 const autosave = debounce(() => { const s = hist[hi]; if (!s) return; DB.put('kv', { snap: s, assets: usedAssets(s), projectId: currentProjectId, driveId: DRV.fileId, driveName: DRV.fileName, at: Date.now() }, 'current').catch(() => {}); }, 700);
 const DRV = { token: null, exp: 0, folder: null, fileId: null, fileName: '' };
@@ -3613,8 +3753,8 @@ async function restore(snapStr, { resetHistory = false } = {}) {
   restoring = true;
   try {
     const s = JSON.parse(snapStr);
-    proj.vars = s.vars && s.vars.length ? s.vars : [{ name: 'A' }];
-    proj.cur = Math.min(s.cur || 0, proj.vars.length - 1); proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur };
+    proj.vars = s.vars && s.vars.length ? s.vars : [{ name: 'A' }]; thumbs.clear(); setProjTitle(s.title || '');
+    proj.cur = Math.min(s.cur || 0, proj.vars.length - 1); proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur, title: proj.vars[proj.cur].title };
     await loadState(s.doc, s.canvas);
   } catch (e) { console.error(e); toast('작업을 불러오지 못했어요.'); }
   restoring = false;
@@ -4974,7 +5114,7 @@ function showTab(k) {
   lsSet('tg.tab', k);
   if (k === 'emoji' && !$('#emojiGrid').children.length) renderEmoji();
   if (k === 'upload') renderLib();
-  if (k === 'mine') renderProjects();
+  if (k === 'mine') msSet(msMode);
   if (k === 'bg') syncBgPanel();
   if (k === 'photo') renderSrc();
   if (k === 'tpl') renderMyTemplates();
@@ -5143,7 +5283,7 @@ async function openProjectData(p) {
   if (!p || !p.canvas || !p.doc) throw new Error('format');
   Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); });
   currentProjectId = null;
-  await restore(JSON.stringify({ doc: p.doc, canvas: p.canvas, vars: p.vars, cur: p.cur }), { resetHistory: true });
+  await restore(JSON.stringify({ doc: p.doc, canvas: p.canvas, vars: p.vars, cur: p.cur, title: p.title || '' }), { resetHistory: true });
 }
 async function openProjectFile(f) {
   try { await openProjectData(JSON.parse(await f.text())); DRV.fileId = null; toast('작업 파일을 열었어요.'); }
@@ -5164,12 +5304,12 @@ const delArm = new Set();
 async function renderProjects() {
   const ps = (await DB.all('projects')).sort((a, b) => b.at - a.at);
   $('#projEmpty').hidden = ps.length > 0;
-  const cur = ps.find(p => p.id === currentProjectId); if (cur && !$('#projName').value) $('#projName').value = cur.name;
+  const cur = ps.find(p => p.id === currentProjectId); if (cur && !$('#projName').value) setProjTitle(cur.name);
   $('#projList').innerHTML = ps.map(p => `<div class="proj"><img src="${p.thumb}" alt=""><div style="min-width:0"><div class="nm">${esc(p.name)}${p.id === currentProjectId ? ' <span class="chip">지금 작업</span>' : ''}</div><div class="dt">${new Date(p.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div><div class="row" style="margin-top:6px"><button class="btn sm" data-open="${p.id}">열기</button><button class="btn sm ghost danger" data-del="${p.id}">${delArm.has(p.id) ? '정말 지우기' : '지우기'}</button></div></div></div>`).join('');
 }
 $('#projList').onclick = async e => {
   const o = e.target.closest('[data-open]');
-  if (o) { const p = await DB.get('projects', o.dataset.open); if (!p) return; Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); }); currentProjectId = p.id; $('#projName').value = p.name; await restore(p.snap, { resetHistory: true }); renderProjects(); toast(`‘${p.name}’ 열었어요.`); return; }
+  if (o) { const p = await DB.get('projects', o.dataset.open); if (!p) return; Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); }); currentProjectId = p.id; setProjTitle(p.name); await restore(p.snap, { resetHistory: true }); renderProjects(); toast(`‘${p.name}’ 열었어요.`); return; }
   const d = e.target.closest('[data-del]');
   if (d) { const id = d.dataset.del; if (delArm.has(id)) { delArm.delete(id); await DB.del('projects', id); if (currentProjectId === id) currentProjectId = null; } else { delArm.add(id); setTimeout(() => { delArm.delete(id); renderProjects(); }, 3500); } renderProjects(); }
 };
@@ -5178,10 +5318,11 @@ $('#projList').onclick = async e => {
 async function blank() {
   restoring = true; cv.discardActiveObject(); cv.clear(); cv.backgroundImage = null;
   Object.assign(doc, { bg: { type: 'solid', c1: '#FFFFFF', c2: '#FFFFFF', dir: 'v' }, bgfx: { dim: 0, blur: 0 }, credits: [] });
-  currentProjectId = null; $('#projName').value = ''; DRV.fileId = null; DRV.fileName = '';
+  currentProjectId = null; setProjTitle(''); DRV.fileId = null; DRV.fileName = '';
   proj.vars = [{ name: 'A' }]; proj.cur = 0; renderVbar();
   applyBg(); restoring = false; hist = []; hi = -1; commit();
 }
+['projTitle', 'projName'].forEach(id => { const el = document.getElementById(id); el.addEventListener('input', () => setProjTitle(el.value)); el.addEventListener('change', () => { setProjTitle(el.value.trim()); commit(); }); el.addEventListener('keydown', e => { if (e.key === 'Enter') el.blur(); }); });
 $('#newBtn').onclick = () => $('#newModal').hidden = false;
 $('#newCancel').onclick = () => $('#newModal').hidden = true;
 $('#newBlank').onclick = () => { $('#newModal').hidden = true; blank(); };
@@ -5285,15 +5426,42 @@ async function getZip() { await loadScript('https://cdnjs.cloudflare.com/ajax/li
 const fmtExt = () => expFmt === 'png' ? 'png' : 'jpg';
 
 /* ---------------- variants (아트보드) ---------------- */
+const artName = i => (proj.vars[i] && proj.vars[i].title) || `아트보드 ${i + 1}`;
+const fileBase = i => `${proj.title || '썸네일'}-${artName(i)}`.replace(/[\\/:*?"<>|]+/g, '_');
+// ---- page thumbnails (kept in memory only) ----
+const thumbs = new Map(), thumbPending = new Set();
+function curThumb() { try { return renderOut(200).toDataURL('image/jpeg', 0.72); } catch (e) { return ''; } }
+function refreshThumbs() {
+  proj.vars.forEach((v, i) => {
+    const img = document.querySelector(`[data-thumb="${i}"]`); if (!img) return;
+    if (i === proj.cur) { const u = curThumb(); thumbs.set(v.name, u); img.src = u; return; }
+    if (thumbs.has(v.name)) { img.src = thumbs.get(v.name); return; }
+    if (!v.snap || thumbPending.has(v.name)) return;
+    thumbPending.add(v.name);
+    renderState(v.snap, 200).then(c => { thumbs.set(v.name, c.toDataURL('image/jpeg', 0.72)); const k = proj.vars.indexOf(v), im = document.querySelector(`[data-thumb="${k}"]`); if (im) im.src = thumbs.get(v.name); }).catch(() => {}).finally(() => thumbPending.delete(v.name));
+  });
+}
+let thumbT; function scheduleThumb() { clearTimeout(thumbT); thumbT = setTimeout(() => { const im = document.querySelector(`[data-thumb="${proj.cur}"]`); if (im) { const u = curThumb(); thumbs.set(proj.vars[proj.cur].name, u); im.src = u; } }, 500); }
 function renderVbar() {
-  const many = proj.vars.length > 1;
-  const dims = proj.vars.map((v, i) => { const d = i === proj.cur ? doc : (v.snap && v.snap.doc) || doc; return `${d.w}×${d.h}`; });
-  const mixed = new Set(dims).size > 1;
-  $('#vbar').innerHTML = proj.vars.map((v, i) => `<button class="vtab${vDelArm === i ? ' arm' : ''}" role="tab" data-v="${i}" aria-selected="${i === proj.cur}">아트보드 ${i + 1}${v.label ? ` · ${esc(v.label)}` : ''}${mixed ? `<small class="vdim">${dims[i]}</small>` : ''}${v.dur ? `<small class="vdim" title="영상 길이">${fmtDur(v.dur)}</small>` : ''}${many && i === proj.cur ? `<span class="vx" data-vdel="${i}" title="${vDelArm === i ? '한 번 더 누르면 지워요' : '이 아트보드 지우기'}" aria-label="아트보드 지우기"><svg class="i"><use href="#i-${vDelArm === i ? 'trash' : 'x'}"/></svg></span>` : ''}</button>`).join('')
-    + `<label class="vdur" title="영상 만들기에서 이 아트보드가 나오는 시간이에요. 2:12처럼 분:초로 넣고, 비우면 자동이에요.">영상 길이<input id="vDur" class="txt" inputmode="numeric" autocomplete="off" placeholder="자동" value="${proj.vars[proj.cur].dur ? fmtDur(proj.vars[proj.cur].dur) : ''}" aria-label="아트보드 ${proj.cur + 1} 영상 길이"></label>`
-    + (proj.vars.length < 5 ? `<button class="vadd" id="vAdd">+ 복제</button><button class="vadd" id="vNewArt">+ 아트보드</button>` : '')
-    + `<button class="vadd" id="vSave" title="지금 보이는 아트보드를 이미지로 저장"><svg class="i"><use href="#i-down"/></svg> 이 아트보드 저장</button>`
-    + (many ? `<button class="vadd" id="vBoard">나란히 보기</button>` : '');
+  const many = proj.vars.length > 1, cur = proj.vars[proj.cur] || {};
+  const cards = proj.vars.map((v, i) => {
+    const d = i === proj.cur ? doc : (v.snap && v.snap.doc) || doc;
+    return `<div class="pg${i === proj.cur ? ' on' : ''}${vDelArm === i ? ' arm' : ''}" role="button" tabindex="0" data-v="${i}" aria-current="${i === proj.cur}" title="${esc(artName(i))} · ${d.w}×${d.h}${v.dur ? ' · ' + fmtDur(v.dur) : ''}">`
+      + `<div class="pg-th"><img data-thumb="${i}" alt="" style="aspect-ratio:${d.w}/${d.h}"></div>`
+      + `<div class="pg-cap"><b>${i + 1}</b><span>${esc(v.title || '')}</span>${v.dur ? `<small>${fmtDur(v.dur)}</small>` : ''}</div>`
+      + (many && i === proj.cur ? `<span class="vx" data-vdel="${i}" title="${vDelArm === i ? '한 번 더 누르면 지워요' : '이 아트보드 지우기'}" aria-label="아트보드 지우기"><svg class="i"><use href="#i-${vDelArm === i ? 'trash' : 'x'}"/></svg></span>` : '')
+      + `</div>`;
+  }).join('') + (proj.vars.length < 5 ? `<button class="pg add" id="vNewArt" title="새 아트보드 추가" aria-label="새 아트보드 추가"><svg class="i"><use href="#i-plus"/></svg></button>` : '');
+  const tools = `<div class="pg-tools">`
+    + `<label class="pg-f">이름<input id="vName" class="txt" autocomplete="off" maxlength="40" value="${esc(cur.title || '')}" placeholder="아트보드 ${proj.cur + 1}"></label>`
+    + `<label class="pg-f vdur" title="영상 만들기에서 이 아트보드가 나오는 시간이에요. 2:12처럼 분:초로 넣고, 비우면 자동이에요.">영상 길이<input id="vDur" class="txt" inputmode="numeric" autocomplete="off" placeholder="자동" value="${cur.dur ? fmtDur(cur.dur) : ''}" aria-label="${esc(artName(proj.cur))} 영상 길이"></label>`
+    + `<span class="pg-sep"></span>`
+    + (proj.vars.length < 5 ? `<button class="vadd" id="vAdd" title="지금 아트보드를 복제"><svg class="i"><use href="#i-copy"/></svg>복제</button>` : '')
+    + `<button class="vadd" id="vSave" title="지금 아트보드를 이미지로 저장"><svg class="i"><use href="#i-down"/></svg>저장</button>`
+    + (many ? `<button class="vadd" id="vBoard" title="아트보드를 나란히 보기"><svg class="i"><use href="#i-stack"/></svg>나란히 보기</button>` : '')
+    + `</div>`;
+  $('#vbar').innerHTML = `<div class="pg-cards" role="tablist">${cards}</div>` + tools;
+  refreshThumbs();
 }
 let vDelArm = -1, vDelT;
 // durations: "2:12", "1:02:03", "132", "2분 12초" → seconds; '' → 0 (auto); NaN when unreadable
@@ -5312,11 +5480,15 @@ function setArtDur(i, raw) {
   if (isNaN(s)) { toast('영상 길이는 2:12처럼 분:초로 넣어 주세요. 4시간까지 돼요.'); return false; }
   if (s) proj.vars[i].dur = s; else delete proj.vars[i].dur;
   commit(); renderVbar();
-  toast(s ? `아트보드 ${i + 1}은 영상에서 ${fmtDur(s)} 동안 나와요.` : `아트보드 ${i + 1}의 영상 길이를 자동으로 바꿨어요.`);
+  toast(s ? `‘${artName(i)}’ 영상 길이: ${fmtDur(s)}` : `‘${artName(i)}’ 영상 길이를 자동으로 바꿨어요.`);
   return true;
 }
-$('#vbar').addEventListener('change', e => { if (e.target.id === 'vDur' && !setArtDur(proj.cur, e.target.value)) renderVbar(); });
-$('#vbar').addEventListener('keydown', e => { if (e.target.id === 'vDur' && e.key === 'Enter') e.target.blur(); });
+$('#vbar').addEventListener('change', e => {
+  if (e.target.id === 'vDur' && !setArtDur(proj.cur, e.target.value)) renderVbar();
+  if (e.target.id === 'vName') { const v = e.target.value.trim(); if (v) proj.vars[proj.cur].title = v; else delete proj.vars[proj.cur].title; commit(); renderVbar(); toast(`이름을 ‘${artName(proj.cur)}’(으)로 정했어요.`); }
+});
+$('#vbar').addEventListener('dblclick', e => { const c = e.target.closest('.pg[data-v]'); if (c && +c.dataset.v === proj.cur) { const n = $('#vName'); n.focus(); n.select(); } });
+$('#vbar').addEventListener('keydown', e => { if ((e.target.id === 'vDur' || e.target.id === 'vName') && e.key === 'Enter') e.target.blur(); if (e.target.matches('.pg[data-v]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); switchVariant(+e.target.dataset.v); } });
 $('#vbar').onclick = async e => {
   const del = e.target.closest('[data-vdel]');
   if (del) { e.stopPropagation(); const i = +del.dataset.vdel; if (vDelArm === i) { vDelArm = -1; await deleteVariant(i); } else { vDelArm = i; clearTimeout(vDelT); vDelT = setTimeout(() => { vDelArm = -1; renderVbar(); }, 3000); renderVbar(); } return; }
@@ -5329,48 +5501,49 @@ $('#vbar').onclick = async e => {
 async function saveArtboard(i) {
   try {
     const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(stateOf(i), outW(stateOf(i).doc));
-    downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `썸네일-아트보드${i + 1}-${stamp()}.${fmtExt()}`);
-    toast(`아트보드 ${i + 1}을 저장했어요.`);
+    downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`);
+    toast(`‘${artName(i)}’ 저장했어요.`);
   } catch (e) { console.error(e); toast('이 아트보드를 저장하지 못했어요. 다시 해 주세요.'); }
 }
 async function switchVariant(i) {
   if (i === proj.cur || !proj.vars[i] || !proj.vars[i].snap) return;
   cv.discardActiveObject(); if (cv.isDrawingMode) setPen('off');
+  thumbs.set(proj.vars[proj.cur].name, curThumb());
   proj.vars[proj.cur].snap = curState();
-  const t = proj.vars[i].snap; proj.vars[i] = { name: proj.vars[i].name, label: proj.vars[i].label, dur: proj.vars[i].dur }; proj.cur = i;
+  const t = proj.vars[i].snap; proj.vars[i] = { name: proj.vars[i].name, label: proj.vars[i].label, dur: proj.vars[i].dur, title: proj.vars[i].title }; proj.cur = i;
   restoring = true; await loadState(t.doc, t.canvas); restoring = false;
   renderVbar(); commit();
 }
 async function addVariant(quiet) {
   const used = new Set(proj.vars.map(v => v.name)); const name = 'ABCDE'.split('').find(c => !used.has(c));
-  proj.vars.push({ name, snap: curState(), label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur });
+  proj.vars.push({ name, snap: curState(), label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur, title: proj.vars[proj.cur].title ? proj.vars[proj.cur].title + ' 복사' : undefined });
   await switchVariant(proj.vars.length - 1); if (!quiet) toast(`아트보드 ${proj.vars.length}를 만들었어요. 지금 아트보드를 복제한 거라 여기서 바꿔 보세요.`);
 }
 async function deleteVariant(i) {
   if (proj.vars.length < 2) return;
   if (i === proj.cur) {
     const j = i > 0 ? i - 1 : 1; const t = proj.vars[j].snap;
-    proj.vars.splice(i, 1); proj.cur = j > i ? j - 1 : j; proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur };
+    proj.vars.splice(i, 1); proj.cur = j > i ? j - 1 : j; proj.vars[proj.cur] = { name: proj.vars[proj.cur].name, label: proj.vars[proj.cur].label, dur: proj.vars[proj.cur].dur, title: proj.vars[proj.cur].title };
     restoring = true; await loadState(t.doc, t.canvas); restoring = false;
   } else { proj.vars.splice(i, 1); if (i < proj.cur) proj.cur--; }
   renderVbar(); commit(); toast('아트보드를 지웠어요. Ctrl+Z로 되돌릴 수 있어요.');
 }
 async function openBoard() {
   $('#boardModal').hidden = false; cv.discardActiveObject(); cv.renderAll();
-  $('#board').innerHTML = proj.vars.map((v, i) => `<div class="bcard"><div class="bhead"><strong>아트보드 ${i + 1}${i === proj.cur ? ' <span class="chip">편집 중</span>' : ''}</strong><div class="row"><button class="btn sm" data-edit="${i}">이 아트보드 편집</button><button class="btn sm" data-dl="${i}"><svg class="i"><use href="#i-down"/></svg></button></div></div><div class="bimg"><img data-b="${i}" alt="아트보드 ${i + 1}"></div><div class="bmini"><img data-bm="${i}" alt=""><span class="hint" style="margin:0">휴대폰 크기</span></div></div>`).join('');
+  $('#board').innerHTML = proj.vars.map((v, i) => `<div class="bcard"><div class="bhead"><strong>${esc(artName(i))}${i === proj.cur ? ' <span class="chip">편집 중</span>' : ''}</strong><div class="row"><button class="btn sm" data-edit="${i}">이 아트보드 편집</button><button class="btn sm" data-dl="${i}"><svg class="i"><use href="#i-down"/></svg></button></div></div><div class="bimg"><img data-b="${i}" alt="${esc(artName(i))}"></div><div class="bmini"><img data-bm="${i}" alt=""><span class="hint" style="margin:0">휴대폰 크기</span></div></div>`).join('');
   for (let i = 0; i < proj.vars.length; i++) {
     try { const c = i === proj.cur ? renderOut(640) : await renderState(proj.vars[i].snap, 640); const u = c.toDataURL('image/jpeg', 0.88); $(`[data-b="${i}"]`).src = u; $(`[data-bm="${i}"]`).src = u; } catch (e) { console.error(e); }
   }
 }
 $('#board').onclick = async e => {
   const ed = e.target.closest('[data-edit]'); if (ed) { $('#boardModal').hidden = true; await switchVariant(+ed.dataset.edit); return; }
-  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `썸네일-아트보드${i + 1}-${stamp()}.${fmtExt()}`); }
+  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`); }
 };
 async function zipVariants() {
   try {
     toast('아트보드를 묶는 중이에요…'); const zip = await getZip();
-    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); zip.file(`썸네일-아트보드${i + 1}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
-    downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-아트보드-${stamp()}.zip`); toast('아트보드를 ZIP으로 내려받았어요.');
+    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); zip.file(`${String(i + 1).padStart(2, '0')}-${fileBase(i)}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    downloadBlob(await zip.generateAsync({ type: 'blob' }), `${(proj.title || '썸네일').replace(/[\\/:*?"<>|]+/g, '_')}-${stamp()}.zip`); toast('아트보드를 ZIP으로 내려받았어요.');
   } catch (e) { console.error(e); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 }
 $('#boardZip').onclick = zipVariants;
@@ -5648,7 +5821,7 @@ let avPrevT;
 function avRefresh() {
   const pl = avPlan(), many = proj.vars.length > 1;
   $('#avModeF').hidden = !many; $('#avVarF').hidden = !many || avMode() !== 'one';
-  $('#avTl').innerHTML = pl.segs.map(g => `<div class="tl-row"><span><b>아트보드 ${g.i + 1}</b>${proj.vars[g.i].label ? ' · ' + esc(proj.vars[g.i].label) : ''}</span><input class="txt" data-avdur="${g.i}" inputmode="numeric" autocomplete="off" aria-label="아트보드 ${g.i + 1} 길이" placeholder="${g.auto ? '자동 ' + fmtDur(g.e - g.s) : ''}" value="${g.auto ? '' : fmtDur(g.e - g.s)}"><span class="when">${fmtDur(g.s)} – ${fmtDur(g.e)}</span></div>`).join('');
+  $('#avTl').innerHTML = pl.segs.map(g => `<div class="tl-row"><span><b>${esc(artName(g.i))}</b>${proj.vars[g.i].label ? ' · ' + esc(proj.vars[g.i].label) : ''}</span><input class="txt" data-avdur="${g.i}" inputmode="numeric" autocomplete="off" aria-label="${esc(artName(g.i))} 길이" placeholder="${g.auto ? '자동 ' + fmtDur(g.e - g.s) : ''}" value="${g.auto ? '' : fmtDur(g.e - g.s)}"><span class="when">${fmtDur(g.s)} – ${fmtDur(g.e)}</span></div>`).join('');
   let sum = `총 길이 <b>${fmtDur(pl.T)}</b>`;
   if (!pl.A) sum += ' · 소리 없는 영상이에요';
   else if (pl.A > pl.T + 0.5) sum += ` · 음성 ${fmtDur(pl.A)} 중 앞 ${fmtDur(pl.T)}만 들어가요`;
@@ -5677,7 +5850,7 @@ function pvDraw(t) {
   let k = PV.segs.findIndex(g => t < g.e - 1e-6); if (k < 0) k = PV.segs.length - 1;
   const x = $('#avCv').getContext('2d'), base = PV.bases[k];
   if ($('#avBar').checked) drawBar(x, base, PV.W, PV.H, PV.T ? Math.min(1, t / PV.T) : 0); else x.drawImage(base, 0, 0);
-  $('#avTime').textContent = `${fmtDur(t)} / ${fmtDur(PV.T)}` + (PV.segs.length > 1 ? ` · 아트보드 ${PV.segs[k].i + 1}` : '');
+  $('#avTime').textContent = `${fmtDur(t)} / ${fmtDur(PV.T)}` + (PV.segs.length > 1 ? ` · ${artName(PV.segs[k].i)}` : '');
   $('#avSeek').value = PV.T ? Math.round(t / PV.T * 1000) : 0;
 }
 function pvStop() { PV.playing = false; cancelAnimationFrame(PV.raf); $('#avAudio').pause(); $('#avPlay').textContent = '▶ 미리보기'; }
@@ -5702,7 +5875,7 @@ $('#avPlay').onclick = pvPlay;
 $('#avSeek').oninput = e => { PV.t = +e.target.value / 1000 * PV.T; PV.t0 = performance.now() - PV.t * 1000; if (PV.playing) pvAudioAt(PV.t); pvDraw(PV.t); };
 $('#avBar').onchange = () => pvDraw(PV.t);
 function openAV() {
-  $('#avVar').innerHTML = proj.vars.map((v, i) => `<option value="${i}"${i === proj.cur ? ' selected' : ''}>아트보드 ${i + 1}${v.label ? ' · ' + esc(v.label) : ''}</option>`).join('');
+  $('#avVar').innerHTML = proj.vars.map((v, i) => `<option value="${i}"${i === proj.cur ? ' selected' : ''}>${esc(artName(i))}${v.label ? ' · ' + esc(v.label) : ''}</option>`).join('');
   $('#avMode').value = proj.vars.length > 1 ? 'seq' : 'one';
   $('#avProg').hidden = true; $('#avModal').hidden = false; pvStop(); PV.key = ''; PV.bases = []; PV.t = 0; avRefresh();
 }
@@ -5798,7 +5971,7 @@ $('#avGo').onclick = async () => {
         const kf = changed || i - lastKey >= key; if (kf) lastKey = i;
         const vf = new VideoFrame(frame, { timestamp: Math.round(i * 1e6 / fps), duration: Math.round(1e6 / fps) }); ve.encode(vf, { keyFrame: kf }); vf.close();
         while (ve.encodeQueueSize > 6) await new Promise(r => setTimeout(r, 1));
-        if (i % 20 === 0) { avProgress(i / total, `영상 만드는 중 ${Math.round(i / total * 100)}% · ${fmtDur(i / fps)} / ${fmtDur(T)} · 아트보드 ${segs[k].i + 1}`); await new Promise(r => setTimeout(r, 0)); }
+        if (i % 20 === 0) { avProgress(i / total, `영상 만드는 중 ${Math.round(i / total * 100)}% · ${fmtDur(i / fps)} / ${fmtDur(T)} · ${artName(segs[k].i)}`); await new Promise(r => setTimeout(r, 0)); }
       }
       if (err) throw err;
       if (AV.cancel) throw new Error('cancel');
@@ -6020,14 +6193,31 @@ async function drvFetch(url, opts = {}, retry = true) {
   if (!r.ok) throw new Error('drive ' + r.status);
   return r;
 }
+// the app's own folder (older saves used '썸네일 공방', so that one is reused when it exists)
+async function drvFindFolder(name, parent) {
+  const q = encodeURIComponent(`name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false` + (parent ? ` and '${parent}' in parents` : ''));
+  const r = await (await drvFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)&spaces=drive`)).json();
+  return r.files && r.files.length ? r.files[0].id : null;
+}
+async function drvMakeFolder(name, parent) {
+  const c = await (await drvFetch('https://www.googleapis.com/drive/v3/files?fields=id', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ name, mimeType: 'application/vnd.google-apps.folder' }, parent ? { parents: [parent] } : {})) })).json();
+  return c.id;
+}
 async function drvFolder() {
   if (DRV.folder) return DRV.folder;
-  const q = encodeURIComponent("name='썸네일 공방' and mimeType='application/vnd.google-apps.folder' and trashed=false");
-  const r = await (await drvFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)&spaces=drive`)).json();
-  if (r.files && r.files.length) return (DRV.folder = r.files[0].id);
-  const c = await (await drvFetch('https://www.googleapis.com/drive/v3/files?fields=id', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: '썸네일 공방', mimeType: 'application/vnd.google-apps.folder' }) })).json();
-  return (DRV.folder = c.id);
+  return (DRV.folder = (await drvFindFolder('Design by FC')) || (await drvFindFolder('썸네일 공방')) || (await drvMakeFolder('Design by FC')));
 }
+async function drvImgFolder() {
+  if (DRV.imgFolder) return DRV.imgFolder;
+  const f = await drvFolder();
+  return (DRV.imgFolder = (await drvFindFolder('올린 사진', f)) || (await drvMakeFolder('올린 사진', f)));
+}
+async function drvPutFile(name, blob, mime, parent) {
+  const meta = { name, mimeType: mime, parents: [parent] }, bd = 'tg' + uid();
+  const body = new Blob([`--${bd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${bd}\r\nContent-Type: ${mime}\r\n\r\n`, blob, `\r\n--${bd}--`]);
+  return (await drvFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,thumbnailLink', { method: 'POST', headers: { 'Content-Type': 'multipart/related; boundary=' + bd }, body })).json();
+}
+const drvLive = () => !!DRV.token && Date.now() < DRV.exp - 60000;
 async function drvUpload(name, blob, thumb, fileId) {
   const meta = { name, mimeType: 'application/json', contentHints: { thumbnail: { image: thumb, mimeType: 'image/jpeg' } } };
   if (!fileId) meta.parents = [await drvFolder()];
@@ -6056,7 +6246,7 @@ function openDrive() {
   const has = !!gClient(); $('#drvSetup').hidden = has; $('#drvMain').hidden = !has; $('#drvModal').hidden = false;
   if (!has) return;
   loadScript(GSI).catch(() => {});
-  $('#drvName').value = DRV.fileName ? DRV.fileName.replace(/\.json$/, '') : ($('#projName').value || '썸네일 작업 ' + stamp());
+  $('#drvName').value = DRV.fileName ? DRV.fileName.replace(/\.json$/, '') : (proj.title || '썸네일 작업 ' + stamp());
   $('#drvNewWrap').hidden = !DRV.fileId; $('#drvAsNew').checked = false;
   $('#drvList').innerHTML = `<button class="btn sm" id="drvConnect">드라이브 목록 보기</button>`;
 }
@@ -6081,6 +6271,128 @@ $('#drvSaveBtn').onclick = async () => {
     toast(`드라이브 ‘썸네일 공방’ 폴더에 ${DRV.fileName.replace(/\.json$/, '')}(으)로 저장했어요.`); drvList();
   } catch (e) { drvErr(e); }
 };
+
+/* ---------------- My Space (Google Drive as storage) ---------------- */
+let msMode = lsGet('tg.ms') || 'drive', msT = 'work';
+const fmtWhen = t => { const d = new Date(t), n = new Date(); return d.toDateString() === n.toDateString() ? d.toTimeString().slice(0, 5) : `${d.getMonth() + 1}월 ${d.getDate()}일`; };
+const fmtGB = b => b >= 1e9 ? (b / 1e9).toFixed(1) + 'GB' : Math.round(b / 1e6) + 'MB';
+function msSet(m) { msMode = m; lsSet('tg.ms', m); $$('#msSrc button').forEach(b => b.setAttribute('aria-pressed', b.dataset.ms === m)); $('#msLocal').hidden = m !== 'local'; $('#msDrive').hidden = m !== 'drive'; if (m === 'local') renderProjects(); else msRender(); }
+function msRender() {
+  const has = !!gClient(), live = drvLive();
+  $('#msSetup').hidden = has; $('#msConnect').hidden = !has || live; $('#msMain').hidden = !has || !live;
+  if (has && !live) loadScript(GSI).catch(() => {});
+  $$('#msTab button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mt === msT)); $('#msWork').hidden = msT !== 'work'; $('#msImg').hidden = msT !== 'img';
+  $('#msAuto').checked = lsGet('tg.drvauto') === '1';
+  msStatus();
+}
+async function msConnect() {
+  try { await drvAuth(); msRender(); await Promise.all([msQuota(), msList()]); }
+  catch (e) { drvErr(e); }
+}
+async function msQuota() {
+  try {
+    const r = await (await drvFetch('https://www.googleapis.com/drive/v3/about?fields=storageQuota')).json(), q = r.storageQuota || {};
+    if (!q.limit) { $('#msQuota').hidden = true; return; }
+    $('#msQuota').hidden = false; $('#msQuotaBar').style.width = Math.min(100, q.usage / q.limit * 100).toFixed(1) + '%';
+    $('#msQuotaT').textContent = `드라이브 ${fmtGB(+q.limit)} 중 ${fmtGB(+q.usage)} 사용`;
+  } catch (e) { $('#msQuota').hidden = true; }
+}
+const delArmD = new Set();
+async function msList() {
+  if (!drvLive()) return msRender();
+  const box = msT === 'work' ? $('#msWorkList') : $('#msImgList');
+  box.innerHTML = '<p class="hint" style="margin:0;grid-column:1/-1">불러오는 중…</p>';
+  try {
+    const f = msT === 'work' ? await drvFolder() : await drvImgFolder();
+    const q = encodeURIComponent(`'${f}' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'`);
+    const r = await (await drvFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=modifiedTime desc&pageSize=100&fields=files(id,name,modifiedTime,thumbnailLink,mimeType)`)).json();
+    const files = r.files || [];
+    if (!files.length) { box.innerHTML = `<div class="empty" style="grid-column:1/-1">${msT === 'work' ? '드라이브에 저장한 작업이 아직 없어요. 위의 <b>지금 작업 저장</b>을 눌러 보세요.' : '올린 사진이 아직 없어요.'}</div>`; return; }
+    const th = x => x.thumbnailLink ? `<img src="${esc(x.thumbnailLink.replace(/=s\d+$/, '=s400'))}" alt="" referrerpolicy="no-referrer" loading="lazy">` : '<img alt="">';
+    box.innerHTML = files.map(x => msT === 'work'
+      ? `<div class="ms-card${x.id === DRV.fileId ? ' on' : ''}" data-fid="${x.id}"><button class="ms-th" data-wopen="${x.id}" data-dname="${esc(x.name)}" title="열기">${th(x)}</button><div class="ms-nm"><span class="nm" title="${esc(x.name.replace(/\.json$/, ''))}">${esc(x.name.replace(/\.json$/, ''))}</span><small>${x.id === DRV.fileId ? '지금 작업 · ' : ''}${fmtWhen(x.modifiedTime)}</small></div><div class="ms-acts"><button data-wren="${x.id}" title="이름 바꾸기" aria-label="이름 바꾸기"><svg class="i"><use href="#i-text"/></svg></button><button data-wdel="${x.id}" class="${delArmD.has(x.id) ? 'arm' : ''}" title="${delArmD.has(x.id) ? '한 번 더 누르면 휴지통으로' : '휴지통으로'}" aria-label="휴지통으로"><svg class="i"><use href="#i-trash"/></svg></button></div></div>`
+      : `<div class="ms-card img" data-fid="${x.id}"><button class="ms-th" data-iadd="${x.id}" data-dname="${esc(x.name)}" title="캔버스에 넣기">${th(x)}</button><div class="ms-acts"><button data-wdel="${x.id}" class="${delArmD.has(x.id) ? 'arm' : ''}" title="${delArmD.has(x.id) ? '한 번 더 누르면 휴지통으로' : '휴지통으로'}" aria-label="휴지통으로"><svg class="i"><use href="#i-trash"/></svg></button></div></div>`).join('');
+  } catch (e) { box.innerHTML = ''; drvErr(e); }
+}
+function msStatus(t) {
+  const st = t || (DRV.lastSave ? `드라이브에 저장됨 · ${fmtWhen(DRV.lastSave)}${DRV.fileName ? ' · ' + DRV.fileName.replace(/\.json$/, '') : ''}` : DRV.fileId ? `드라이브 파일: ${DRV.fileName.replace(/\.json$/, '')}` : '아직 드라이브에 저장하지 않은 작업이에요.');
+  $('#msStatus').textContent = st;
+  const ss = $('#saveState'); ss.classList.toggle('drive', !!DRV.lastSave); ss.title = DRV.lastSave ? st : '이 브라우저에 자동 저장돼요. 마이스페이스에서 구글 드라이브에도 저장할 수 있어요.';
+}
+async function msSaveNow(asNew, quiet) {
+  cv.discardActiveObject(); cv.renderAll();
+  const name = (proj.title || '제목 없는 디자인') + '.json';
+  const blob = new Blob([JSON.stringify(projectPayload())], { type: 'application/json' });
+  const thumb = renderOut(400).toDataURL('image/jpeg', 0.8).split(',')[1].replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  if (!quiet) msStatus('드라이브에 저장하는 중…');
+  const r = await drvUpload(name, blob, thumb, asNew ? null : DRV.fileId);
+  DRV.fileId = r.id; DRV.fileName = r.name || name; DRV.lastSave = Date.now(); DRV.dirty = false; autosave(); msStatus();
+  if (!quiet) { toast(`드라이브에 ‘${DRV.fileName.replace(/\.json$/, '')}’(으)로 저장했어요.`); if (msMode === 'drive' && msT === 'work') msList(); msQuota(); }
+}
+$('#msSrc').onclick = e => { const b = e.target.closest('[data-ms]'); if (b) msSet(b.dataset.ms); };
+$('#msTab').onclick = e => { const b = e.target.closest('[data-mt]'); if (!b) return; msT = b.dataset.mt; msRender(); msList(); };
+$('#msGoSet').onclick = () => { $('#settingsBtn').click(); setTimeout(() => { const d = $('.steps'); if (d) d.open = true; $('#setGClient').focus(); }, 50); };
+$('#msConnBtn').onclick = msConnect;
+$('#msSave').onclick = () => msSaveNow(false).catch(drvErr);
+$('#msSaveNew').onclick = () => msSaveNow(true).catch(drvErr);
+$('#msAuto').onchange = e => { lsSet('tg.drvauto', e.target.checked ? '1' : '0'); if (e.target.checked) { toast('고칠 때마다 1분 간격으로 드라이브에 저장해요.'); if (!DRV.fileId) msSaveNow(false).catch(drvErr); } };
+$('#saveState').onclick = () => { showTab('mine'); msSet('drive'); };
+$('#msUpImg').onclick = () => $('#msImgFile').click();
+async function msUploadBlobs(list) {
+  const f = await drvImgFolder(); let n = 0;
+  for (const [name, blob] of list) { await drvPutFile(name, blob, blob.type || 'image/png', f); n++; msStatus(`사진 올리는 중… ${n}/${list.length}`); }
+  msStatus(); toast(`사진 ${n}장을 드라이브에 올렸어요.`); msT = 'img'; msRender(); msList(); msQuota();
+}
+$('#msImgFile').onchange = async e => { const fs = [...e.target.files]; e.target.value = ''; if (!fs.length) return; try { await msUploadBlobs(fs.map(f => [f.name, f])); } catch (er) { drvErr(er); } };
+$('#msBackup').onclick = async () => {
+  try {
+    const ups = await DB.all('uploads'); if (!ups.length) { toast('업로드 탭에 사진이 없어요.'); return; }
+    const list = await Promise.all(ups.map(async u => { const b = await (await fetch(u.data)).blob(); return [(u.name || '사진').replace(/\.[a-z0-9]+$/i, '') + (b.type === 'image/jpeg' ? '.jpg' : '.png'), b]; }));
+    await msUploadBlobs(list);
+  } catch (er) { drvErr(er); }
+};
+$('#msDrive').addEventListener('click', async e => {
+  const o = e.target.closest('[data-wopen]');
+  if (o) { try { toast('드라이브에서 불러오는 중…'); const p = await (await drvFetch(`https://www.googleapis.com/drive/v3/files/${o.dataset.wopen}?alt=media`)).json(); await openProjectData(p); setProjTitle(o.dataset.dname.replace(/\.json$/, '')); hist[hi] = snapshot(); DRV.fileId = o.dataset.wopen; DRV.fileName = o.dataset.dname; DRV.lastSave = null; DRV.dirty = false; autosave(); msStatus(); msList(); toast(`‘${DRV.fileName.replace(/\.json$/, '')}’ 열었어요.`); } catch (er) { drvErr(er); } return; }
+  const a = e.target.closest('[data-iadd]');
+  if (a) { try { toast('사진을 가져오는 중…'); const b = await (await drvFetch(`https://www.googleapis.com/drive/v3/files/${a.dataset.iadd}?alt=media`)).blob(); await addImageData(await blobToDataURL(b), { name: a.dataset.dname }); toast('캔버스에 넣었어요.'); } catch (er) { drvErr(er); } return; }
+  const r = e.target.closest('[data-wren]');
+  if (r) {
+    const card = r.closest('.ms-card'), nm = card.querySelector('.nm'), old = nm.textContent;
+    nm.outerHTML = `<input class="txt ms-ren" value="${esc(old)}" maxlength="80">`; const inp = card.querySelector('.ms-ren'); inp.focus(); inp.select();
+    const done = async ok => { inp.onblur = null; const v = inp.value.trim(); if (!ok || !v || v === old) return msList(); try { await drvFetch(`https://www.googleapis.com/drive/v3/files/${r.dataset.wren}?fields=id,name`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: v + '.json' }) }); if (r.dataset.wren === DRV.fileId) { DRV.fileName = v + '.json'; setProjTitle(v); commit(); } toast('이름을 바꿨어요.'); } catch (er) { drvErr(er); } msList(); };
+    inp.onkeydown = ev => { if (ev.key === 'Enter') done(true); if (ev.key === 'Escape') done(false); }; inp.onblur = () => done(true); return;
+  }
+  const d = e.target.closest('[data-wdel]');
+  if (d) {
+    const id = d.dataset.wdel;
+    if (!delArmD.has(id)) { delArmD.add(id); setTimeout(() => { delArmD.delete(id); msList(); }, 3500); msList(); return; }
+    delArmD.delete(id);
+    try { await drvFetch(`https://www.googleapis.com/drive/v3/files/${id}?fields=id`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ trashed: true }) }); if (id === DRV.fileId) { DRV.fileId = null; DRV.fileName = ''; DRV.lastSave = null; msStatus(); } toast('드라이브 휴지통으로 옮겼어요. 30일 안에는 드라이브에서 되살릴 수 있어요.'); } catch (er) { drvErr(er); }
+    msList(); msQuota();
+  }
+});
+// quiet cloud autosave: only while signed in (no surprise login pop-ups)
+setInterval(() => {
+  if (lsGet('tg.drvauto') !== '1' || !DRV.dirty || DRV.saving) return;
+  if (!drvLive()) { msStatus('드라이브 연결이 끝났어요. 마이스페이스에서 다시 연결하면 자동 저장이 이어져요.'); return; }
+  DRV.saving = true; msSaveNow(false, true).catch(e => { console.error(e); msStatus('드라이브 자동 저장에 실패했어요. 잠시 뒤 다시 해요.'); }).finally(() => DRV.saving = false);
+}, 60000);
+$('#drvMenu').onclick = () => { showTab('mine'); msSet('drive'); };
+
+/* ---------------- collapsible inspector ---------------- */
+const SEC_OPEN = { tBasic: 1, iCut: 1, shape: 1, align: 1, layers: 1 };
+(() => {
+  let saved = {}; try { saved = JSON.parse(lsGet('tg.secs') || '{}'); } catch (e) {}
+  $$('#insp details.sec').forEach(d => {
+    const k = d.dataset.sec; d.open = k in saved ? !!saved[k] : !!SEC_OPEN[k];
+    d.addEventListener('toggle', () => { saved[k] = d.open ? 1 : 0; lsSet('tg.secs', JSON.stringify(saved)); });
+  });
+  const bar = document.createElement('div'); bar.className = 'insp-fold';
+  bar.innerHTML = '<button type="button" class="btn sm ghost" data-fold="1">모두 펴기</button><button type="button" class="btn sm ghost" data-fold="0">모두 접기</button>';
+  $('#insp').prepend(bar);
+  bar.onclick = e => { const b = e.target.closest('[data-fold]'); if (!b) return; $$('#insp details.sec').forEach(d => { d.open = b.dataset.fold === '1'; }); };
+})();
 
 /* ---------------- boot ---------------- */
 async function boot() {
