@@ -626,7 +626,9 @@ input[type=range]{accent-color:var(--primary)}
 .doc-title .ttl:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1px var(--ink)}
 .doc-title .sizebtn{height:30px;padding:0 10px;font-size:12.5px;background:var(--sec);box-shadow:none;border-radius:4px;flex:none}
 .doc-title .sizebtn:hover{background:var(--sec-hover);box-shadow:none}
-.top{overflow:hidden}
+.top{overflow:visible;position:relative;z-index:50}
+.top .menu{z-index:60}
+.doc-title{overflow:hidden}
 .top>*{flex-shrink:0}
 .top>.doc-title{flex-shrink:1;min-width:0}
 .doc-title .ttl{min-width:120px}
@@ -671,6 +673,15 @@ details.sec>summary:hover::after{border-color:var(--ink)}
 .sec-b{padding-bottom:12px}
 .sec-b>.field:first-child,.sec-b>.toolgrid:first-child,.sec-b>.btn:first-child{margin-top:0}
 #pCommon>.row:last-child{padding-top:4px;border-top:1px solid var(--line)}
+/* slider number boxes */
+input.num.rv{width:58px;height:26px;padding:0 6px;font:600 12.5px var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:4px;-moz-appearance:textfield}
+input.num.rv::-webkit-inner-spin-button,input.num.rv::-webkit-outer-spin-button{opacity:1;height:22px}
+input.num.rv:hover{border-color:var(--text)}
+input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1px var(--ink)}
+.clr .alpha input.num.rv{flex:none}
+/* text align icons */
+#tAlign button{display:grid;place-items:center}
+.al-i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 /* My Space */
 .ms-err{margin-top:12px;padding:12px 14px;border-radius:4px;background:var(--panel-2);box-shadow:inset 3px 0 0 var(--hot);font-size:13px;color:var(--ink)}
 .ms-err p{margin:6px 0}
@@ -1107,9 +1118,10 @@ details.sec>summary:hover::after{border-color:var(--ink)}
             <button id="tUnder" aria-label="밑줄" title="밑줄"><u>U</u></button>
           </div>
           <div class="seg" style="flex:1" id="tAlign">
-            <button data-al="left" aria-label="왼쪽 정렬">좌</button>
-            <button data-al="center" aria-label="가운데 정렬">중</button>
-            <button data-al="right" aria-label="오른쪽 정렬">우</button>
+            <button data-al="left" aria-label="왼쪽 정렬" title="왼쪽 정렬"><svg class="al-i" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M2 6.5h8M2 10h12M2 13.5h8"/></svg></button>
+            <button data-al="center" aria-label="가운데 정렬" title="가운데 정렬"><svg class="al-i" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M4 6.5h8M2 10h12M4 13.5h8"/></svg></button>
+            <button data-al="right" aria-label="오른쪽 정렬" title="오른쪽 정렬"><svg class="al-i" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M6 6.5h8M2 10h12M6 13.5h8"/></svg></button>
+            <button data-al="justify" aria-label="양쪽 정렬" title="양쪽 정렬 (여러 줄일 때 줄 끝을 맞춰요)"><svg class="al-i" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12M2 6.5h12M2 10h12M2 13.5h12"/></svg></button>
           </div>
         </div>
         </div></details>
@@ -1117,13 +1129,13 @@ details.sec>summary:hover::after{border-color:var(--ink)}
         <div class="field"><span class="lbl">글자색 <label class="tog"><input type="checkbox" id="tGradOn">그라데이션</label></span><div class="clr" data-clr="tFill"></div>
           <div class="clr" data-clr="tFill2" id="tFill2Row" hidden></div></div>
         <div class="field"><span class="lbl">외곽선 <output id="tStrokeWO">0</output></span><div class="clr" data-clr="tStroke"></div><input type="range" id="tStrokeW" min="0" max="60" value="0"></div>
-        <div class="field"><span class="lbl">글자 뒤 상자 <label class="tog"><input type="checkbox" id="tBoxOn">켜기</label></span><div class="clr" data-clr="tBox" id="tBoxRow" hidden></div></div>
+        <div class="field"><span class="lbl">배경색 <label class="tog"><input type="checkbox" id="tBoxOn">켜기</label></span><div class="clr" data-clr="tBox" id="tBoxRow" hidden></div></div>
         </div></details>
         <details class="sec" data-sec="tSpace"><summary>간격</summary><div class="sec-b">
         <div class="field"><span class="lbl">자간 <output id="tSpacingO">0</output></span><input type="range" id="tSpacing" min="-200" max="800" step="10"></div>
         <div class="field"><span class="lbl">줄 간격 <output id="tLineO">1.1</output></span><input type="range" id="tLine" min="0.6" max="2.2" step="0.05"></div>
         </div></details>
-        <details class="sec" data-sec="tFx"><summary>효과 · 휘기</summary><div class="sec-b">
+        <details class="sec" data-sec="tFx"><summary>효과 · 커브</summary><div class="sec-b">
         <div class="field"><span class="lbl">바깥 테두리 (이중) <label class="tog"><input type="checkbox" id="t2On">켜기</label></span>
           <div id="t2Box" hidden><div class="clr" data-clr="t2C"></div><div class="field"><span class="lbl">두께 <output id="t2WO">10</output></span><input type="range" id="t2W" min="2" max="40" value="10"></div></div></div>
         <div class="field"><span class="lbl">입체 <label class="tog"><input type="checkbox" id="t3On">켜기</label></span>
@@ -1136,8 +1148,8 @@ details.sec>summary:hover::after{border-color:var(--ink)}
             <div class="field"><span class="lbl">사진 크기 <output id="fiZO">100</output></span><input type="range" id="fiZ" min="100" max="300" value="100"></div>
             <div class="field"><span class="lbl">가로 위치 <output id="fiXO">50</output></span><input type="range" id="fiX" min="0" max="100" value="50"></div>
             <div class="field"><span class="lbl">세로 위치 <output id="fiYO">50</output></span><input type="range" id="fiY" min="0" max="100" value="50"></div></div></div>
-        <div class="field"><span class="lbl">휘기 <output id="tArcO">0</output></span><input type="range" id="tArc" min="-100" max="100" step="5" value="0"></div>
-        <p class="hint" style="margin-top:4px">휘기는 한 줄 글자에만 돼요.</p></div></details>
+        <div class="field"><span class="lbl">커브 <output id="tArcO">0</output></span><input type="range" id="tArc" min="-100" max="100" step="5" value="0"></div>
+        <p class="hint" style="margin-top:4px">커브는 한 줄 글자에만 돼요. +는 위로, −는 아래로 휘어요.</p></div></details>
         
       </div>
 
@@ -5038,7 +5050,7 @@ cv.on('object:modified', e => {
 // plain text ⇄ fixed-width wrapping box (same look, same place, same layer)
 async function setTextBox(t, on) {
   if (!isTxt(t) || (t.type === 'textbox') === on) return t;
-  if (on && t.meta && t.meta.arc) { toast('곡선 글자는 상자 고정을 쓸 수 없어요. 곡선을 먼저 0으로 해 주세요.'); syncPanel(); return t; }
+  if (on && t.meta && t.meta.arc) { toast('커브를 준 글자는 상자 고정을 쓸 수 없어요. 커브를 먼저 0으로 해 주세요.'); syncPanel(); return t; }
   if (t.isEditing) t.exitEditing();
   const data = t.toObject(EXTRA); ['type', 'path', 'width', 'height', 'minWidth', 'splitByGrapheme', 'dynamicMinWidth'].forEach(k => delete data[k]);
   const c = t.getCenterPoint();
@@ -5360,7 +5372,7 @@ $('#t3A').oninput = e => { $('#t3AO').textContent = dirArrow(+e.target.value); s
 $('#t3N').onchange = $('#t3A').onchange = () => commit();
 clrHandlers.t3C = (c, done) => { if (!$('#t3On').checked) { $('#t3On').checked = true; $('#t3Box').hidden = false; } setTextFx({ depth: depthNow() }, done); };
 $('#tArc').oninput = e => { const t = act(); if (!t || !isTxt(t)) return;
-  if (t.text.includes('\n') && +e.target.value) { e.target.value = 0; $('#tArcO').textContent = 0; toast('휘기는 한 줄 글자에만 쓸 수 있어요. 줄마다 글자를 따로 만들어 휘어 주세요.', 3600); return; }
+  if (t.text.includes('\n') && +e.target.value) { e.target.value = 0; $('#tArcO').textContent = 0; toast('커브는 한 줄 글자에만 쓸 수 있어요. 줄마다 글자를 따로 만들어 휘어 주세요.', 3600); return; }
   $('#tArcO').textContent = e.target.value; if (t.isEditing) t.exitEditing(); t.meta = Object.assign({}, t.meta, { arc: +e.target.value }); reArc(t); setTextFx({}); };
 $('#tArc').onchange = () => commit();
 cv.on('text:changed', e => {
@@ -5782,7 +5794,7 @@ function runCheck() {
     if (o.depth && o.depth.n > 0) cands.push(contrast(fill, o.depth.c) * 0.8);
     if (o.shadow && o.shadow.blur <= 8 && Math.hypot(o.shadow.offsetX, o.shadow.offsetY) >= o.fontSize * 0.04) cands.push(contrast(fill, o.shadow.color) * 0.8);
     const best = (o.meta && o.meta.fillImg) ? 99 : Math.max(...cands);
-    if (best < 2) items.push(['bad', `${name} 글자색이 뒤 배경과 비슷해서 묻혀요 (대비 ${best.toFixed(1)}). 외곽선이나 글자 뒤 상자를 넣어 보세요.`, o]);
+    if (best < 2) items.push(['bad', `${name} 글자색이 뒤 배경과 비슷해서 묻혀요 (대비 ${best.toFixed(1)}). 외곽선이나 배경색을 넣어 보세요.`, o]);
     else if (best < 3) items.push(['warn', `${name} 글자 대비가 약해요 (${best.toFixed(1)}). 작은 화면에선 흐려 보일 수 있어요.`, o]);
     if (b.left + b.width > doc.w * 0.83 && b.top + b.height > doc.h * 0.86) items.push(['warn', `${name} 글자가 오른쪽 아래 재생시간 표시에 가려져요.`, o]);
     if (b.left < doc.w * 0.015 || b.top < doc.h * 0.015 || b.left + b.width > doc.w * 0.985 || b.top + b.height > doc.h * 0.985) items.push(['info', `${name} 글자가 가장자리에 붙어 있어요. 둥근 모서리에서 잘릴 수 있어요.`, o]);
@@ -6415,6 +6427,36 @@ setInterval(() => {
   DRV.saving = true; msSaveNow(false, true).catch(e => { console.error(e); msStatus('드라이브 자동 저장에 실패했어요. 잠시 뒤 다시 해요.'); }).finally(() => DRV.saving = false);
 }, 60000);
 $('#drvMenu').onclick = () => { showTab('mine'); msSet('drive'); };
+
+/* ---------------- sliders: type an exact number ---------------- */
+(() => {
+  const desc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  const SKIP = new Set(['vidSeek', 'avSeek', 'tSize']); // seek bars, and font size already has its own box
+  const dec = st => (String(st).split('.')[1] || '').length;
+  function enhance(r) {
+    if (r.dataset.num || SKIP.has(r.id)) return; r.dataset.num = '1';
+    const out = document.getElementById(r.id + 'O') || (r.id.startsWith('clra_') && document.getElementById('clrao_' + r.id.slice(5)));
+    const n = document.createElement('input');
+    n.type = 'number'; n.className = 'num rv'; n.min = r.min; n.max = r.max; n.step = r.step && r.step !== 'any' ? r.step : 1; n.inputMode = 'decimal';
+    const lab = r.closest('.field') && r.closest('.field').querySelector('.lbl'); n.setAttribute('aria-label', ((lab && lab.firstChild && lab.firstChild.textContent) || '값').trim() + ' 직접 입력');
+    const show = () => { if (document.activeElement !== n) { const v = +desc.get.call(r); n.value = +v.toFixed(Math.max(dec(n.step), 0)); } };
+    // programmatic `range.value = …` (panel sync) updates the box too
+    Object.defineProperty(r, 'value', { configurable: true, get() { return desc.get.call(this); }, set(v) { desc.set.call(this, v); show(); } });
+    r.addEventListener('input', show);
+    const apply = () => {
+      let v = parseFloat(String(n.value).replace(',', '.')); if (isNaN(v)) { show(); return; }
+      v = Math.min(+r.max, Math.max(+r.min, v)); const st = +n.step || 1; v = +(Math.round((v - +r.min) / st) * st + +r.min).toFixed(dec(n.step));
+      desc.set.call(r, v); n.value = v;
+      r.dispatchEvent(new Event('input', { bubbles: true })); r.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    n.addEventListener('change', apply);
+    n.addEventListener('keydown', e => { if (e.key === 'Enter') { apply(); n.blur(); } });
+    if (out) { out.hidden = true; out.after(n); } else r.before(n);
+    show();
+  }
+  $$('input[type=range]').forEach(enhance);
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(nd => { if (nd.nodeType !== 1) return; if (nd.matches('input[type=range]')) enhance(nd); nd.querySelectorAll && nd.querySelectorAll('input[type=range]').forEach(enhance); }))).observe(document.body, { childList: true, subtree: true });
+})();
 
 /* ---------------- collapsible inspector ---------------- */
 const SEC_OPEN = { tBasic: 1, iCut: 1, shape: 1, align: 1, layers: 1 };
