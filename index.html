@@ -672,6 +672,13 @@ details.sec>summary:hover::after{border-color:var(--ink)}
 .sec-b>.field:first-child,.sec-b>.toolgrid:first-child,.sec-b>.btn:first-child{margin-top:0}
 #pCommon>.row:last-child{padding-top:4px;border-top:1px solid var(--line)}
 /* My Space */
+.ms-err{margin-top:12px;padding:12px 14px;border-radius:4px;background:var(--panel-2);box-shadow:inset 3px 0 0 var(--hot);font-size:13px;color:var(--ink)}
+.ms-err p{margin:6px 0}
+.ms-err ol{margin:6px 0 10px;padding-left:20px;display:grid;gap:4px;color:var(--text)}
+.ms-err a{color:var(--ink);text-decoration:underline}
+.ms-err code{font:12px var(--mono);word-break:break-all;background:var(--sec);padding:1px 4px;border-radius:3px}
+.ms-err details{margin:0 0 10px;font-size:12px;color:var(--muted)}
+.ms-err-t{color:var(--hot)}
 .rail button{white-space:nowrap;letter-spacing:-.03em}
 #msSrc{display:grid;grid-template-columns:1fr 1fr;border-radius:20px}
 #msSrc button,#msTab button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
@@ -1000,6 +1007,7 @@ details.sec>summary:hover::after{border-color:var(--ink)}
           <div class="empty" id="projEmpty">아직 저장한 작업이 없어요.</div>
         </div>
         <div id="msDrive">
+          <div class="ms-err" id="msErr" role="alert" hidden></div>
           <div id="msSetup" hidden>
             <p class="hint" style="margin-top:12px">내 구글 드라이브를 저장 공간으로 쓰면 작업과 사진이 어느 컴퓨터·휴대폰에서든 그대로 열려요. 처음 한 번 <b>구글 클라이언트 ID</b>를 만들어 넣어야 해요(무료, 10분쯤).</p>
             <button class="btn primary" id="msGoSet" style="margin-top:4px">설정에서 연결 준비하기</button>
@@ -6180,7 +6188,7 @@ async function drvAuth() {
   return new Promise((res, rej) => {
     const tc = google.accounts.oauth2.initTokenClient({
       client_id: gClient(), scope: 'https://www.googleapis.com/auth/drive.file',
-      callback: r => { if (r.error) { rej(new Error(r.error)); return; } DRV.token = r.access_token; DRV.exp = Date.now() + (+r.expires_in || 3600) * 1000; res(DRV.token); },
+      callback: r => { if (r.error) { rej(new Error(r.error)); return; } if (google.accounts.oauth2.hasGrantedAllScopes && !google.accounts.oauth2.hasGrantedAllScopes(r, 'https://www.googleapis.com/auth/drive.file')) { rej(new Error('scope')); return; } DRV.token = r.access_token; DRV.exp = Date.now() + (+r.expires_in || 3600) * 1000; res(DRV.token); },
       error_callback: e => rej(new Error((e && e.type) || 'popup')),
     });
     tc.requestAccessToken();
@@ -6190,7 +6198,10 @@ async function drvFetch(url, opts = {}, retry = true) {
   const tok = await drvAuth();
   const r = await fetch(url, Object.assign({}, opts, { headers: Object.assign({}, opts.headers || {}, { Authorization: 'Bearer ' + tok }) }));
   if (r.status === 401 && retry) { DRV.token = null; return drvFetch(url, opts, false); }
-  if (!r.ok) throw new Error('drive ' + r.status);
+  if (!r.ok) {
+    let why = ''; try { const j = await r.json(); const er = j.error || {}; why = ((er.errors && er.errors[0] && er.errors[0].reason) || (er.details && er.details[0] && er.details[0].reason) || er.status || '') + ' ' + (er.message || ''); } catch (e) {}
+    throw new Error('drive ' + r.status + ' ' + why);
+  }
   return r;
 }
 // the app's own folder (older saves used '썸네일 공방', so that one is reused when it exists)
@@ -6229,9 +6240,32 @@ async function drvUpload(name, blob, thumb, fileId) {
   const body = new Blob([`--${bd}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${bd}\r\nContent-Type: application/json\r\n\r\n`, blob, `\r\n--${bd}--`]);
   return (await drvFetch(base + '?uploadType=multipart&fields=id,name', { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'multipart/related; boundary=' + bd }, body })).json();
 }
+const DRV_FIX = {
+  api: { t: '구글 클라우드 프로젝트에서 <b>Google Drive API</b>가 아직 꺼져 있어요.', s: ['<a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">Google Drive API 페이지</a>를 열어요. (클라이언트 ID를 만든 프로젝트가 위쪽에 선택돼 있는지 확인)', '파란 <b>사용</b>(Enable) 버튼을 눌러요.', '1~2분 기다린 뒤 여기서 <b>다시 연결</b>을 눌러요.'] },
+  scope: { t: '구글 로그인 때 <b>드라이브 권한</b>에 체크가 안 됐어요.', s: ['아래 <b>다시 연결</b>을 눌러요.', '구글 창에서 <b>“이 앱에서 사용하는 Google Drive 파일만 보기, 수정, 생성, 삭제”</b> 항목의 <b>체크 상자를 꼭 켜고</b> 계속을 눌러요.', '체크 상자가 안 보이면 <b>모두 선택</b>을 눌러요.'] },
+  tester: { t: '이 구글 계정이 앱의 <b>테스트 사용자</b>로 등록돼 있지 않아요.', s: ['구글 클라우드 → <b>API 및 서비스 → OAuth 동의 화면</b>(또는 <b>대상</b>)으로 가요.', '<b>테스트 사용자 → 사용자 추가</b>에 지금 로그인하는 Gmail 주소를 넣고 저장해요.', '여기서 <b>다시 연결</b>을 눌러요.'] },
+  origin: { t: '이 사이트 주소가 클라이언트 ID에 <b>승인된 자바스크립트 원본</b>으로 등록돼 있지 않아요.', s: ['구글 클라우드 → <b>API 및 서비스 → 사용자 인증 정보</b> → 만든 OAuth 클라이언트 ID를 눌러요.', '<b>승인된 자바스크립트 원본</b>에 <code>' + location.origin + '</code> 를 추가하고 저장해요 (끝에 / 없이).', '5분쯤 뒤 <b>다시 연결</b>을 눌러요.'] },
+};
+function drvKind(m) {
+  if (/accessNotConfigured|SERVICE_DISABLED|has not been used|is disabled/i.test(m)) return 'api';
+  if (m === 'scope' || /insufficientPermissions|ACCESS_TOKEN_SCOPE_INSUFFICIENT|insufficient authentication scopes/i.test(m)) return 'scope';
+  if (/access_denied/.test(m)) return 'tester';
+  if (/origin_mismatch|idpiframe|invalid_client|redirect_uri/i.test(m)) return 'origin';
+  return '';
+}
+function drvShowFix(k, raw) {
+  const box = $('#msErr'); if (!box) return;
+  if (!k) { box.hidden = true; return; }
+  const f = DRV_FIX[k];
+  box.innerHTML = `<b class="ms-err-t">드라이브에 연결하지 못했어요</b><p>${f.t}</p><ol>${f.s.map(x => `<li>${x}</li>`).join('')}</ol>${raw ? `<details><summary>구글이 보낸 원래 메시지</summary><code>${esc(raw)}</code></details>` : ''}<button class="btn sm primary" id="msRetry">다시 연결</button>`;
+  box.hidden = false;
+}
 function drvErr(e) {
   console.error(e); const m = String(e && e.message || '');
-  toast(m === 'noclient' ? '설정에서 구글 클라이언트 ID를 먼저 넣어 주세요.' : /popup|access_denied/.test(m) ? '구글 로그인 창이 닫혔거나 막혔어요. 팝업을 허용하고 다시 눌러 주세요.' : /403/.test(m) ? '드라이브 권한이 없어요. 클라이언트 ID 설정(승인된 원본, 테스트 사용자)을 확인해 주세요.' : '드라이브와 연결하지 못했어요. 인터넷과 설정을 확인해 주세요.', 4800);
+  const k = drvKind(m);
+  if (k === 'scope' || k === 'tester' || k === 'origin') { DRV.token = null; DRV.exp = 0; }
+  if (k) { if (typeof msSet === 'function') { showTab('mine'); msSet('drive'); } drvShowFix(k, m.replace(/^drive \d+ /, '')); toast('드라이브 연결 문제예요. 마이스페이스에 고치는 방법을 띄웠어요.', 4800); return; }
+  toast(m === 'noclient' ? '설정에서 구글 클라이언트 ID를 먼저 넣어 주세요.' : /popup|access_denied/.test(m) ? '구글 로그인 창이 닫혔거나 막혔어요. 팝업을 허용하고 다시 눌러 주세요.' : /403/.test(m) ? '드라이브가 요청을 거절했어요: ' + m.replace(/^drive 403 /, '').slice(0, 120) : '드라이브와 연결하지 못했어요. 인터넷과 설정을 확인해 주세요.', 4800);
 }
 async function drvList() {
   $('#drvList').innerHTML = '<p class="hint" style="margin:0">불러오는 중…</p>';
@@ -6279,15 +6313,16 @@ const fmtGB = b => b >= 1e9 ? (b / 1e9).toFixed(1) + 'GB' : Math.round(b / 1e6) 
 function msSet(m) { msMode = m; lsSet('tg.ms', m); $$('#msSrc button').forEach(b => b.setAttribute('aria-pressed', b.dataset.ms === m)); $('#msLocal').hidden = m !== 'local'; $('#msDrive').hidden = m !== 'drive'; if (m === 'local') renderProjects(); else msRender(); }
 function msRender() {
   const has = !!gClient(), live = drvLive();
-  $('#msSetup').hidden = has; $('#msConnect').hidden = !has || live; $('#msMain').hidden = !has || !live;
+  $('#msSetup').hidden = has; $('#msConnect').hidden = !has || live; $('#msMain').hidden = !has || !live || !$('#msErr').hidden;
   if (has && !live) loadScript(GSI).catch(() => {});
   $$('#msTab button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mt === msT)); $('#msWork').hidden = msT !== 'work'; $('#msImg').hidden = msT !== 'img';
   $('#msAuto').checked = lsGet('tg.drvauto') === '1';
   msStatus();
 }
 async function msConnect() {
-  try { await drvAuth(); msRender(); await Promise.all([msQuota(), msList()]); }
-  catch (e) { drvErr(e); }
+  drvShowFix('');
+  try { await drvAuth(); await drvFolder(); msRender(); await Promise.all([msQuota(), msList()]); }
+  catch (e) { drvErr(e); msRender(); }
 }
 async function msQuota() {
   try {
@@ -6333,6 +6368,7 @@ $('#msSrc').onclick = e => { const b = e.target.closest('[data-ms]'); if (b) msS
 $('#msTab').onclick = e => { const b = e.target.closest('[data-mt]'); if (!b) return; msT = b.dataset.mt; msRender(); msList(); };
 $('#msGoSet').onclick = () => { $('#settingsBtn').click(); setTimeout(() => { const d = $('.steps'); if (d) d.open = true; $('#setGClient').focus(); }, 50); };
 $('#msConnBtn').onclick = msConnect;
+$('#msErr').addEventListener('click', e => { if (e.target.closest('#msRetry')) { DRV.token = null; DRV.exp = 0; DRV.folder = null; DRV.imgFolder = null; msConnect(); } });
 $('#msSave').onclick = () => msSaveNow(false).catch(drvErr);
 $('#msSaveNew').onclick = () => msSaveNow(true).catch(drvErr);
 $('#msAuto').onchange = e => { lsSet('tg.drvauto', e.target.checked ? '1' : '0'); if (e.target.checked) { toast('고칠 때마다 1분 간격으로 드라이브에 저장해요.'); if (!DRV.fileId) msSaveNow(false).catch(drvErr); } };
