@@ -4053,6 +4053,34 @@ async function addEmoji(ch, opts = {}) {
 const iconURL = (id, color) => { const [p, n] = id.split(':'); return `https://api.iconify.design/${p}/${n}.svg?height=512` + (color ? `&color=${encodeURIComponent(color)}` : ''); };
 const COLOR_SETS = new Set(['fluent-emoji', 'fluent-emoji-flat', 'noto']);
 const isMono = id => !COLOR_SETS.has(id.split(':')[0]);
+// Icons are drawn from Iconify's JSON data (one request per icon set) instead of one image request per icon:
+// dozens of separate SVG requests at once can hit the public API's limit and show as broken images.
+const ICON_DATA = new Map();
+async function loadIconData(ids) {
+  const by = {}; ids.filter(id => !ICON_DATA.has(id)).forEach(id => { const [p, n] = id.split(':'); (by[p] = by[p] || []).push(n); });
+  await Promise.all(Object.entries(by).map(async ([p, names]) => {
+    for (let i = 0; i < names.length; i += 60) {
+      const part = names.slice(i, i + 60), r = await fetch(`https://api.iconify.design/${p}.json?icons=${part.map(encodeURIComponent).join(',')}`);
+      if (!r.ok) throw new Error('icons ' + r.status);
+      const j = await r.json(), icons = j.icons || {}, aliases = j.aliases || {};
+      part.forEach(n => {
+        let ic = icons[n], a = aliases[n], hops = 0; while (!ic && a && hops++ < 5) { ic = icons[a.parent]; if (!ic) a = aliases[a.parent]; }
+        if (!ic) return;
+        ICON_DATA.set(`${p}:${n}`, { body: ic.body, w: ic.width ?? j.width ?? 16, h: ic.height ?? j.height ?? 16, l: ic.left ?? j.left ?? 0, t: ic.top ?? j.top ?? 0 });
+      });
+    }
+  }));
+}
+function iconSVG(id, color, height) {
+  const d = ICON_DATA.get(id); if (!d) return null;
+  const body = color ? d.body.replace(/currentColor/g, color) : d.body, w = Math.round(height * d.w / d.h);
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${height}" viewBox="${d.l} ${d.t} ${d.w} ${d.h}">${body}</svg>`;
+}
+const svgDataURL = t => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(t);
+async function iconImageData(id, color) {
+  try { await loadIconData([id]); const t = iconSVG(id, color, 512); if (t) return await blobToDataURL(new Blob([t], { type: 'image/svg+xml' }), 1024); } catch (e) { console.warn(e); }
+  return fetchImageDataURL(iconURL(id, color), { proxy: false, maxSide: 1024 });
+}
 
 
 /* ---------------- text tab ---------------- */
@@ -4387,13 +4415,15 @@ async function searchIcons() {
   try {
     const r = await fetch(`https://api.iconify.design/search?query=${encodeURIComponent(q)}&limit=96&prefixes=${ICON_SETS}`);
     const d = await r.json(); const icons = d.icons || [];
-    $('#iconGrid').innerHTML = icons.map(id => `<button type="button" data-id="${esc(id)}" title="${esc(id)}"><img src="${iconURL(id, isMono(id) ? '#15171C' : '').replace('height=512', 'height=48')}" alt="" loading="lazy"></button>`).join('');
+    let local = true; try { await loadIconData(icons); } catch (e) { console.warn(e); local = false; }
+    const thumb = id => { const c = isMono(id) ? '#15171C' : ''; const t = local && iconSVG(id, c, 48); return t ? svgDataURL(t) : iconURL(id, c).replace('height=512', 'height=48'); };
+    $('#iconGrid').innerHTML = icons.map(id => `<button type="button" data-id="${esc(id)}" title="${esc(id)}"><img src="${esc(thumb(id))}" alt="" loading="lazy"></button>`).join('');
     $('#iconEmpty').hidden = icons.length > 0; $('#iconEmpty').textContent = /[가-힣]/.test(q) ? '못 찾았어요. 영어로 찾아보세요 (예: arrow, fire).' : '결과가 없어요.';
   } catch (e) { $('#iconEmpty').textContent = '아이콘을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'; }
 }
 $('#iconGrid').onclick = async e => {
   const b = e.target.closest('[data-id]'); if (!b) return; const id = b.dataset.id;
-  try { const col = isMono(id) ? iconColor : ''; const d = await fetchImageDataURL(iconURL(id, col), { proxy: false, maxSide: 1024 }); await addImageData(d, { kind: 'icon', meta: { icon: id, color: col }, max: 280, name: id.split(':')[1] }); }
+  try { const col = isMono(id) ? iconColor : ''; const d = await iconImageData(id, col); await addImageData(d, { kind: 'icon', meta: { icon: id, color: col }, max: 280, name: id.split(':')[1] }); }
   catch (er) { toast('아이콘을 넣지 못했어요.'); }
 };
 
@@ -5253,7 +5283,7 @@ $('#iShape').onclick = e => {
 };
 clrHandlers.iColor = async (c, done) => {
   if (!done) return; c = toHex(c); const o = act(); if (!o || o.kind !== 'icon' || !o.meta) return;
-  try { const d = await fetchImageDataURL(iconURL(o.meta.icon, c), { proxy: false, maxSide: 1024 }); const id = registerAsset(d); await setImageDisplay(o, Object.assign({}, o.meta, { color: c, orig: null, crop: null }), id); commit(); }
+  try { const d = await iconImageData(o.meta.icon, c); const id = registerAsset(d); await setImageDisplay(o, Object.assign({}, o.meta, { color: c, orig: null, crop: null }), id); commit(); }
   catch (e) { toast('아이콘 색을 바꾸지 못했어요.'); }
 };
 clrHandlers.iconColor = c => { iconColor = c; };
