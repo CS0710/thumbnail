@@ -1422,6 +1422,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
     <img id="impPrev" class="exp-prev" alt="가져올 파일 미리보기" style="margin-top:4px">
     <div class="field" id="impPageF" hidden><label for="impPage">페이지 (일러스트 아트보드)</label><select class="sel" id="impPage"></select></div>
     <div class="field"><span class="lbl">넣을 곳</span><div class="seg" id="impWhere"><button data-w="new">새 아트보드로 (원래 크기)</button><button data-w="here">지금 아트보드에 맞춰 넣기</button></div></div>
+    <label class="tog" id="impSplitW" style="margin-top:12px"><input type="checkbox" id="impSplit" checked>조각마다 따로 넣기 (도형·선·글자를 하나씩 고르고 고칠 수 있어요)</label>
     <label class="tog" id="impTextW" style="margin-top:12px"><input type="checkbox" id="impText"><span id="impTextL"></span></label>
     <p class="hint" id="impTextH" style="margin:4px 0 0"></p>
     <div id="impProg" hidden><div class="bar"><i id="impBar"></i></div><p class="hint" id="impProgT"></p></div>
@@ -7190,7 +7191,7 @@ async function openImport(file) {
       IMP.W = IMP.psd.width; IMP.H = IMP.psd.height;
       $('#impInfo').textContent = `${IMP.W}×${IMP.H}px · 레이어 ${n.length}개 · 글자 레이어 ${n.filter(l => l.text).length}개`;
       if (IMP.psd.canvas) $('#impPrev').src = IMP.psd.canvas.toDataURL('image/jpeg', 0.8);
-      $('#impTextW').hidden = false; $('#impText').checked = true; $('#impTextL').textContent = '글자 레이어를 고칠 수 있는 글자로 바꾸기';
+      $('#impSplitW').hidden = true; $('#impTextW').hidden = false; $('#impText').checked = true; $('#impTextL').textContent = '글자 레이어를 고칠 수 있는 글자로 바꾸기';
       $('#impTextH').textContent = '끄면 포토샵에서 보이던 모양 그대로 그림으로 들어와요. 켜면 내용을 고칠 수 있지만, 같은 글꼴이 이 앱에 없으면 비슷한 글꼴로 바뀌어요. 레이어 스타일(그림자·획)과 조정 레이어는 빠질 수 있어요.';
     } else if (IMP.kind === 'pdf') {
       const pdfjs = await getPdfJs();
@@ -7201,14 +7202,14 @@ async function openImport(file) {
       $('#impPage').innerHTML = Array.from({ length: IMP.pdf.numPages }, (_, i) => `<option value="${i + 1}">${i + 1}쪽</option>`).join(''); $('#impPageF').hidden = IMP.pdf.numPages < 2;
       $('#impInfo').textContent = `${Math.round(IMP.W)}×${Math.round(IMP.H)}pt · ${IMP.pdf.numPages}쪽 · 벡터(도형·선)는 벡터 그대로 들어와요`;
       await impPdfPreview(1);
-      $('#impTextW').hidden = false; $('#impText').checked = false; $('#impTextL').textContent = '글자를 고칠 수 있는 글자로 바꾸기';
-      $('#impTextH').textContent = '끄면 원래 글꼴 모양 그대로 들어와요(내용 수정은 어려워요). 켜면 내용을 고칠 수 있지만 글꼴이 비슷한 걸로 바뀌어요. 들어온 그림은 하나로 묶여 있어요. 오른쪽 ‘묶음 풀기’를 누르면 조각마다 색을 바꾸거나 옮길 수 있어요.';
+      $('#impSplitW').hidden = false; $('#impTextW').hidden = false; $('#impText').checked = false; $('#impTextL').textContent = '글자를 고칠 수 있는 글자로 바꾸기';
+      $('#impTextH').textContent = '끄면 원래 글꼴 모양 그대로 들어와요(내용 수정은 어려워요). 켜면 내용을 고칠 수 있지만 글꼴이 비슷한 걸로 바뀌어요. ‘조각마다 따로’를 끄면 하나로 묶여 들어오고, 나중에 오른쪽 ‘묶음 풀기’로 나눌 수 있어요.';
     } else {
       IMP.svg = new TextDecoder().decode(buf);
       const vb = IMP.svg.match(/viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/), w = IMP.svg.match(/<svg[^>]*\swidth="([\d.]+)/), h = IMP.svg.match(/<svg[^>]*\sheight="([\d.]+)/);
       IMP.W = +(w && w[1]) || +(vb && vb[1]) || 800; IMP.H = +(h && h[1]) || +(vb && vb[2]) || 800;
       $('#impInfo').textContent = `SVG ${Math.round(IMP.W)}×${Math.round(IMP.H)} · 벡터 그대로 들어와요. ‘묶음 풀기’로 조각마다 편집할 수 있어요.`;
-      $('#impPrev').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(IMP.svg); $('#impTextW').hidden = true; $('#impTextH').textContent = '';
+      $('#impPrev').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(IMP.svg); $('#impSplitW').hidden = false; $('#impTextW').hidden = true; $('#impTextH').textContent = '';
     }
     $('#impGo').disabled = false;
   } catch (e) {
@@ -7322,15 +7323,24 @@ async function impBuildPdf(n, editText) {
     await ensureFont('Pretendard', 'normal', tc.items.map(i => i.str).join('').slice(0, 200));
   }
   impProg(0.7, '도형을 만드는 중…');
-  const g = await svgToGroup(svg, vp.width, vp.height);
-  return { objs: (g ? [g] : []).concat(texts), skipped: [], fonts: pdfFonts };
+  const vs = await svgToObjs(svg, $('#impSplit').checked);
+  return { objs: vs.concat(texts), skipped: [], fonts: pdfFonts, tooMany: vs.length === 1 && vs[0].tooMany };
 }
-function svgToGroup(svg, W, H) {
+// split = every path/shape/text as its own layer (easy to edit); otherwise one group you can ungroup later
+const SPLIT_MAX = 600;
+function svgToObjs(svg, split) {
   return new Promise(res => fabric.loadSVGFromString(svg, (objs, opts) => {
-    objs = (objs || []).filter(Boolean); if (!objs.length) return res(null);
+    objs = (objs || []).filter(Boolean); if (!objs.length) return res([]);
+    const base = (IMP.file && IMP.file.name.replace(/\.[^.]+$/, '')) || '벡터 그림';
+    // a PDF page usually starts with a full-page white box: keep it only if it isn't plain white
+    if (split && objs.length <= SPLIT_MAX) {
+      const kind = o => o.type === 'text' ? '글자' : o.type === 'image' ? '그림' : '도형';
+      objs.forEach((o, i) => o.set({ name: `${base} · ${kind(o)} ${i + 1}`, kind: o.type === 'image' ? 'image' : 'shape', meta: Object.assign({}, o.meta, { shape: 'vector' }) }));
+      return res(objs);
+    }
     const g = objs.length === 1 ? objs[0] : fabric.util.groupSVGElements(objs, opts);
-    g.set({ name: (IMP.file && IMP.file.name.replace(/\.[^.]+$/, '')) || '벡터 그림', kind: 'vector' });
-    res(g);
+    g.set({ name: base, kind: 'vector' }); g.tooMany = split && objs.length > SPLIT_MAX;
+    res([g]);
   }));
 }
 $('#impGo').onclick = async () => {
@@ -7340,7 +7350,7 @@ $('#impGo').onclick = async () => {
     let r;
     if (IMP.kind === 'psd') r = await impBuildPsd(editText);
     else if (IMP.kind === 'pdf') r = await impBuildPdf(+$('#impPage').value || 1, editText);
-    else { impProg(0.5, '벡터로 바꾸는 중…'); const g = await svgToGroup(IMP.svg, IMP.W, IMP.H); r = { objs: g ? [g] : [], skipped: [] }; }
+    else { impProg(0.5, '벡터로 바꾸는 중…'); const vs = await svgToObjs(IMP.svg, $('#impSplit').checked); r = { objs: vs, skipped: [], tooMany: vs.length === 1 && vs[0].tooMany }; }
     if (!r.objs.length) throw new Error('empty');
     // vectors scale without loss, so small PDF pages get a sharper working size
     const up = IMP.kind === 'psd' ? 1 : Math.max(1, Math.min(4, 1600 / Math.max(IMP.W, IMP.H)));
@@ -7355,7 +7365,7 @@ $('#impGo').onclick = async () => {
     impProg(1, '마무리하는 중…');
     cv.discardActiveObject(); cv.requestRenderAll(); commit(); refreshLayers();
     $('#impModal').hidden = true;
-    toast(`${IMP.file.name}을(를) 가져왔어요. 레이어 ${r.objs.length}개` + (r.skipped.length ? ` · 조정 레이어 등 ${r.skipped.length}개는 빠졌어요` : '') + '.', 4800);
+    toast(`${IMP.file.name}을(를) 가져왔어요. 레이어 ${r.objs.length}개` + (r.skipped.length ? ` · 조정 레이어 등 ${r.skipped.length}개는 빠졌어요` : '') + (r.tooMany ? ` · 조각이 ${SPLIT_MAX}개가 넘어서 한 묶음으로 넣었어요. 오른쪽 ‘묶음 풀기’로 나눌 수 있어요` : '') + '.', 5200);
   } catch (e) { console.error(e); impProg(0, '가져오지 못했어요. ' + (String(e && e.message) === 'empty' ? '들어올 내용이 없어요.' : '파일이 너무 크거나 지원하지 않는 형식일 수 있어요.')); }
   $('#impGo').disabled = false;
 };
