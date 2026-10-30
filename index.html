@@ -711,6 +711,24 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 .bx-x:hover{background:var(--sec);color:var(--ink)}
 #bxBg{width:44px;height:30px;border:1px solid var(--line);border-radius:4px;padding:0;background:none}
 #pMulti details.sec{margin-top:16px}
+/* shapes, frames, masks */
+.shape-h{display:flex;flex-direction:column;gap:2px}
+.shape-h small{font-weight:400;font-size:12px;color:var(--muted)}
+#shapeGrid .shapes{grid-template-columns:repeat(4,1fr);gap:6px}
+#shapeGrid .shape-h:first-child{margin-top:0}
+.masks{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:6px}
+.masks button{aspect-ratio:1;border-radius:4px;background:var(--sec);display:grid;place-items:center;padding:4px;color:var(--ink)}
+.masks button svg{width:100%;height:100%}
+.masks button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
+.masks.big{grid-template-columns:repeat(4,1fr);gap:6px}
+.masks.big button,.frames2 button{aspect-ratio:auto;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;font-size:11.5px;color:var(--text)}
+.masks.big button svg,.frames2 button svg{width:34px;height:34px;color:var(--ink)}
+.masks button:hover,.frames2 button:hover{background:var(--sec-hover)}
+.frames2{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.frames2 button{border-radius:4px;background:var(--sec)}
+.ie-seg{display:grid;grid-template-columns:1fr 1fr;margin:-4px 0 12px}
+#expPrev.clear{background:repeating-conic-gradient(#D5D8DF 0 25%,#FFFFFF 0 50%) 0 0/16px 16px}
+#expFmt{display:grid;grid-template-columns:repeat(5,1fr)}
 /* My Space */
 .ms-err{margin-top:12px;padding:12px 14px;border-radius:4px;background:var(--panel-2);box-shadow:inset 3px 0 0 var(--hot);font-size:13px;color:var(--ink)}
 .ms-err p{margin:6px 0}
@@ -873,8 +891,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
       <button role="tab" data-tab="text"><span class="ic"><svg class="i"><use href="#i-text"/></svg></span>텍스트</button>
       <button role="tab" data-tab="photo"><span class="ic"><svg class="i"><use href="#i-photo"/></svg></span>사진</button>
       <button role="tab" data-tab="video"><span class="ic"><svg class="i"><use href="#i-film"/></svg></span>영상</button>
-      <button role="tab" data-tab="emoji"><span class="ic"><svg class="i"><use href="#i-smile"/></svg></span>이모지</button>
-      <button role="tab" data-tab="icon"><span class="ic"><svg class="i"><use href="#i-star"/></svg></span>아이콘</button>
+      <button role="tab" data-tab="icon"><span class="ic"><svg class="i"><use href="#i-smile"/></svg></span>아이콘·이모지</button>
       <button role="tab" data-tab="shape"><span class="ic"><svg class="i"><use href="#i-shapes"/></svg></span>도형</button>
       <button role="tab" data-tab="upload"><span class="ic"><svg class="i"><use href="#i-upload"/></svg></span>업로드</button>
       <button role="tab" data-tab="bg"><span class="ic"><svg class="i"><use href="#i-bg"/></svg></span>배경</button>
@@ -969,7 +986,8 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 
       <!-- emoji -->
       <div data-panel="emoji" hidden>
-        <h2>이모지</h2>
+        <h2>아이콘·이모지</h2>
+        <div class="seg ie-seg"><button data-ie="icon" aria-pressed="false">아이콘</button><button data-ie="emoji" aria-pressed="true">이모지</button></div>
         <form class="search" id="emojiForm"><input class="txt" id="emojiQ" placeholder="예: 놀람, 하트, 불, 돈" autocomplete="off"></form>
         <div class="chips" id="emojiGroups"></div>
         <div class="emojis" id="emojiGrid"></div>
@@ -978,7 +996,8 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 
       <!-- icon -->
       <div data-panel="icon" hidden>
-        <h2>아이콘</h2>
+        <h2>아이콘·이모지</h2>
+        <div class="seg ie-seg"><button data-ie="icon" aria-pressed="true">아이콘</button><button data-ie="emoji" aria-pressed="false">이모지</button></div>
         <form class="search" id="iconForm">
           <input class="txt" id="iconQ" placeholder="예: 화살표, 체크, arrow" autocomplete="off">
           <button class="btn icon" aria-label="검색"><svg class="i"><use href="#i-search"/></svg></button>
@@ -993,7 +1012,12 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
       <!-- shape -->
       <div data-panel="shape" hidden>
         <h2>도형</h2>
-        <div class="shapes" id="shapeGrid"></div>
+        <div id="shapeGrid"></div>
+        <h3 class="shape-h">사진 틀 <small>사진을 고른 상태면 그 사진에, 아니면 빈 틀을 넣어요</small></h3>
+        <div class="masks big" id="maskGrid"></div>
+        <h3 class="shape-h">액자·테두리 <small>고른 요소 둘레에, 아니면 캔버스 둘레에</small></h3>
+        <div class="frames2" id="frameGrid"></div>
+        <p class="hint" style="margin:6px 0 0">더 많은 액자 그림은 <b>사진</b> 탭 Pixabay에서 ‘frame’, ‘border’를 <b>일러스트·벡터</b>로 찾아보세요 (상업적 무료).</p>
         <h3>직접 그리기</h3>
         <div class="seg grid2" id="penMode"><button data-p="off">끄기</button><button data-p="pen">펜</button><button data-p="arrow">화살표 펜</button><button data-p="hl">형광펜</button></div>
         <div class="field"><span class="lbl">색</span><div class="clr" data-clr="penC"></div></div>
@@ -1191,6 +1215,8 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <div class="insp-title">이미지</div>
         <details class="sec" data-sec="iCut"><summary>누끼 · 가리기</summary><div class="sec-b">
         <button class="btn primary" id="iCut" style="width:100%;margin-top:10px"><svg class="i"><use href="#i-wand"/></svg>누끼 · 배경 지우기</button>
+        <button class="btn sm" id="iReplace" style="width:100%;margin-top:6px"><svg class="i"><use href="#i-photo"/></svg>사진 바꾸기 (틀·크기 그대로)</button>
+        <input type="file" id="iReplaceFile" accept="image/*,.heic,.heif" hidden>
         <button class="btn sm" id="iEdit" style="width:100%;margin-top:6px">사진 편집 (도장·브러시·선택·자르기·곡선)</button>
         <button class="btn sm" id="iMosaic" style="width:100%;margin-top:6px">모자이크 · 흐림으로 가리기</button>
         <button class="btn sm ghost" id="iOrig" hidden style="margin-top:6px">원본 이미지로 되돌리기</button>
@@ -1210,7 +1236,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <details class="sec" data-sec="iShape"><summary>색 · 모양</summary><div class="sec-b">
         <div class="field"><span class="lbl">이 사진의 색 <small class="hint" style="margin:0">누르면 내 색에 저장</small></span><div class="clr" id="iPal"></div></div>
         <div class="field"><span class="lbl">모양</span>
-          <div class="seg" id="iShape"><button data-sh="none">그대로</button><button data-sh="circle">원</button><button data-sh="round">둥근 사각</button></div></div>
+          <div class="masks" id="iShape"></div></div>
         </div></details>
         <details class="sec" data-sec="iFx"><summary>보정 · 색 입히기</summary><div class="sec-b">
         <div class="field"><span class="lbl">밝기 <output id="fxBO">0</output></span><input type="range" id="fxB" min="-60" max="60" value="0"></div>
@@ -1337,12 +1363,13 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
     <h2 id="expTitle">이미지 내보내기</h2>
     <p class="hint" style="margin-top:0" id="expHint">유튜브 섬네일은 1280×720, 2MB 이하가 권장이에요.</p>
     <img class="exp-prev" id="expPrev" alt="내보낼 섬네일 미리보기">
-    <div class="field"><span class="lbl">형식</span><div class="seg" id="expFmt"><button data-f="jpeg">JPG (가벼움)</button><button data-f="png">PNG (선명함)</button></div></div>
-    <div class="field"><span class="lbl">해상도 <output id="expScaleO"></output></span><div class="seg" id="expScale"><button data-s="1">1배</button><button data-s="2">2배</button><button data-s="3">3배</button><button data-s="4">4배</button></div></div>
+    <div class="field"><span class="lbl">형식</span><div class="seg" id="expFmt"><button data-f="jpeg">JPG</button><button data-f="png">PNG</button><button data-f="pdf">PDF</button><button data-f="psd">PSD</button><button data-f="svg">SVG</button></div>
+      <p class="hint" id="expFmtHint" style="margin:6px 0 0"></p>
+      <label class="tog" id="expClearW" style="margin-top:8px"><input type="checkbox" id="expClear"><span id="expClearL">배경 투명하게</span></label>
+      <label class="tog" id="expPdfW" style="margin-top:8px" hidden><input type="checkbox" id="expPdfAll" checked>아트보드 전부 담기 (끄면 지금 아트보드만)</label></div>
+    <div class="field" id="expScaleF"><span class="lbl">해상도 <output id="expScaleO"></output></span><div class="seg" id="expScale"><button data-s="1">1배</button><button data-s="2">2배</button><button data-s="3">3배</button><button data-s="4">4배</button></div></div>
     <div class="field" id="expQF"><span class="lbl">JPG 품질 <output id="expQO">92</output></span><input type="range" id="expQ" min="50" max="100" value="92"></div>
     <div class="field"><label for="expName">파일 이름</label><input class="txt" id="expName"></div>
-    <div class="field"><span class="lbl">다른 형식으로</span><div class="row" id="expMore" style="flex-wrap:wrap"><button class="btn sm" data-x="psd">PSD (레이어 유지)</button><button class="btn sm" data-x="svg">SVG (벡터)</button><button class="btn sm" data-x="pdf">PDF (아트보드 전부)</button></div>
-      <p class="hint" style="margin:6px 0 0">PSD는 요소마다 레이어로 나뉘어 포토샵에서 열려요. SVG는 일러스트레이터에서 벡터로 열려요. PDF는 아트보드마다 한 쪽씩 고해상도로 담겨요. (.ai 파일로는 저장할 수 없어요)</p></div>
     <p style="margin:12px 0 0">파일 크기 <span class="meter" id="expSize">계산 중…</span></p>
     <div id="credBox" hidden>
       <h3 style="font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin:16px 0 4px">사용한 사진 출처</h3>
@@ -1395,6 +1422,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
     <img id="impPrev" class="exp-prev" alt="가져올 파일 미리보기" style="margin-top:4px">
     <div class="field" id="impPageF" hidden><label for="impPage">페이지 (일러스트 아트보드)</label><select class="sel" id="impPage"></select></div>
     <div class="field"><span class="lbl">넣을 곳</span><div class="seg" id="impWhere"><button data-w="new">새 아트보드로 (원래 크기)</button><button data-w="here">지금 아트보드에 맞춰 넣기</button></div></div>
+    <label class="tog" id="impSplitW" style="margin-top:12px"><input type="checkbox" id="impSplit" checked>조각마다 따로 넣기 (도형·선·글자를 하나씩 고르고 고칠 수 있어요)</label>
     <label class="tog" id="impTextW" style="margin-top:12px"><input type="checkbox" id="impText"><span id="impTextL"></span></label>
     <p class="hint" id="impTextH" style="margin:4px 0 0"></p>
     <div id="impProg" hidden><div class="bar"><i id="impBar"></i></div><p class="hint" id="impProgT"></p></div>
@@ -3958,19 +3986,69 @@ function makeText(text, o = {}) {
 }
 function starPts(n, R, r) { const p = []; for (let i = 0; i < n * 2; i++) { const a = -Math.PI / 2 + i * Math.PI / n, rr = i % 2 ? r : R; p.push({ x: Math.cos(a) * rr, y: Math.sin(a) * rr }); } return p; }
 const SHAPES = {
-  rect: { n: '사각형', svg: '<rect x="6" y="14" width="52" height="36" fill="currentColor"/>', make: o => new fabric.Rect(Object.assign({ width: 420, height: 240, fill: '#EE3124' }, o)) },
-  round: { n: '둥근 사각형', svg: '<rect x="6" y="14" width="52" height="36" rx="10" fill="currentColor"/>', make: o => new fabric.Rect(Object.assign({ width: 420, height: 240, rx: 36, ry: 36, fill: '#FFD21F' }, o)) },
-  circle: { n: '원', svg: '<circle cx="32" cy="32" r="24" fill="currentColor"/>', make: o => new fabric.Circle(Object.assign({ radius: 150, fill: '#2563EB' }, o)) },
-  ring: { n: '강조 동그라미', svg: '<circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="6"/>', make: o => new fabric.Circle(Object.assign({ radius: 150, fill: '', stroke: '#EE3124', strokeWidth: 16 }, o)) },
-  tri: { n: '삼각형', svg: '<path d="M32 8L58 54H6z" fill="currentColor"/>', make: o => new fabric.Triangle(Object.assign({ width: 280, height: 250, fill: '#22C55E' }, o)) },
-  star: { n: '별', svg: '<path d="M32 6l7.6 15.6 17.1 2.5-12.4 12 2.9 17L32 45l-15.2 8.1 2.9-17-12.4-12 17.1-2.5z" fill="currentColor"/>', make: o => new fabric.Polygon(starPts(5, 160, 66), Object.assign({ fill: '#FFD21F' }, o)) },
-  burst: { n: '쾅 터짐', svg: '<path d="M32 4l5 12 11-7-2 13 13 1-10 9 10 9-13 1 2 13-11-7-5 12-5-12-11 7 2-13-13-1 10-9-10-9 13-1-2-13 11 7z" fill="currentColor"/>', make: o => new fabric.Polygon(starPts(14, 190, 130), Object.assign({ fill: '#FFE600', stroke: '#111111', strokeWidth: 10 }, o)) },
-  arrow: { n: '화살표', svg: '<path d="M6 25h30V14l22 18-22 18V39H6z" fill="currentColor"/>', make: o => new fabric.Polygon([{x:0,y:40},{x:200,y:40},{x:200,y:0},{x:320,y:80},{x:200,y:160},{x:200,y:120},{x:0,y:120}], Object.assign({ fill: '#EE3124' }, o)) },
-  bubble: { n: '말풍선', svg: '<path d="M14 10h36a6 6 0 016 6v20a6 6 0 01-6 6H28l-10 10 2-10h-6a6 6 0 01-6-6V16a6 6 0 016-6z" fill="currentColor"/>', make: o => new fabric.Path('M 40 0 H 360 Q 400 0 400 40 V 200 Q 400 240 360 240 H 150 L 80 310 L 100 240 H 40 Q 0 240 0 200 V 40 Q 0 0 40 0 Z', Object.assign({ fill: '#FFFFFF', stroke: '#111111', strokeWidth: 8 }, o)) },
-  line: { n: '선', svg: '<path d="M6 32h52" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>', make: o => new fabric.Line([0, 0, 480, 0], Object.assign({ stroke: '#233237', strokeWidth: 10, strokeLineCap: 'round', fill: '', padding: 10 }, o)) },
-  dline: { n: '점선', svg: '<path d="M6 32h52" stroke="currentColor" stroke-width="6" stroke-dasharray="9 7"/>', make: o => { const l = new fabric.Line([0, 0, 480, 0], Object.assign({ stroke: '#233237', strokeWidth: 10, fill: '', padding: 10 }, o)); applyDash(l, 'dash'); return l; } },
-  bar: { n: '밑줄 띠', svg: '<rect x="4" y="27" width="56" height="12" rx="3" fill="currentColor"/>', make: o => new fabric.Rect(Object.assign({ width: 560, height: 40, rx: 8, ry: 8, fill: '#FFE600' }, o)) },
+  rect: { c: 'basic', n: '사각형', svg: '<rect x="6" y="14" width="52" height="36" fill="currentColor"/>', make: o => new fabric.Rect(Object.assign({ width: 420, height: 240, fill: '#EE3124' }, o)) },
+  round: { c: 'basic', n: '둥근 사각형', svg: '<rect x="6" y="14" width="52" height="36" rx="10" fill="currentColor"/>', make: o => new fabric.Rect(Object.assign({ width: 420, height: 240, rx: 36, ry: 36, fill: '#FFD21F' }, o)) },
+  circle: { c: 'basic', n: '원', svg: '<circle cx="32" cy="32" r="24" fill="currentColor"/>', make: o => new fabric.Circle(Object.assign({ radius: 150, fill: '#2563EB' }, o)) },
+  ring: { c: 'basic', n: '강조 동그라미', svg: '<circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="6"/>', make: o => new fabric.Circle(Object.assign({ radius: 150, fill: '', stroke: '#EE3124', strokeWidth: 16 }, o)) },
+  tri: { c: 'basic', n: '삼각형', svg: '<path d="M32 8L58 54H6z" fill="currentColor"/>', make: o => new fabric.Triangle(Object.assign({ width: 280, height: 250, fill: '#22C55E' }, o)) },
+  star: { c: 'deco', n: '별', svg: '<path d="M32 6l7.6 15.6 17.1 2.5-12.4 12 2.9 17L32 45l-15.2 8.1 2.9-17-12.4-12 17.1-2.5z" fill="currentColor"/>', make: o => new fabric.Polygon(starPts(5, 160, 66), Object.assign({ fill: '#FFD21F' }, o)) },
+  burst: { c: 'bubble', n: '쾅 터짐', svg: '<path d="M32 4l5 12 11-7-2 13 13 1-10 9 10 9-13 1 2 13-11-7-5 12-5-12-11 7 2-13-13-1 10-9-10-9 13-1-2-13 11 7z" fill="currentColor"/>', make: o => new fabric.Polygon(starPts(14, 190, 130), Object.assign({ fill: '#FFE600', stroke: '#111111', strokeWidth: 10 }, o)) },
+  arrow: { c: 'arrow', n: '화살표', svg: '<path d="M6 25h30V14l22 18-22 18V39H6z" fill="currentColor"/>', make: o => new fabric.Polygon([{x:0,y:40},{x:200,y:40},{x:200,y:0},{x:320,y:80},{x:200,y:160},{x:200,y:120},{x:0,y:120}], Object.assign({ fill: '#EE3124' }, o)) },
+  bubble: { c: 'bubble', n: '말풍선', svg: '<path d="M14 10h36a6 6 0 016 6v20a6 6 0 01-6 6H28l-10 10 2-10h-6a6 6 0 01-6-6V16a6 6 0 016-6z" fill="currentColor"/>', make: o => new fabric.Path('M 40 0 H 360 Q 400 0 400 40 V 200 Q 400 240 360 240 H 150 L 80 310 L 100 240 H 40 Q 0 240 0 200 V 40 Q 0 0 40 0 Z', Object.assign({ fill: '#FFFFFF', stroke: '#111111', strokeWidth: 8 }, o)) },
+  line: { c: 'line', n: '선', svg: '<path d="M6 32h52" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>', make: o => new fabric.Line([0, 0, 480, 0], Object.assign({ stroke: '#233237', strokeWidth: 10, strokeLineCap: 'round', fill: '', padding: 10 }, o)) },
+  dline: { c: 'line', n: '점선', svg: '<path d="M6 32h52" stroke="currentColor" stroke-width="6" stroke-dasharray="9 7"/>', make: o => { const l = new fabric.Line([0, 0, 480, 0], Object.assign({ stroke: '#233237', strokeWidth: 10, fill: '', padding: 10 }, o)); applyDash(l, 'dash'); return l; } },
+  bar: { c: 'deco', n: '밑줄 띠', svg: '<rect x="4" y="27" width="56" height="12" rx="3" fill="currentColor"/>', make: o => new fabric.Rect(Object.assign({ width: 560, height: 40, rx: 8, ry: 8, fill: '#FFE600' }, o)) },
 };
+// more shapes, drawn in a 100×100 box (paths & polygons → one editable path each)
+const PD = pts => 'M' + pts.map(p => p.join(' ')).join('L') + 'Z';
+const REG = (n, rot = -90) => PD(Array.from({ length: n }, (_, i) => { const a = (rot + i * 360 / n) * Math.PI / 180; return [+(50 + 50 * Math.cos(a)).toFixed(2), +(50 + 50 * Math.sin(a)).toFixed(2)]; }));
+const SCALLOP = (n, R, r) => PD(Array.from({ length: n * 2 }, (_, i) => { const a = (-90 + i * 180 / n) * Math.PI / 180, rr = i % 2 ? r : R; return [+(50 + rr * Math.cos(a)).toFixed(2), +(50 + rr * Math.sin(a)).toFixed(2)]; }));
+const MORE_SHAPES = {
+  // basic
+  oval: ['basic', '타원', 'M50 15A50 35 0 1 1 49.99 15Z', '#2563EB'],
+  hex: ['basic', '육각형', REG(6, 0), '#0BB7AE'],
+  penta: ['basic', '오각형', REG(5), '#FC6589'],
+  octa: ['basic', '팔각형', REG(8, 22.5), '#EE3124'],
+  diamond: ['basic', '마름모', PD([[50, 0], [100, 50], [50, 100], [0, 50]]), '#FFD21F'],
+  rtri: ['basic', '직각삼각형', PD([[0, 0], [0, 100], [100, 100]]), '#22C55E'],
+  para: ['basic', '평행사변형', PD([[25, 20], [100, 20], [75, 80], [0, 80]]), '#2563EB'],
+  trap: ['basic', '사다리꼴', PD([[22, 20], [78, 20], [100, 80], [0, 80]]), '#FF6F00'],
+  cutrect: ['basic', '모서리 자른 사각', PD([[14, 10], [86, 10], [100, 24], [100, 76], [86, 90], [14, 90], [0, 76], [0, 24]]), '#233237'],
+  semi: ['basic', '반원', 'M0 75A50 50 0 0 1 100 75Z', '#FC6589'],
+  arch: ['basic', '아치', 'M10 100V45A40 40 0 0 1 90 45V100Z', '#0BB7AE'],
+  pie: ['basic', '부채꼴', 'M0 0H100A100 100 0 0 1 0 100Z', '#FFD21F'],
+  donut: ['basic', '도넛', 'M50 0A50 50 0 1 1 49.99 0ZM50 28A22 22 0 1 0 50.01 28Z', '#EE3124'],
+  plus: ['basic', '더하기', PD([[35, 0], [65, 0], [65, 35], [100, 35], [100, 65], [65, 65], [65, 100], [35, 100], [35, 65], [0, 65], [0, 35], [35, 35]]), '#22C55E'],
+  // arrows & lines
+  arrow2: ['arrow', '양쪽 화살표', PD([[0, 50], [25, 20], [25, 38], [75, 38], [75, 20], [100, 50], [75, 80], [75, 62], [25, 62], [25, 80]]), '#2563EB'],
+  chev: ['arrow', '갈매기 화살표', PD([[0, 0], [55, 0], [100, 50], [55, 100], [0, 100], [45, 50]]), '#FC6589'],
+  curve: ['arrow', '굽은 화살표', 'M8 90C8 40 40 18 70 26L66 8L100 36L58 54L63 38C42 34 24 52 24 90Z', '#EE3124'],
+  uturn: ['arrow', '돌아가는 화살표', 'M20 100V45A30 30 0 0 1 80 45V60H96L70 92L44 60H60V45A10 10 0 0 0 40 45V100Z', '#233237'],
+  aline: ['line', '화살표 선', PD([[0, 46], [86, 46], [86, 38], [100, 50], [86, 62], [86, 54], [0, 54]]), '#233237'],
+  aline2: ['line', '양쪽 화살표 선', PD([[0, 50], [14, 38], [14, 46], [86, 46], [86, 38], [100, 50], [86, 62], [86, 54], [14, 54], [14, 62]]), '#233237'],
+  // bubbles & badges
+  rbubble: ['bubble', '둥근 말풍선', 'M50 5C77 5 98 22 98 45C98 68 77 85 50 85C43 85 36 84 30 82L10 96L16 76C7 68 2 57 2 45C2 22 23 5 50 5Z', '#FFFFFF'],
+  think: ['bubble', '생각 풍선', 'M25 70A18 18 0 0 1 22 36A24 24 0 0 1 64 22A22 22 0 0 1 94 44A18 18 0 0 1 82 72A20 20 0 0 1 50 78A22 22 0 0 1 25 70ZM20 84A6 6 0 1 1 19.99 84ZM8 96A4 4 0 1 1 7.99 96Z', '#FFFFFF'],
+  seal: ['bubble', '인증 배지', SCALLOP(18, 50, 43), '#FFD21F'],
+  ribbon: ['bubble', '리본 띠', 'M0 30H14V18H86V30H100L90 47L100 64H76V54H24V64H0L10 47Z', '#EE3124'],
+  tag: ['bubble', '꼬리표', 'M0 25H72L100 50L72 75H0ZM76 50A6 6 0 1 0 64 50A6 6 0 1 0 76 50Z', '#0BB7AE'],
+  // decorations
+  heart: ['deco', '하트', 'M50 90C22 70 2 52 2 31A24 24 0 0 1 50 20A24 24 0 0 1 98 31C98 52 78 70 50 90Z', '#EE3124'],
+  spark: ['deco', '반짝이', 'M50 0C53 38 62 47 100 50C62 53 53 62 50 100C47 62 38 53 0 50C38 47 47 38 50 0Z', '#FFD21F'],
+  star6: ['deco', '육각 별', SCALLOP(6, 50, 28), '#FC6589'],
+  bolt: ['deco', '번개', PD([[58, 0], [16, 56], [46, 56], [36, 100], [86, 40], [56, 40], [72, 0]]), '#FFD21F'],
+  moon: ['deco', '달', 'M62 4A46 46 0 1 0 96 72A38 38 0 1 1 62 4Z', '#FFD21F'],
+  drop: ['deco', '물방울', 'M50 0C50 0 14 44 14 64A36 36 0 0 0 86 64C86 44 50 0 50 0Z', '#2563EB'],
+  cloud: ['deco', '구름', 'M24 82A18 18 0 0 1 20 46A24 24 0 0 1 64 30A22 22 0 0 1 94 56A16 16 0 0 1 84 82Z', '#FFFFFF'],
+  check: ['deco', '체크', PD([[6, 52], [22, 36], [40, 54], [80, 12], [96, 28], [40, 86]]), '#22C55E'],
+  xmark: ['deco', '엑스', PD([[18, 2], [50, 34], [82, 2], [98, 18], [66, 50], [98, 82], [82, 98], [50, 66], [18, 98], [2, 82], [34, 50], [2, 18]]), '#EE3124'],
+  sun: ['deco', '해', SCALLOP(12, 50, 36), '#FF6F00'],
+};
+Object.entries(MORE_SHAPES).forEach(([k, [c, n, d, fill]]) => {
+  SHAPES[k] = { c, n, d, vb: '-6 -6 112 112', svg: `<path d="${d}" fill="currentColor" fill-rule="evenodd"/>`,
+    make: o => new fabric.Path(d, Object.assign({ fill, fillRule: 'evenodd', scaleX: 3, scaleY: 3 }, fill === '#FFFFFF' ? { stroke: '#233237', strokeWidth: 6 } : {}, o)) };
+});
+const SHAPE_GROUPS = [['basic', '기본 도형'], ['line', '선'], ['arrow', '화살표'], ['bubble', '말풍선·배지'], ['deco', '장식']];
 // stroke pattern, scaled to the stroke width so it keeps its look at any thickness
 const DASHES = { solid: null, dash: w => [w * 3, w * 2], dot: w => [0, w * 2], long: w => [w * 7, w * 3] };
 function applyDash(o, kind) {
@@ -3988,6 +4066,7 @@ function makeShape(kind, o = {}) {
 function addObj(o, { select = true } = {}) { cv.add(o); if (select) cv.setActiveObject(o); cv.requestRenderAll(); commit(); return o; }
 function imageFromData(dataURL) { return new Promise((res, rej) => fabric.Image.fromURL(dataURL, (img, err) => (!img || err || !img.width) ? rej(new Error('image')) : res(img))); }
 async function addImageData(dataURL, { kind = 'image', meta = null, max = 0.72, name = '' } = {}) {
+  const ph = act(); if (kind === 'image' && ph && ph.type === 'image' && ph.meta && ph.meta.placeholder) { await fillImage(ph, dataURL); toast('사진을 틀에 넣었어요.'); return ph; }
   const id = registerAsset(dataURL);
   const img = await imageFromData(dataURL);
   // max ≤ 1: fit inside that share of the canvas; max > 1: longest side in px
@@ -4427,8 +4506,10 @@ $('#iconGrid').onclick = async e => {
   catch (er) { toast('아이콘을 넣지 못했어요.'); }
 };
 
+$$('.ie-seg').forEach(g => g.onclick = e => { const b = e.target.closest('[data-ie]'); if (b) showTab(b.dataset.ie); });
+
 /* ---------------- shapes ---------------- */
-$('#shapeGrid').innerHTML = Object.entries(SHAPES).map(([k, s]) => `<button type="button" data-s="${k}" title="${s.n}" aria-label="${s.n}"><svg viewBox="0 0 64 64" style="color:var(--ink)">${s.svg}</svg></button>`).join('');
+$('#shapeGrid').innerHTML = SHAPE_GROUPS.map(([g, label]) => `<h3 class="shape-h">${label}</h3><div class="shapes">` + Object.entries(SHAPES).filter(([, s]) => (s.c || 'basic') === g).map(([k, s]) => `<button type="button" data-s="${k}" title="${s.n}" aria-label="${s.n}"><svg viewBox="${s.vb || '0 0 64 64'}" style="color:var(--ink)">${s.svg}</svg></button>`).join('') + '</div>').join('');
 $('#shapeGrid').onclick = e => { const b = e.target.closest('[data-s]'); if (b) addObj(makeShape(b.dataset.s)); };
 
 /* ---------------- uploads ---------------- */
@@ -5271,11 +5352,124 @@ const lookUpdate = debounce(async done => {
 }, 160);
 ['lkV', 'lkM', 'lkMA', 'lkHT', 'lkNR'].forEach(id => { $('#' + id).addEventListener('input', e => { $('#' + id + 'O').textContent = e.target.value; lookUpdate(false); }); $('#' + id).addEventListener('change', () => lookUpdate(true)); });
 $('#iToBg').onclick = () => { const o = act(); if (!o || o.type !== 'image') return; const d = assets.get(o.assetId); if (!d) return; cv.remove(o); cv.discardActiveObject(); setBgImage(d); };
+// photo frames: a shape a photo is cut into. full = stretch to the photo's box, else a centred square
+const MASKS = {
+  none: { n: '그대로' }, circle: { n: '원', d: 'M50 0A50 50 0 1 1 49.99 0Z' }, round: { n: '둥근 사각', full: 1 }, oval: { n: '타원', d: 'M50 0A50 50 0 1 1 49.99 0Z', full: 1 },
+  arch: { n: '아치', d: 'M0 100V50A50 50 0 0 1 100 50V100Z', full: 1 }, heart: { n: '하트', d: MORE_SHAPES.heart[2] }, star: { n: '별', d: SCALLOP(5, 50, 22) },
+  hex: { n: '육각형', d: REG(6, 0) }, diamond: { n: '마름모', d: MORE_SHAPES.diamond[2] }, blob: { n: '조약돌', d: 'M52 2C76 2 98 18 98 46C98 74 80 98 50 98C22 98 2 80 2 52C2 24 26 2 52 2Z' },
+  drop: { n: '물방울', d: MORE_SHAPES.drop[2] }, cloud: { n: '구름', d: MORE_SHAPES.cloud[2] }, seal: { n: '톱니 원', d: SCALLOP(18, 50, 45) }, tri: { n: '삼각형', d: 'M50 0L100 100H0Z' },
+};
 function applyImageShape(o, sh) {
-  const w = o.width, h = o.height, m = Math.min(w, h);
-  o.clipPath = sh === 'circle' ? new fabric.Circle({ radius: m / 2, originX: 'center', originY: 'center' }) : sh === 'round' ? new fabric.Rect({ width: w, height: h, rx: m * 0.12, ry: m * 0.12, originX: 'center', originY: 'center' }) : null;
+  const w = o.width, h = o.height, m = Math.min(w, h), M = MASKS[sh];
+  if (!M || sh === 'none') o.clipPath = null;
+  else if (sh === 'round') o.clipPath = new fabric.Rect({ width: w, height: h, rx: m * 0.12, ry: m * 0.12, originX: 'center', originY: 'center' });
+  else { const p = new fabric.Path(M.d, { originX: 'center', originY: 'center', left: 0, top: 0, fillRule: 'evenodd' }); p.set({ scaleX: (M.full ? w : m) / p.width, scaleY: (M.full ? h : m) / p.height }); o.clipPath = p; }
   o.dirty = true;
 }
+const maskSVG = (k, M) => k === 'none' ? '<svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" fill="none" stroke="currentColor" stroke-width="6" stroke-dasharray="10 8"/></svg>' : k === 'round' ? '<svg viewBox="0 0 100 100"><rect x="4" y="14" width="92" height="72" rx="12" fill="currentColor"/></svg>' : `<svg viewBox="-4 -4 108 108"><path d="${M.d}" fill="currentColor" fill-rule="evenodd"${M.full ? ' transform="translate(0 14) scale(1 .72)"' : ''}/></svg>`;
+$('#iShape').innerHTML = Object.entries(MASKS).map(([k, M]) => `<button type="button" data-sh="${k}" title="${M.n}" aria-label="${M.n}">${maskSVG(k, M)}</button>`).join('');
+// empty photo frame: a grey placeholder cut to the shape; fill it with 사진 바꾸기, a drop, or any photo you add while it's selected
+function placeholderURL() {
+  const c = document.createElement('canvas'); c.width = c.height = 800; const x = c.getContext('2d');
+  x.fillStyle = '#DADCE0'; x.fillRect(0, 0, 800, 800); x.strokeStyle = '#9BA2AE'; x.lineWidth = 18; x.lineJoin = 'round';
+  x.strokeRect(290, 300, 220, 170); x.beginPath(); x.moveTo(300, 455); x.lineTo(370, 380); x.lineTo(420, 430); x.lineTo(450, 400); x.lineTo(500, 455); x.stroke(); x.beginPath(); x.arc(450, 345, 18, 0, Math.PI * 2); x.stroke();
+  x.fillStyle = '#636978'; x.font = '600 44px Pretendard, sans-serif'; x.textAlign = 'center'; x.fillText('사진을 넣어 주세요', 400, 560);
+  return c.toDataURL('image/png');
+}
+async function addMaskFrame(sh) {
+  const o = act();
+  if (o && o.type === 'image') { applyImageShape(o, sh); o.meta = Object.assign({}, o.meta, { shape: sh }); cv.requestRenderAll(); commit(); syncPanel(); return; }
+  const d = placeholderURL(), id = registerAsset(d), img = await imageFromData(d), sz = Math.min(doc.w, doc.h) * 0.5;
+  img.set({ left: doc.w / 2, top: doc.h / 2, originX: 'center', originY: 'center', scaleX: sz / 800, scaleY: sz / 800, assetId: id, kind: 'image', name: '사진 틀 · ' + MASKS[sh].n, meta: { shape: sh, placeholder: true } });
+  applyImageShape(img, sh); addObj(img); toast('빈 사진 틀을 넣었어요. 고른 채로 사진을 넣거나 ‘사진 바꾸기’를 누르면 틀에 들어가요.', 4200);
+}
+$('#maskGrid').innerHTML = Object.entries(MASKS).filter(([k]) => k !== 'none').map(([k, M]) => `<button type="button" data-mk="${k}" title="${M.n}" aria-label="사진 틀 ${M.n}">${maskSVG(k, M)}<span>${M.n}</span></button>`).join('');
+$('#maskGrid').onclick = e => { const b = e.target.closest('[data-mk]'); if (b) addMaskFrame(b.dataset.mk); };
+// swap the picture but keep the frame: crop the new photo to the old box's shape, same size, same place
+async function fillImage(o, dataURL) {
+  const bw = o.width * o.scaleX, bh = o.height * o.scaleY, src = await loadImgEl(dataURL), W = src.naturalWidth, H = src.naturalHeight, r = bw / bh;
+  let cw = W, ch = W / r; if (ch > H) { ch = H; cw = H * r; }
+  const c = document.createElement('canvas'); c.width = Math.round(cw); c.height = Math.round(ch); c.getContext('2d').drawImage(src, (W - cw) / 2, (H - ch) / 2, cw, ch, 0, 0, c.width, c.height);
+  const id = registerAsset(c.toDataURL(/png/.test(dataURL.slice(0, 30)) ? 'image/png' : 'image/jpeg', 0.92));
+  const m = Object.assign({}, o.meta, { orig: null, base: null, crop: null, placeholder: false });
+  await setImageDisplay(o, m, id);
+  o.set({ scaleX: bw / o.width * Math.sign(o.scaleX || 1), scaleY: bh / o.height * Math.sign(o.scaleY || 1) }); if (m.shape) applyImageShape(o, m.shape); o.setCoords(); cv.requestRenderAll(); commit();
+}
+$('#iReplace').onclick = () => $('#iReplaceFile').click();
+$('#iReplaceFile').onchange = async e => { let f = e.target.files[0]; e.target.value = ''; const o = act(); if (!f || !o || o.type !== 'image') return; try { f = await heicFix(f); await fillImage(o, await blobToDataURL(f, 2560)); toast('사진을 바꿨어요. 틀과 크기는 그대로예요.'); } catch (er) { console.error(er); toast('사진을 바꾸지 못했어요.'); } };
+
+// ---- decorative frames around the selection (or the canvas) ----
+const RRp = (x, y, w, h, r) => `M${x + r} ${y}H${x + w - r}A${r} ${r} 0 0 1 ${x + w} ${y + r}V${y + h - r}A${r} ${r} 0 0 1 ${x + w - r} ${y + h}H${x + r}A${r} ${r} 0 0 1 ${x} ${y + h - r}V${y + r}A${r} ${r} 0 0 1 ${x + r} ${y}Z`;
+const Rp = (x, y, w, h) => `M${x} ${y}H${x + w}V${y + h}H${x}Z`;
+const FRAMES = {
+  line: { n: '심플', ic: '<rect x="10" y="14" width="80" height="72" fill="none" stroke="currentColor" stroke-width="6"/>' },
+  rounded: { n: '둥근 테두리', ic: '<rect x="10" y="14" width="80" height="72" rx="14" fill="none" stroke="currentColor" stroke-width="6"/>' },
+  double: { n: '이중선', ic: '<rect x="8" y="12" width="84" height="76" fill="none" stroke="currentColor" stroke-width="3"/><rect x="16" y="20" width="68" height="60" fill="none" stroke="currentColor" stroke-width="3"/>' },
+  dash: { n: '점선', ic: '<rect x="10" y="14" width="80" height="72" fill="none" stroke="currentColor" stroke-width="6" stroke-dasharray="10 7"/>' },
+  corner: { n: '꺾쇠', ic: '<path d="M10 34V14H30M70 14H90V34M90 66V86H70M30 86H10V66" fill="none" stroke="currentColor" stroke-width="7"/>' },
+  polaroid: { n: '폴라로이드', ic: '<path d="M14 8H86V92H14ZM22 16V68H78V16Z" fill="currentColor" fill-rule="evenodd"/>' },
+  stamp: { n: '우표', ic: '<path d="M10 10h80v80h-80z" fill="none" stroke="currentColor" stroke-width="7" stroke-dasharray="7 5"/><rect x="22" y="22" width="56" height="56" fill="none" stroke="currentColor" stroke-width="3"/>' },
+  film: { n: '필름', ic: '<path d="M4 18H96V82H4ZM10 30V70H90V30ZM12 21h6v5h-6zM28 21h6v5h-6zM44 21h6v5h-6zM60 21h6v5h-6zM76 21h6v5h-6zM12 74h6v5h-6zM28 74h6v5h-6zM44 74h6v5h-6zM60 74h6v5h-6zM76 74h6v5h-6z" fill="currentColor" fill-rule="evenodd"/>' },
+  browser: { n: '브라우저 창', ic: '<path d="M6 12H94V88H6ZM12 30V82H88V30Z" fill="currentColor" fill-rule="evenodd"/><circle cx="16" cy="21" r="3" fill="var(--panel)"/><circle cx="25" cy="21" r="3" fill="var(--panel)"/><circle cx="34" cy="21" r="3" fill="var(--panel)"/>' },
+  phone: { n: '휴대폰', ic: '<path d="M30 4h40a8 8 0 0 1 8 8v76a8 8 0 0 1-8 8h-40a8 8 0 0 1-8-8v-76a8 8 0 0 1 8-8zM28 12v76h44v-76zM42 14h16v4h-16z" fill="currentColor" fill-rule="evenodd"/>' },
+  tape: { n: '테이프', ic: '<rect x="18" y="22" width="64" height="62" fill="none" stroke="currentColor" stroke-width="3"/><path d="M8 18l18-12 10 15-18 12zM92 18l-18-12-10 15 18 12z" fill="currentColor" opacity=".6"/>' },
+  ornament: { n: '장식 모서리', ic: '<path d="M10 40C10 22 22 10 40 10M18 32C18 24 24 18 32 18M90 40C90 22 78 10 60 10M82 32C82 24 76 18 68 18M10 60C10 78 22 90 40 90M18 68C18 76 24 82 32 82M90 60C90 78 78 90 60 90M82 68C82 76 76 82 68 82" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>' },
+  neon: { n: '네온', ic: '<rect x="12" y="16" width="76" height="68" rx="6" fill="none" stroke="currentColor" stroke-width="6"/>' },
+};
+function frameObjs(kind, b) {
+  const { left: x, top: y, width: w, height: h } = b, m = Math.min(w, h), t = Math.max(4, Math.round(m * 0.035)), base = { kind: 'shape', strokeUniform: true, meta: { shape: 'frame', frame: kind }, name: '액자 · ' + FRAMES[kind].n };
+  const P = (d, o) => new fabric.Path(d, Object.assign({ fillRule: 'evenodd', objectCaching: false }, base, o));
+  if (kind === 'line' || kind === 'rounded' || kind === 'dash' || kind === 'neon') {
+    const r = kind === 'rounded' ? m * 0.06 : kind === 'neon' ? m * 0.03 : 0;
+    const o = new fabric.Rect(Object.assign({}, base, { left: x, top: y, width: w, height: h, rx: r, ry: r, fill: '', stroke: kind === 'neon' ? '#FF4FD8' : '#233237', strokeWidth: t, originX: 'left', originY: 'top' }));
+    if (kind === 'dash') { o.set({ strokeDashArray: [t * 2.2, t * 1.4] }); o.meta = Object.assign({}, o.meta, { dash: 'dash' }); }
+    if (kind === 'neon') o.set({ shadow: new fabric.Shadow({ color: '#FF4FD8', blur: t * 6, offsetX: 0, offsetY: 0 }) });
+    return [o];
+  }
+  if (kind === 'double') { const g = t * 1.4; return [P(Rp(x, y, w, h) + Rp(x + g, y + g, w - 2 * g, h - 2 * g), { fill: '', stroke: '#233237', strokeWidth: Math.max(2, t * 0.45) })]; }
+  if (kind === 'corner') { const L = m * 0.16; return [P(`M${x} ${y + L}V${y}H${x + L}M${x + w - L} ${y}H${x + w}V${y + L}M${x + w} ${y + h - L}V${y + h}H${x + w - L}M${x + L} ${y + h}H${x}V${y + h - L}`, { fill: '', stroke: '#233237', strokeWidth: t * 1.2, strokeLineCap: 'square' })]; }
+  if (kind === 'polaroid') { const p = m * 0.05, pb = m * 0.24; return [P(Rp(x - p, y - p, w + 2 * p, h + p + pb) + Rp(x, y, w, h), { fill: '#FFFFFF', shadow: new fabric.Shadow({ color: 'rgba(0,0,0,.28)', blur: m * 0.04, offsetX: 0, offsetY: m * 0.012 }) })]; }
+  if (kind === 'stamp') {
+    const p = t * 2.4, r = p * 0.42, X = x - p, Y = y - p, W = w + 2 * p, H = h + 2 * p;
+    const edge = (len, dx, dy) => { const n = Math.max(3, Math.floor(len / (r * 3.2))), step = len / n, gap = (step - 2 * r) / 2; let d = ''; for (let i = 0; i < n; i++) d += `l${dx * gap} ${dy * gap}a${r} ${r} 0 0 0 ${dx * 2 * r} ${dy * 2 * r}l${dx * gap} ${dy * gap}`; return d; };
+    const d = `M${X} ${Y}` + edge(W, 1, 0) + edge(H, 0, 1) + edge(W, -1, 0) + edge(H, 0, -1) + 'Z' + Rp(x, y, w, h);
+    return [P(d, { fill: '#FFFFFF', shadow: new fabric.Shadow({ color: 'rgba(0,0,0,.22)', blur: m * 0.03, offsetX: 0, offsetY: m * 0.01 }) })];
+  }
+  if (kind === 'film') {
+    const bh = m * 0.14, sp = m * 0.03, s = bh * 0.42; let d = Rp(x - sp, y - bh, w + 2 * sp, h + 2 * bh) + Rp(x, y, w, h);
+    const n = Math.max(4, Math.floor((w + 2 * sp) / (s * 2))), step = (w + 2 * sp) / n;
+    for (let i = 0; i < n; i++) { const hx = x - sp + i * step + (step - s) / 2; d += Rp(hx, y - bh + (bh - s) / 2, s, s * 0.8) + Rp(hx, y + h + (bh - s) / 2, s, s * 0.8); }
+    return [P(d, { fill: '#111111' })];
+  }
+  if (kind === 'browser') {
+    const bar = m * 0.09, bw = Math.max(2, t * 0.5), d = Rp(x - bw, y - bar, w + 2 * bw, h + bar + bw) + Rp(x, y, w, h);
+    const frame = P(d, { fill: '#E5E7EB' }), dots = ['#FF5F57', '#FEBC2E', '#28C840'].map((c, i) => new fabric.Circle({ left: x + bar * (0.55 + i * 0.6), top: y - bar / 2, originX: 'center', originY: 'center', radius: bar * 0.18, fill: c }));
+    return [new fabric.Group([frame, ...dots], { name: '액자 · 브라우저 창', kind: 'shape', meta: { frame: kind } })];
+  }
+  if (kind === 'phone') { const p = m * 0.05, R = m * 0.12, d = RRp(x - p, y - p * 1.8, w + 2 * p, h + p * 3.6, R) + RRp(x, y, w, h, R * 0.55) + RRp(x + w / 2 - m * 0.13, y + p * 0.25, m * 0.26, p * 0.8, p * 0.4); return [P(d, { fill: '#111111' })]; }
+  if (kind === 'tape') {
+    const tw = m * 0.34, th = m * 0.085, strip = (cx, cy, a) => { const c = Math.cos(a), s2 = Math.sin(a), pts = [[-tw / 2, -th / 2], [tw / 2, -th / 2], [tw / 2, th / 2], [-tw / 2, th / 2]].map(([px, py]) => [cx + px * c - py * s2, cy + px * s2 + py * c]); return 'M' + pts.map(q => q.join(' ')).join('L') + 'Z'; };
+    return [P(strip(x + tw * 0.18, y + th * 0.2, -0.75) + strip(x + w - tw * 0.18, y + th * 0.2, 0.75), { fill: 'rgba(242,232,196,0.88)', shadow: new fabric.Shadow({ color: 'rgba(0,0,0,.15)', blur: 6, offsetX: 0, offsetY: 2 }) })];
+  }
+  if (kind === 'ornament') {
+    const L = m * 0.2, cr = (cx, cy, sx, sy) => `M${cx} ${cy + sy * L}C${cx} ${cy + sy * L * 0.45} ${cx + sx * L * 0.45} ${cy} ${cx + sx * L} ${cy}M${cx + sx * L * 0.2} ${cy + sy * L * 0.7}C${cx + sx * L * 0.2} ${cy + sy * L * 0.4} ${cx + sx * L * 0.4} ${cy + sy * L * 0.2} ${cx + sx * L * 0.7} ${cy + sy * L * 0.2}`;
+    return [P(cr(x, y, 1, 1) + cr(x + w, y, -1, 1) + cr(x, y + h, 1, -1) + cr(x + w, y + h, -1, -1), { fill: '', stroke: '#B8860B', strokeWidth: t * 0.6, strokeLineCap: 'round' })];
+  }
+  return [];
+}
+$('#frameGrid').innerHTML = Object.entries(FRAMES).map(([k, f]) => `<button type="button" data-fr="${k}" title="${f.n}" aria-label="액자 ${f.n}"><svg viewBox="0 0 100 100" style="color:var(--ink)">${f.ic}</svg><span>${f.n}</span></button>`).join('');
+$('#frameGrid').onclick = e => {
+  const b = e.target.closest('[data-fr]'); if (!b) return; const sel = act();
+  let box;
+  if (sel && sel.type !== 'activeSelection') { const r = sel.getBoundingRect(true, true); box = { left: r.left, top: r.top, width: r.width, height: r.height }; }
+  else { const g = Math.round(Math.min(doc.w, doc.h) * 0.05); box = { left: g, top: g, width: doc.w - 2 * g, height: doc.h - 2 * g }; }
+  const objs = frameObjs(b.dataset.fr, box); if (!objs.length) return;
+  const behind = ['polaroid', 'stamp', 'film', 'browser', 'phone'].includes(b.dataset.fr) && sel && sel.type !== 'activeSelection';
+  objs.forEach(o => { o.setCoords(); cv.add(o); if (behind) { cv.moveTo(o, cv.getObjects().indexOf(sel)); } });
+  cv.setActiveObject(objs[0]); cv.requestRenderAll(); commit();
+  toast(sel && sel.type !== 'activeSelection' ? '고른 요소 둘레에 액자를 넣었어요. 색·굵기는 오른쪽에서 바꿀 수 있어요.' : '캔버스 둘레에 액자를 넣었어요. 사진을 고른 뒤 누르면 그 사진에 맞춰 들어가요.', 4200);
+};
+
 $('#iShape').onclick = e => {
   const b = e.target.closest('[data-sh]'); const o = act(); if (!b || !o || o.type !== 'image') return;
   applyImageShape(o, b.dataset.sh);
@@ -5635,7 +5829,7 @@ document.addEventListener('paste', e => {
 
 /* ---------------- tabs ---------------- */
 function showTab(k) {
-  $$('.rail button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === k));
+  $$('.rail button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === (k === 'emoji' ? 'icon' : k)));
   $$('[data-panel]').forEach(p => p.hidden = p.dataset.panel !== k);
   lsSet('tg.tab', k);
   if (k === 'emoji' && !$('#emojiGrid').children.length) renderEmoji();
@@ -5752,7 +5946,24 @@ function syncTitle() { const t = $('#vTitle').value || '영상 제목'; $$('[dat
 $('#vTitle').oninput = syncTitle;
 
 /* ---------------- export ---------------- */
-let expFmt = lsGet('tg.fmt') || 'jpeg', expBlob = null;
+let expFmt = lsGet('tg.fmt') || 'jpeg', expBlob = null, expClear = lsGet('tg.clear') === '1';
+const EXP_RASTER = ['jpeg', 'png'];
+const rasterFmt = () => expFmt === 'png' ? 'png' : 'jpeg';
+const clearOn = () => expClear && ['png', 'psd', 'svg'].includes(expFmt);
+function withNoBg(fn) { const a = cv.backgroundColor, b = cv.backgroundImage; cv.backgroundColor = null; cv.backgroundImage = null; try { return fn(); } finally { cv.backgroundColor = a; cv.backgroundImage = b; cv.requestRenderAll(); } }
+const renderExport = w => clearOn() ? withNoBg(() => renderOut(w)) : renderOut(w);
+const FMT_HINT = { jpeg: '가볍고 어디서나 열려요. 유튜브 섬네일에 알맞아요.', png: '선명하고, 배경을 투명하게 뺄 수 있어요.', pdf: '아트보드마다 한 쪽씩 담겨요. 인쇄나 공유용이에요.', psd: '요소마다 레이어로 나뉘어 포토샵에서 열려요. 글자는 포토샵 글자 레이어로 들어가요.', svg: '벡터라 일러스트레이터에서 열고 고칠 수 있어요. 사진은 그림 그대로 들어 있어요. (.ai로는 저장할 수 없어요)' };
+function syncExpUI() {
+  const raster = EXP_RASTER.includes(expFmt);
+  $$('#expFmt button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === expFmt));
+  $('#expFmtHint').textContent = FMT_HINT[expFmt] || '';
+  $('#expQF').hidden = !(expFmt === 'jpeg' || expFmt === 'pdf'); $('#expScaleF').hidden = !(raster || expFmt === 'pdf');
+  $('#expClearW').hidden = expFmt === 'pdf'; $('#expClear').checked = expClear; $('#expClearL').textContent = expFmt === 'jpeg' ? '배경 투명하게 (JPG는 투명이 안 돼서 PNG로 바꿔요)' : '배경 투명하게';
+  $('#expPdfW').hidden = expFmt !== 'pdf'; $('#expCopy').hidden = !raster;
+  $('#expPrev').classList.toggle('clear', clearOn());
+}
+$('#expClear').onchange = e => { expClear = e.target.checked; lsSet('tg.clear', expClear ? '1' : '0'); if (expClear && expFmt === 'jpeg') { expFmt = 'png'; lsSet('tg.fmt', expFmt); toast('투명 배경은 PNG로 저장돼요.'); } syncExpUI(); buildExport(); };
+$('#expPdfAll').onchange = () => buildExport();
 function stamp() { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; }
 function fmtBytes(n) { return n > 1048576 ? (n / 1048576).toFixed(2) + ' MB' : Math.round(n / 1024) + ' KB'; }
 let expScale = +(lsGet('tg.scale') || 1);
@@ -5766,16 +5977,22 @@ function syncScale() {
 $('#expScale').onclick = e => { const b = e.target.closest('[data-s]'); if (!b || b.disabled) return; expScale = +b.dataset.s; lsSet('tg.scale', expScale); syncScale(); buildExport(); };
 const buildExport = debounce(async () => {
   syncScale();
-  const c = renderOut(outW(doc)); const q = +$('#expQ').value / 100;
+  const c = renderExport(EXP_RASTER.includes(expFmt) || expFmt === 'pdf' ? outW(doc) : doc.w); const q = +$('#expQ').value / 100;
+  $('#expPrev').src = c.toDataURL(clearOn() ? 'image/png' : 'image/jpeg', 0.7);
+  const m = $('#expSize');
+  if (!EXP_RASTER.includes(expFmt)) {
+    expBlob = null; m.className = 'meter';
+    m.textContent = expFmt === 'pdf' ? `${$('#expPdfAll').checked ? proj.vars.length : 1}쪽 · 쪽마다 ${c.width}×${c.height}` : expFmt === 'psd' ? `${doc.w}×${doc.h} · 레이어 ${cv.getObjects().length + (clearOn() ? 0 : 1)}개` : `${doc.w}×${doc.h} · 벡터`;
+    return;
+  }
   expBlob = await new Promise(r => c.toBlob(r, 'image/' + expFmt, q));
-  $('#expPrev').src = c.toDataURL('image/jpeg', 0.7);
-  const m = $('#expSize'); const big = doc.size === 'yt' && expBlob.size > 2 * 1048576;
+  const big = doc.size === 'yt' && expBlob.size > 2 * 1048576;
   m.textContent = `${fmtBytes(expBlob.size)} · ${c.width}×${c.height}` + (doc.size === 'yt' ? (big ? ' — 2MB를 넘어요. JPG로 바꾸거나 품질을 낮춰 주세요.' : ' — 유튜브에 올릴 수 있어요') : '');
   m.className = 'meter ' + (big ? 'bad' : 'good');
 }, 120);
 function openExport() {
   cv.discardActiveObject(); cv.requestRenderAll();
-  $$('#expFmt button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === expFmt)); $('#expQF').hidden = expFmt !== 'jpeg';
+  syncExpUI();
   if (!$('#expName').value) $('#expName').value = '썸네일-' + stamp();
   $('#expSize').textContent = '계산 중…'; $('#expSize').className = 'meter';
   const cr = doc.credits || [];
@@ -5786,10 +6003,22 @@ function openExport() {
 }
 $('#exportBtn').onclick = openExport;
 $('#expClose').onclick = () => $('#expModal').hidden = true;
-$('#expFmt').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; expFmt = b.dataset.f; lsSet('tg.fmt', expFmt); $$('#expFmt button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#expQF').hidden = expFmt !== 'jpeg'; buildExport(); };
+$('#expFmt').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; expFmt = b.dataset.f; lsSet('tg.fmt', expFmt); syncExpUI(); buildExport(); };
 $('#expQ').oninput = e => { $('#expQO').textContent = e.target.value; buildExport(); };
 function downloadBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
-$('#expGo').onclick = async () => { if (!expBlob) await sleep(300); if (!expBlob) return; const n = ($('#expName').value.trim() || '썸네일') + (expFmt === 'png' ? '.png' : '.jpg'); downloadBlob(expBlob, n); toast('내려받았어요.'); $('#expName').value = ''; };
+$('#expGo').onclick = async () => {
+  if (!EXP_RASTER.includes(expFmt)) {
+    const b = $('#expGo'); b.disabled = true;
+    try {
+      if (expFmt === 'pdf') { toast('PDF를 만드는 중…'); const n = await exportPDF($('#expPdfAll').checked); toast(`PDF를 내려받았어요 (${n}쪽).`); }
+      else if (expFmt === 'psd') { toast('PSD를 만드는 중… 레이어가 많으면 몇 초 걸려요.'); const n = await exportPSD(); toast(`PSD를 내려받았어요 (레이어 ${n}개).`); }
+      else { exportSVG(); toast('SVG를 내려받았어요. 글꼴은 설치된 글꼴로 보여요.', 4200); }
+      $('#expName').value = '';
+    } catch (er) { console.error(er); toast(/script/.test(String(er && er.message)) ? '내보내기 도구를 받지 못했어요. 인터넷 연결을 확인해 주세요.' : '내보내지 못했어요. 다시 해 주세요.'); }
+    b.disabled = false; return;
+  }
+  if (!expBlob) await sleep(300); if (!expBlob) return; const n = ($('#expName').value.trim() || '썸네일') + (expFmt === 'png' ? '.png' : '.jpg'); downloadBlob(expBlob, n); toast('내려받았어요.'); $('#expName').value = '';
+};
 $('#expCopy').onclick = async () => {
   try { const c = renderOut(outW(doc)); const b = await new Promise(r => c.toBlob(r, 'image/png')); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast('이미지를 복사했어요. 원하는 곳에 붙여넣으세요.'); }
   catch (e) { toast('이 브라우저에서는 이미지 복사가 안 돼요. 내려받기를 써 주세요.'); }
@@ -5934,14 +6163,14 @@ $('#tplSaveMenu').onclick = () => { showTab('tpl'); setTimeout(() => $('#myTplNa
 $$('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').hidden = true));
 
 /* ---------------- offscreen rendering (variants, batch) ---------------- */
-async function renderState(st, width, mutate) {
+async function renderState(st, width, mutate, noBg) {
   const d = st.doc, json = JSON.parse(JSON.stringify(st.canvas)); hydrate(json);
   await regDocFonts(d); await loadFontsFor(json);
   const sc = new fabric.StaticCanvas(document.createElement('canvas'), { width: d.w, height: d.h, enableRetinaScaling: false, renderOnAddRemove: false });
   await new Promise(r => sc.loadFromJSON(json, r));
   sc.getObjects().forEach(prepObj);
   if (mutate) await mutate(sc);
-  applyBgTo(sc, Object.assign({ bgfx: {} }, d)); sc.renderAll();
+  if (!noBg) applyBgTo(sc, Object.assign({ bgfx: {} }, d)); sc.renderAll();
   const out = sc.toCanvasElement(width / d.w); sc.dispose(); return out;
 }
 const stateOf = i => i === proj.cur ? curState() : proj.vars[i].snap;
@@ -5949,7 +6178,7 @@ const canvasBlob = (c, fmt, q) => new Promise(r => c.toBlob(r, 'image/' + fmt, q
 const scriptCache = {};
 function loadScript(src) { return scriptCache[src] || (scriptCache[src] = new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; if (!/accounts\.google\.com/.test(src)) s.crossOrigin = 'anonymous'; s.onload = res; s.onerror = () => { delete scriptCache[src]; rej(new Error('script')); }; document.head.appendChild(s); })); }
 async function getZip() { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'); return new window.JSZip(); }
-const fmtExt = () => expFmt === 'png' ? 'png' : 'jpg';
+const fmtExt = () => rasterFmt() === 'png' ? 'png' : 'jpg';
 
 /* ---------------- variants (아트보드) ---------------- */
 const artName = i => (proj.vars[i] && proj.vars[i].title) || `아트보드 ${i + 1}`;
@@ -6026,8 +6255,8 @@ $('#vbar').onclick = async e => {
 };
 async function saveArtboard(i) {
   try {
-    const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(stateOf(i), outW(stateOf(i).doc));
-    downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`);
+    const c = i === proj.cur ? renderExport(outW(doc)) : await renderState(stateOf(i), outW(stateOf(i).doc), null, clearOn());
+    downloadBlob(await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`);
     toast(`‘${artName(i)}’ 저장했어요.`);
   } catch (e) { console.error(e); toast('이 아트보드를 저장하지 못했어요. 다시 해 주세요.'); }
 }
@@ -6063,12 +6292,12 @@ async function openBoard() {
 }
 $('#board').onclick = async e => {
   const ed = e.target.closest('[data-edit]'); if (ed) { $('#boardModal').hidden = true; await switchVariant(+ed.dataset.edit); return; }
-  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`); }
+  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderExport(outW(doc)) : await renderState(st, outW(st.doc), null, clearOn()); downloadBlob(await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`); }
 };
 async function zipVariants() {
   try {
     toast('아트보드를 묶는 중이에요…'); const zip = await getZip();
-    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); zip.file(`${String(i + 1).padStart(2, '0')}-${fileBase(i)}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderExport(outW(doc)) : await renderState(st, outW(st.doc), null, clearOn()); zip.file(`${String(i + 1).padStart(2, '0')}-${fileBase(i)}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
     downloadBlob(await zip.generateAsync({ type: 'blob' }), `${(proj.title || '썸네일').replace(/[\\/:*?"<>|]+/g, '_')}-${stamp()}.zip`); toast('아트보드를 ZIP으로 내려받았어요.');
   } catch (e) { console.error(e); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 }
@@ -6140,7 +6369,7 @@ $('#bZip').onclick = async () => {
   const rows = batchRows(); if (!rows.length) { toast('한 줄에 하나씩 글자를 써 주세요.'); return; }
   try {
     cv.discardActiveObject(); const zip = await getZip(); const pad = String(rows.length).length;
-    for (let i = 0; i < rows.length; i++) { $('#bInfo').textContent = `만드는 중 ${i + 1} / ${rows.length}`; const c = await batchRender(rows[i], outW(doc)); const nm = rows[i].split('|')[0].replace(/\\n|\*/g, ' ').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 30); zip.file(`${String(i + 1).padStart(pad, '0')}-${nm || '썸네일'}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    for (let i = 0; i < rows.length; i++) { $('#bInfo').textContent = `만드는 중 ${i + 1} / ${rows.length}`; const c = await batchRender(rows[i], outW(doc)); const nm = rows[i].split('|')[0].replace(/\\n|\*/g, ' ').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 30); zip.file(`${String(i + 1).padStart(pad, '0')}-${nm || '썸네일'}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
     downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-여러장-${stamp()}.zip`); $('#bInfo').textContent = `${rows.length}장 완료`; toast(`${rows.length}장을 ZIP으로 내려받았어요.`);
   } catch (e) { console.error(e); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 };
@@ -6683,7 +6912,7 @@ $('#i18nZip').onclick = async () => {
   const st = i18nState(); if (!st.langs.length) { toast('언어를 하나 이상 골라 주세요.'); return; }
   try {
     cv.discardActiveObject(); commit(); const zip = await getZip();
-    for (let i = 0; i < st.langs.length; i++) { const k = st.langs[i]; $('#i18nInfo').textContent = `만드는 중 ${i + 1} / ${st.langs.length}`; const c = await renderState(curState(), outW(doc), sc => applyLang(sc, k)); zip.file(`썸네일-${k}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    for (let i = 0; i < st.langs.length; i++) { const k = st.langs[i]; $('#i18nInfo').textContent = `만드는 중 ${i + 1} / ${st.langs.length}`; const c = await renderState(curState(), outW(doc), sc => applyLang(sc, k)); zip.file(`썸네일-${k}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
     downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-언어별-${stamp()}.zip`); $('#i18nInfo').textContent = `${st.langs.length}개 언어 완료`; toast('언어별 섬네일을 ZIP으로 내려받았어요.');
   } catch (err) { console.error(err); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 };
@@ -6962,7 +7191,7 @@ async function openImport(file) {
       IMP.W = IMP.psd.width; IMP.H = IMP.psd.height;
       $('#impInfo').textContent = `${IMP.W}×${IMP.H}px · 레이어 ${n.length}개 · 글자 레이어 ${n.filter(l => l.text).length}개`;
       if (IMP.psd.canvas) $('#impPrev').src = IMP.psd.canvas.toDataURL('image/jpeg', 0.8);
-      $('#impTextW').hidden = false; $('#impText').checked = true; $('#impTextL').textContent = '글자 레이어를 고칠 수 있는 글자로 바꾸기';
+      $('#impSplitW').hidden = true; $('#impTextW').hidden = false; $('#impText').checked = true; $('#impTextL').textContent = '글자 레이어를 고칠 수 있는 글자로 바꾸기';
       $('#impTextH').textContent = '끄면 포토샵에서 보이던 모양 그대로 그림으로 들어와요. 켜면 내용을 고칠 수 있지만, 같은 글꼴이 이 앱에 없으면 비슷한 글꼴로 바뀌어요. 레이어 스타일(그림자·획)과 조정 레이어는 빠질 수 있어요.';
     } else if (IMP.kind === 'pdf') {
       const pdfjs = await getPdfJs();
@@ -6973,14 +7202,14 @@ async function openImport(file) {
       $('#impPage').innerHTML = Array.from({ length: IMP.pdf.numPages }, (_, i) => `<option value="${i + 1}">${i + 1}쪽</option>`).join(''); $('#impPageF').hidden = IMP.pdf.numPages < 2;
       $('#impInfo').textContent = `${Math.round(IMP.W)}×${Math.round(IMP.H)}pt · ${IMP.pdf.numPages}쪽 · 벡터(도형·선)는 벡터 그대로 들어와요`;
       await impPdfPreview(1);
-      $('#impTextW').hidden = false; $('#impText').checked = false; $('#impTextL').textContent = '글자를 고칠 수 있는 글자로 바꾸기';
-      $('#impTextH').textContent = '끄면 원래 글꼴 모양 그대로 들어와요(내용 수정은 어려워요). 켜면 내용을 고칠 수 있지만 글꼴이 비슷한 걸로 바뀌어요. 들어온 그림은 하나로 묶여 있어요. 오른쪽 ‘묶음 풀기’를 누르면 조각마다 색을 바꾸거나 옮길 수 있어요.';
+      $('#impSplitW').hidden = false; $('#impTextW').hidden = false; $('#impText').checked = false; $('#impTextL').textContent = '글자를 고칠 수 있는 글자로 바꾸기';
+      $('#impTextH').textContent = '끄면 원래 글꼴 모양 그대로 들어와요(내용 수정은 어려워요). 켜면 내용을 고칠 수 있지만 글꼴이 비슷한 걸로 바뀌어요. ‘조각마다 따로’를 끄면 하나로 묶여 들어오고, 나중에 오른쪽 ‘묶음 풀기’로 나눌 수 있어요.';
     } else {
       IMP.svg = new TextDecoder().decode(buf);
       const vb = IMP.svg.match(/viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)/), w = IMP.svg.match(/<svg[^>]*\swidth="([\d.]+)/), h = IMP.svg.match(/<svg[^>]*\sheight="([\d.]+)/);
       IMP.W = +(w && w[1]) || +(vb && vb[1]) || 800; IMP.H = +(h && h[1]) || +(vb && vb[2]) || 800;
       $('#impInfo').textContent = `SVG ${Math.round(IMP.W)}×${Math.round(IMP.H)} · 벡터 그대로 들어와요. ‘묶음 풀기’로 조각마다 편집할 수 있어요.`;
-      $('#impPrev').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(IMP.svg); $('#impTextW').hidden = true; $('#impTextH').textContent = '';
+      $('#impPrev').src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(IMP.svg); $('#impSplitW').hidden = false; $('#impTextW').hidden = true; $('#impTextH').textContent = '';
     }
     $('#impGo').disabled = false;
   } catch (e) {
@@ -7094,15 +7323,24 @@ async function impBuildPdf(n, editText) {
     await ensureFont('Pretendard', 'normal', tc.items.map(i => i.str).join('').slice(0, 200));
   }
   impProg(0.7, '도형을 만드는 중…');
-  const g = await svgToGroup(svg, vp.width, vp.height);
-  return { objs: (g ? [g] : []).concat(texts), skipped: [], fonts: pdfFonts };
+  const vs = await svgToObjs(svg, $('#impSplit').checked);
+  return { objs: vs.concat(texts), skipped: [], fonts: pdfFonts, tooMany: vs.length === 1 && vs[0].tooMany };
 }
-function svgToGroup(svg, W, H) {
+// split = every path/shape/text as its own layer (easy to edit); otherwise one group you can ungroup later
+const SPLIT_MAX = 600;
+function svgToObjs(svg, split) {
   return new Promise(res => fabric.loadSVGFromString(svg, (objs, opts) => {
-    objs = (objs || []).filter(Boolean); if (!objs.length) return res(null);
+    objs = (objs || []).filter(Boolean); if (!objs.length) return res([]);
+    const base = (IMP.file && IMP.file.name.replace(/\.[^.]+$/, '')) || '벡터 그림';
+    // a PDF page usually starts with a full-page white box: keep it only if it isn't plain white
+    if (split && objs.length <= SPLIT_MAX) {
+      const kind = o => o.type === 'text' ? '글자' : o.type === 'image' ? '그림' : '도형';
+      objs.forEach((o, i) => o.set({ name: `${base} · ${kind(o)} ${i + 1}`, kind: o.type === 'image' ? 'image' : 'shape', meta: Object.assign({}, o.meta, { shape: 'vector' }) }));
+      return res(objs);
+    }
     const g = objs.length === 1 ? objs[0] : fabric.util.groupSVGElements(objs, opts);
-    g.set({ name: (IMP.file && IMP.file.name.replace(/\.[^.]+$/, '')) || '벡터 그림', kind: 'vector' });
-    res(g);
+    g.set({ name: base, kind: 'vector' }); g.tooMany = split && objs.length > SPLIT_MAX;
+    res([g]);
   }));
 }
 $('#impGo').onclick = async () => {
@@ -7112,7 +7350,7 @@ $('#impGo').onclick = async () => {
     let r;
     if (IMP.kind === 'psd') r = await impBuildPsd(editText);
     else if (IMP.kind === 'pdf') r = await impBuildPdf(+$('#impPage').value || 1, editText);
-    else { impProg(0.5, '벡터로 바꾸는 중…'); const g = await svgToGroup(IMP.svg, IMP.W, IMP.H); r = { objs: g ? [g] : [], skipped: [] }; }
+    else { impProg(0.5, '벡터로 바꾸는 중…'); const vs = await svgToObjs(IMP.svg, $('#impSplit').checked); r = { objs: vs, skipped: [], tooMany: vs.length === 1 && vs[0].tooMany }; }
     if (!r.objs.length) throw new Error('empty');
     // vectors scale without loss, so small PDF pages get a sharper working size
     const up = IMP.kind === 'psd' ? 1 : Math.max(1, Math.min(4, 1600 / Math.max(IMP.W, IMP.H)));
@@ -7127,7 +7365,7 @@ $('#impGo').onclick = async () => {
     impProg(1, '마무리하는 중…');
     cv.discardActiveObject(); cv.requestRenderAll(); commit(); refreshLayers();
     $('#impModal').hidden = true;
-    toast(`${IMP.file.name}을(를) 가져왔어요. 레이어 ${r.objs.length}개` + (r.skipped.length ? ` · 조정 레이어 등 ${r.skipped.length}개는 빠졌어요` : '') + '.', 4800);
+    toast(`${IMP.file.name}을(를) 가져왔어요. 레이어 ${r.objs.length}개` + (r.skipped.length ? ` · 조정 레이어 등 ${r.skipped.length}개는 빠졌어요` : '') + (r.tooMany ? ` · 조각이 ${SPLIT_MAX}개가 넘어서 한 묶음으로 넣었어요. 오른쪽 ‘묶음 풀기’로 나눌 수 있어요` : '') + '.', 5200);
   } catch (e) { console.error(e); impProg(0, '가져오지 못했어요. ' + (String(e && e.message) === 'empty' ? '들어올 내용이 없어요.' : '파일이 너무 크거나 지원하지 않는 형식일 수 있어요.')); }
   $('#impGo').disabled = false;
 };
@@ -7142,7 +7380,7 @@ async function exportPSD() {
   const bgC = cv.backgroundColor, bgI = cv.backgroundImage, layers = [];
   try {
     objs.forEach(o => o.visible = false); cv.renderAll();
-    layers.push({ name: '배경', canvas: renderOut(W) });
+    layers.push({ name: '배경', canvas: renderOut(W), hidden: clearOn() });
     cv.backgroundColor = null; cv.backgroundImage = null;
     objs.forEach((o, i) => {
       o.visible = true; o.opacity = 1; o.globalCompositeOperation = 'source-over'; cv.renderAll();
@@ -7171,24 +7409,27 @@ async function exportPSD() {
 function exportSVG() {
   cv.discardActiveObject();
   const vpt = cv.viewportTransform.slice(); cv.setViewportTransform([1, 0, 0, 1, 0, 0]);
-  let svg; try { svg = cv.toSVG({ width: doc.w, height: doc.h, viewBox: { x: 0, y: 0, width: doc.w, height: doc.h } }); } finally { cv.setViewportTransform(vpt); cv.requestRenderAll(); }
+  const bgC = cv.backgroundColor, bgI = cv.backgroundImage; if (clearOn()) { cv.backgroundColor = null; cv.backgroundImage = null; }
+  let svg; try { svg = cv.toSVG({ width: doc.w, height: doc.h, viewBox: { x: 0, y: 0, width: doc.w, height: doc.h } }); } finally { cv.setViewportTransform(vpt); cv.backgroundColor = bgC; cv.backgroundImage = bgI; cv.requestRenderAll(); }
   const css = [...document.querySelectorAll('link[href*="fonts.googleapis.com/css"]')].map(l => `@import url('${l.href}');`).join('\n');
   if (css) svg = svg.replace(/<defs>/, `<defs><style type="text/css"><![CDATA[\n${css}\n]]></style>`);
   downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), fileBaseName() + '.svg');
 }
-async function exportPDF() {
-  await loadScript(LIB.jspdf); const { jsPDF } = window.jspdf; let pdf = null;
+async function exportPDF(all = true) {
+  await loadScript(LIB.jspdf); const { jsPDF } = window.jspdf; let pdf = null, pages = 0;
   cv.discardActiveObject(); cv.renderAll();
   for (let i = 0; i < proj.vars.length; i++) {
+    if (!all && i !== proj.cur) continue; pages++;
     const st = stateOf(i), d = st.doc, c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(d));
     const wpt = d.w * 0.75, hpt = d.h * 0.75, ori = d.w >= d.h ? 'landscape' : 'portrait';
     if (!pdf) pdf = new jsPDF({ unit: 'pt', format: [wpt, hpt], orientation: ori, compress: true }); else pdf.addPage([wpt, hpt], ori);
-    const png = expFmt === 'png'; pdf.addImage(c.toDataURL(png ? 'image/png' : 'image/jpeg', +$('#expQ').value / 100), png ? 'PNG' : 'JPEG', 0, 0, wpt, hpt, undefined, 'FAST');
+    const png = false; pdf.addImage(c.toDataURL(png ? 'image/png' : 'image/jpeg', +$('#expQ').value / 100), png ? 'PNG' : 'JPEG', 0, 0, wpt, hpt, undefined, 'FAST');
   }
   pdf.setProperties({ title: proj.title || '썸네일', creator: 'Design by FC' });
   downloadBlob(pdf.output('blob'), fileBaseName() + '.pdf');
+  return pages;
 }
-$('#expMore').onclick = async e => {
+const expMoreEl = document.getElementById('expMore'); if (expMoreEl) expMoreEl.onclick = async e => {
   const b = e.target.closest('[data-x]'); if (!b || b.disabled) return; const k = b.dataset.x; b.disabled = true;
   try {
     toast(k === 'psd' ? 'PSD를 만드는 중… 레이어가 많으면 몇 초 걸려요.' : k === 'pdf' ? 'PDF를 만드는 중…' : 'SVG를 만드는 중…');
