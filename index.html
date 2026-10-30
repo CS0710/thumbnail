@@ -727,6 +727,8 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 .frames2{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
 .frames2 button{border-radius:4px;background:var(--sec)}
 .ie-seg{display:grid;grid-template-columns:1fr 1fr;margin:-4px 0 12px}
+#expPrev.clear{background:repeating-conic-gradient(#D5D8DF 0 25%,#FFFFFF 0 50%) 0 0/16px 16px}
+#expFmt{display:grid;grid-template-columns:repeat(5,1fr)}
 /* My Space */
 .ms-err{margin-top:12px;padding:12px 14px;border-radius:4px;background:var(--panel-2);box-shadow:inset 3px 0 0 var(--hot);font-size:13px;color:var(--ink)}
 .ms-err p{margin:6px 0}
@@ -1361,12 +1363,13 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
     <h2 id="expTitle">이미지 내보내기</h2>
     <p class="hint" style="margin-top:0" id="expHint">유튜브 섬네일은 1280×720, 2MB 이하가 권장이에요.</p>
     <img class="exp-prev" id="expPrev" alt="내보낼 섬네일 미리보기">
-    <div class="field"><span class="lbl">형식</span><div class="seg" id="expFmt"><button data-f="jpeg">JPG (가벼움)</button><button data-f="png">PNG (선명함)</button></div></div>
-    <div class="field"><span class="lbl">해상도 <output id="expScaleO"></output></span><div class="seg" id="expScale"><button data-s="1">1배</button><button data-s="2">2배</button><button data-s="3">3배</button><button data-s="4">4배</button></div></div>
+    <div class="field"><span class="lbl">형식</span><div class="seg" id="expFmt"><button data-f="jpeg">JPG</button><button data-f="png">PNG</button><button data-f="pdf">PDF</button><button data-f="psd">PSD</button><button data-f="svg">SVG</button></div>
+      <p class="hint" id="expFmtHint" style="margin:6px 0 0"></p>
+      <label class="tog" id="expClearW" style="margin-top:8px"><input type="checkbox" id="expClear"><span id="expClearL">배경 투명하게</span></label>
+      <label class="tog" id="expPdfW" style="margin-top:8px" hidden><input type="checkbox" id="expPdfAll" checked>아트보드 전부 담기 (끄면 지금 아트보드만)</label></div>
+    <div class="field" id="expScaleF"><span class="lbl">해상도 <output id="expScaleO"></output></span><div class="seg" id="expScale"><button data-s="1">1배</button><button data-s="2">2배</button><button data-s="3">3배</button><button data-s="4">4배</button></div></div>
     <div class="field" id="expQF"><span class="lbl">JPG 품질 <output id="expQO">92</output></span><input type="range" id="expQ" min="50" max="100" value="92"></div>
     <div class="field"><label for="expName">파일 이름</label><input class="txt" id="expName"></div>
-    <div class="field"><span class="lbl">다른 형식으로</span><div class="row" id="expMore" style="flex-wrap:wrap"><button class="btn sm" data-x="psd">PSD (레이어 유지)</button><button class="btn sm" data-x="svg">SVG (벡터)</button><button class="btn sm" data-x="pdf">PDF (아트보드 전부)</button></div>
-      <p class="hint" style="margin:6px 0 0">PSD는 요소마다 레이어로 나뉘어 포토샵에서 열려요. SVG는 일러스트레이터에서 벡터로 열려요. PDF는 아트보드마다 한 쪽씩 고해상도로 담겨요. (.ai 파일로는 저장할 수 없어요)</p></div>
     <p style="margin:12px 0 0">파일 크기 <span class="meter" id="expSize">계산 중…</span></p>
     <div id="credBox" hidden>
       <h3 style="font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin:16px 0 4px">사용한 사진 출처</h3>
@@ -5942,7 +5945,24 @@ function syncTitle() { const t = $('#vTitle').value || '영상 제목'; $$('[dat
 $('#vTitle').oninput = syncTitle;
 
 /* ---------------- export ---------------- */
-let expFmt = lsGet('tg.fmt') || 'jpeg', expBlob = null;
+let expFmt = lsGet('tg.fmt') || 'jpeg', expBlob = null, expClear = lsGet('tg.clear') === '1';
+const EXP_RASTER = ['jpeg', 'png'];
+const rasterFmt = () => expFmt === 'png' ? 'png' : 'jpeg';
+const clearOn = () => expClear && ['png', 'psd', 'svg'].includes(expFmt);
+function withNoBg(fn) { const a = cv.backgroundColor, b = cv.backgroundImage; cv.backgroundColor = null; cv.backgroundImage = null; try { return fn(); } finally { cv.backgroundColor = a; cv.backgroundImage = b; cv.requestRenderAll(); } }
+const renderExport = w => clearOn() ? withNoBg(() => renderOut(w)) : renderOut(w);
+const FMT_HINT = { jpeg: '가볍고 어디서나 열려요. 유튜브 섬네일에 알맞아요.', png: '선명하고, 배경을 투명하게 뺄 수 있어요.', pdf: '아트보드마다 한 쪽씩 담겨요. 인쇄나 공유용이에요.', psd: '요소마다 레이어로 나뉘어 포토샵에서 열려요. 글자는 포토샵 글자 레이어로 들어가요.', svg: '벡터라 일러스트레이터에서 열고 고칠 수 있어요. 사진은 그림 그대로 들어 있어요. (.ai로는 저장할 수 없어요)' };
+function syncExpUI() {
+  const raster = EXP_RASTER.includes(expFmt);
+  $$('#expFmt button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === expFmt));
+  $('#expFmtHint').textContent = FMT_HINT[expFmt] || '';
+  $('#expQF').hidden = !(expFmt === 'jpeg' || expFmt === 'pdf'); $('#expScaleF').hidden = !(raster || expFmt === 'pdf');
+  $('#expClearW').hidden = expFmt === 'pdf'; $('#expClear').checked = expClear; $('#expClearL').textContent = expFmt === 'jpeg' ? '배경 투명하게 (JPG는 투명이 안 돼서 PNG로 바꿔요)' : '배경 투명하게';
+  $('#expPdfW').hidden = expFmt !== 'pdf'; $('#expCopy').hidden = !raster;
+  $('#expPrev').classList.toggle('clear', clearOn());
+}
+$('#expClear').onchange = e => { expClear = e.target.checked; lsSet('tg.clear', expClear ? '1' : '0'); if (expClear && expFmt === 'jpeg') { expFmt = 'png'; lsSet('tg.fmt', expFmt); toast('투명 배경은 PNG로 저장돼요.'); } syncExpUI(); buildExport(); };
+$('#expPdfAll').onchange = () => buildExport();
 function stamp() { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; }
 function fmtBytes(n) { return n > 1048576 ? (n / 1048576).toFixed(2) + ' MB' : Math.round(n / 1024) + ' KB'; }
 let expScale = +(lsGet('tg.scale') || 1);
@@ -5956,16 +5976,22 @@ function syncScale() {
 $('#expScale').onclick = e => { const b = e.target.closest('[data-s]'); if (!b || b.disabled) return; expScale = +b.dataset.s; lsSet('tg.scale', expScale); syncScale(); buildExport(); };
 const buildExport = debounce(async () => {
   syncScale();
-  const c = renderOut(outW(doc)); const q = +$('#expQ').value / 100;
+  const c = renderExport(EXP_RASTER.includes(expFmt) || expFmt === 'pdf' ? outW(doc) : doc.w); const q = +$('#expQ').value / 100;
+  $('#expPrev').src = c.toDataURL(clearOn() ? 'image/png' : 'image/jpeg', 0.7);
+  const m = $('#expSize');
+  if (!EXP_RASTER.includes(expFmt)) {
+    expBlob = null; m.className = 'meter';
+    m.textContent = expFmt === 'pdf' ? `${$('#expPdfAll').checked ? proj.vars.length : 1}쪽 · 쪽마다 ${c.width}×${c.height}` : expFmt === 'psd' ? `${doc.w}×${doc.h} · 레이어 ${cv.getObjects().length + (clearOn() ? 0 : 1)}개` : `${doc.w}×${doc.h} · 벡터`;
+    return;
+  }
   expBlob = await new Promise(r => c.toBlob(r, 'image/' + expFmt, q));
-  $('#expPrev').src = c.toDataURL('image/jpeg', 0.7);
-  const m = $('#expSize'); const big = doc.size === 'yt' && expBlob.size > 2 * 1048576;
+  const big = doc.size === 'yt' && expBlob.size > 2 * 1048576;
   m.textContent = `${fmtBytes(expBlob.size)} · ${c.width}×${c.height}` + (doc.size === 'yt' ? (big ? ' — 2MB를 넘어요. JPG로 바꾸거나 품질을 낮춰 주세요.' : ' — 유튜브에 올릴 수 있어요') : '');
   m.className = 'meter ' + (big ? 'bad' : 'good');
 }, 120);
 function openExport() {
   cv.discardActiveObject(); cv.requestRenderAll();
-  $$('#expFmt button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === expFmt)); $('#expQF').hidden = expFmt !== 'jpeg';
+  syncExpUI();
   if (!$('#expName').value) $('#expName').value = '썸네일-' + stamp();
   $('#expSize').textContent = '계산 중…'; $('#expSize').className = 'meter';
   const cr = doc.credits || [];
@@ -5976,10 +6002,22 @@ function openExport() {
 }
 $('#exportBtn').onclick = openExport;
 $('#expClose').onclick = () => $('#expModal').hidden = true;
-$('#expFmt').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; expFmt = b.dataset.f; lsSet('tg.fmt', expFmt); $$('#expFmt button').forEach(x => x.setAttribute('aria-pressed', x === b)); $('#expQF').hidden = expFmt !== 'jpeg'; buildExport(); };
+$('#expFmt').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; expFmt = b.dataset.f; lsSet('tg.fmt', expFmt); syncExpUI(); buildExport(); };
 $('#expQ').oninput = e => { $('#expQO').textContent = e.target.value; buildExport(); };
 function downloadBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
-$('#expGo').onclick = async () => { if (!expBlob) await sleep(300); if (!expBlob) return; const n = ($('#expName').value.trim() || '썸네일') + (expFmt === 'png' ? '.png' : '.jpg'); downloadBlob(expBlob, n); toast('내려받았어요.'); $('#expName').value = ''; };
+$('#expGo').onclick = async () => {
+  if (!EXP_RASTER.includes(expFmt)) {
+    const b = $('#expGo'); b.disabled = true;
+    try {
+      if (expFmt === 'pdf') { toast('PDF를 만드는 중…'); const n = await exportPDF($('#expPdfAll').checked); toast(`PDF를 내려받았어요 (${n}쪽).`); }
+      else if (expFmt === 'psd') { toast('PSD를 만드는 중… 레이어가 많으면 몇 초 걸려요.'); const n = await exportPSD(); toast(`PSD를 내려받았어요 (레이어 ${n}개).`); }
+      else { exportSVG(); toast('SVG를 내려받았어요. 글꼴은 설치된 글꼴로 보여요.', 4200); }
+      $('#expName').value = '';
+    } catch (er) { console.error(er); toast(/script/.test(String(er && er.message)) ? '내보내기 도구를 받지 못했어요. 인터넷 연결을 확인해 주세요.' : '내보내지 못했어요. 다시 해 주세요.'); }
+    b.disabled = false; return;
+  }
+  if (!expBlob) await sleep(300); if (!expBlob) return; const n = ($('#expName').value.trim() || '썸네일') + (expFmt === 'png' ? '.png' : '.jpg'); downloadBlob(expBlob, n); toast('내려받았어요.'); $('#expName').value = '';
+};
 $('#expCopy').onclick = async () => {
   try { const c = renderOut(outW(doc)); const b = await new Promise(r => c.toBlob(r, 'image/png')); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast('이미지를 복사했어요. 원하는 곳에 붙여넣으세요.'); }
   catch (e) { toast('이 브라우저에서는 이미지 복사가 안 돼요. 내려받기를 써 주세요.'); }
@@ -6124,14 +6162,14 @@ $('#tplSaveMenu').onclick = () => { showTab('tpl'); setTimeout(() => $('#myTplNa
 $$('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').hidden = true));
 
 /* ---------------- offscreen rendering (variants, batch) ---------------- */
-async function renderState(st, width, mutate) {
+async function renderState(st, width, mutate, noBg) {
   const d = st.doc, json = JSON.parse(JSON.stringify(st.canvas)); hydrate(json);
   await regDocFonts(d); await loadFontsFor(json);
   const sc = new fabric.StaticCanvas(document.createElement('canvas'), { width: d.w, height: d.h, enableRetinaScaling: false, renderOnAddRemove: false });
   await new Promise(r => sc.loadFromJSON(json, r));
   sc.getObjects().forEach(prepObj);
   if (mutate) await mutate(sc);
-  applyBgTo(sc, Object.assign({ bgfx: {} }, d)); sc.renderAll();
+  if (!noBg) applyBgTo(sc, Object.assign({ bgfx: {} }, d)); sc.renderAll();
   const out = sc.toCanvasElement(width / d.w); sc.dispose(); return out;
 }
 const stateOf = i => i === proj.cur ? curState() : proj.vars[i].snap;
@@ -6139,7 +6177,7 @@ const canvasBlob = (c, fmt, q) => new Promise(r => c.toBlob(r, 'image/' + fmt, q
 const scriptCache = {};
 function loadScript(src) { return scriptCache[src] || (scriptCache[src] = new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; if (!/accounts\.google\.com/.test(src)) s.crossOrigin = 'anonymous'; s.onload = res; s.onerror = () => { delete scriptCache[src]; rej(new Error('script')); }; document.head.appendChild(s); })); }
 async function getZip() { await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'); return new window.JSZip(); }
-const fmtExt = () => expFmt === 'png' ? 'png' : 'jpg';
+const fmtExt = () => rasterFmt() === 'png' ? 'png' : 'jpg';
 
 /* ---------------- variants (아트보드) ---------------- */
 const artName = i => (proj.vars[i] && proj.vars[i].title) || `아트보드 ${i + 1}`;
@@ -6216,8 +6254,8 @@ $('#vbar').onclick = async e => {
 };
 async function saveArtboard(i) {
   try {
-    const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(stateOf(i), outW(stateOf(i).doc));
-    downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`);
+    const c = i === proj.cur ? renderExport(outW(doc)) : await renderState(stateOf(i), outW(stateOf(i).doc), null, clearOn());
+    downloadBlob(await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`);
     toast(`‘${artName(i)}’ 저장했어요.`);
   } catch (e) { console.error(e); toast('이 아트보드를 저장하지 못했어요. 다시 해 주세요.'); }
 }
@@ -6253,12 +6291,12 @@ async function openBoard() {
 }
 $('#board').onclick = async e => {
   const ed = e.target.closest('[data-edit]'); if (ed) { $('#boardModal').hidden = true; await switchVariant(+ed.dataset.edit); return; }
-  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); downloadBlob(await canvasBlob(c, expFmt, +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`); }
+  const dl = e.target.closest('[data-dl]'); if (dl) { const i = +dl.dataset.dl; const st = stateOf(i); const c = i === proj.cur ? renderExport(outW(doc)) : await renderState(st, outW(st.doc), null, clearOn()); downloadBlob(await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100), `${fileBase(i)}-${stamp()}.${fmtExt()}`); }
 };
 async function zipVariants() {
   try {
     toast('아트보드를 묶는 중이에요…'); const zip = await getZip();
-    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(st.doc)); zip.file(`${String(i + 1).padStart(2, '0')}-${fileBase(i)}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    for (let i = 0; i < proj.vars.length; i++) { const st = stateOf(i); const c = i === proj.cur ? renderExport(outW(doc)) : await renderState(st, outW(st.doc), null, clearOn()); zip.file(`${String(i + 1).padStart(2, '0')}-${fileBase(i)}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
     downloadBlob(await zip.generateAsync({ type: 'blob' }), `${(proj.title || '썸네일').replace(/[\\/:*?"<>|]+/g, '_')}-${stamp()}.zip`); toast('아트보드를 ZIP으로 내려받았어요.');
   } catch (e) { console.error(e); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 }
@@ -6330,7 +6368,7 @@ $('#bZip').onclick = async () => {
   const rows = batchRows(); if (!rows.length) { toast('한 줄에 하나씩 글자를 써 주세요.'); return; }
   try {
     cv.discardActiveObject(); const zip = await getZip(); const pad = String(rows.length).length;
-    for (let i = 0; i < rows.length; i++) { $('#bInfo').textContent = `만드는 중 ${i + 1} / ${rows.length}`; const c = await batchRender(rows[i], outW(doc)); const nm = rows[i].split('|')[0].replace(/\\n|\*/g, ' ').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 30); zip.file(`${String(i + 1).padStart(pad, '0')}-${nm || '썸네일'}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    for (let i = 0; i < rows.length; i++) { $('#bInfo').textContent = `만드는 중 ${i + 1} / ${rows.length}`; const c = await batchRender(rows[i], outW(doc)); const nm = rows[i].split('|')[0].replace(/\\n|\*/g, ' ').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 30); zip.file(`${String(i + 1).padStart(pad, '0')}-${nm || '썸네일'}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
     downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-여러장-${stamp()}.zip`); $('#bInfo').textContent = `${rows.length}장 완료`; toast(`${rows.length}장을 ZIP으로 내려받았어요.`);
   } catch (e) { console.error(e); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 };
@@ -6873,7 +6911,7 @@ $('#i18nZip').onclick = async () => {
   const st = i18nState(); if (!st.langs.length) { toast('언어를 하나 이상 골라 주세요.'); return; }
   try {
     cv.discardActiveObject(); commit(); const zip = await getZip();
-    for (let i = 0; i < st.langs.length; i++) { const k = st.langs[i]; $('#i18nInfo').textContent = `만드는 중 ${i + 1} / ${st.langs.length}`; const c = await renderState(curState(), outW(doc), sc => applyLang(sc, k)); zip.file(`썸네일-${k}.${fmtExt()}`, await canvasBlob(c, expFmt, +$('#expQ').value / 100)); }
+    for (let i = 0; i < st.langs.length; i++) { const k = st.langs[i]; $('#i18nInfo').textContent = `만드는 중 ${i + 1} / ${st.langs.length}`; const c = await renderState(curState(), outW(doc), sc => applyLang(sc, k)); zip.file(`썸네일-${k}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
     downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-언어별-${stamp()}.zip`); $('#i18nInfo').textContent = `${st.langs.length}개 언어 완료`; toast('언어별 섬네일을 ZIP으로 내려받았어요.');
   } catch (err) { console.error(err); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 };
@@ -7332,7 +7370,7 @@ async function exportPSD() {
   const bgC = cv.backgroundColor, bgI = cv.backgroundImage, layers = [];
   try {
     objs.forEach(o => o.visible = false); cv.renderAll();
-    layers.push({ name: '배경', canvas: renderOut(W) });
+    layers.push({ name: '배경', canvas: renderOut(W), hidden: clearOn() });
     cv.backgroundColor = null; cv.backgroundImage = null;
     objs.forEach((o, i) => {
       o.visible = true; o.opacity = 1; o.globalCompositeOperation = 'source-over'; cv.renderAll();
@@ -7361,24 +7399,27 @@ async function exportPSD() {
 function exportSVG() {
   cv.discardActiveObject();
   const vpt = cv.viewportTransform.slice(); cv.setViewportTransform([1, 0, 0, 1, 0, 0]);
-  let svg; try { svg = cv.toSVG({ width: doc.w, height: doc.h, viewBox: { x: 0, y: 0, width: doc.w, height: doc.h } }); } finally { cv.setViewportTransform(vpt); cv.requestRenderAll(); }
+  const bgC = cv.backgroundColor, bgI = cv.backgroundImage; if (clearOn()) { cv.backgroundColor = null; cv.backgroundImage = null; }
+  let svg; try { svg = cv.toSVG({ width: doc.w, height: doc.h, viewBox: { x: 0, y: 0, width: doc.w, height: doc.h } }); } finally { cv.setViewportTransform(vpt); cv.backgroundColor = bgC; cv.backgroundImage = bgI; cv.requestRenderAll(); }
   const css = [...document.querySelectorAll('link[href*="fonts.googleapis.com/css"]')].map(l => `@import url('${l.href}');`).join('\n');
   if (css) svg = svg.replace(/<defs>/, `<defs><style type="text/css"><![CDATA[\n${css}\n]]></style>`);
   downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), fileBaseName() + '.svg');
 }
-async function exportPDF() {
-  await loadScript(LIB.jspdf); const { jsPDF } = window.jspdf; let pdf = null;
+async function exportPDF(all = true) {
+  await loadScript(LIB.jspdf); const { jsPDF } = window.jspdf; let pdf = null, pages = 0;
   cv.discardActiveObject(); cv.renderAll();
   for (let i = 0; i < proj.vars.length; i++) {
+    if (!all && i !== proj.cur) continue; pages++;
     const st = stateOf(i), d = st.doc, c = i === proj.cur ? renderOut(outW(doc)) : await renderState(st, outW(d));
     const wpt = d.w * 0.75, hpt = d.h * 0.75, ori = d.w >= d.h ? 'landscape' : 'portrait';
     if (!pdf) pdf = new jsPDF({ unit: 'pt', format: [wpt, hpt], orientation: ori, compress: true }); else pdf.addPage([wpt, hpt], ori);
-    const png = expFmt === 'png'; pdf.addImage(c.toDataURL(png ? 'image/png' : 'image/jpeg', +$('#expQ').value / 100), png ? 'PNG' : 'JPEG', 0, 0, wpt, hpt, undefined, 'FAST');
+    const png = false; pdf.addImage(c.toDataURL(png ? 'image/png' : 'image/jpeg', +$('#expQ').value / 100), png ? 'PNG' : 'JPEG', 0, 0, wpt, hpt, undefined, 'FAST');
   }
   pdf.setProperties({ title: proj.title || '썸네일', creator: 'Design by FC' });
   downloadBlob(pdf.output('blob'), fileBaseName() + '.pdf');
+  return pages;
 }
-$('#expMore').onclick = async e => {
+const expMoreEl = document.getElementById('expMore'); if (expMoreEl) expMoreEl.onclick = async e => {
   const b = e.target.closest('[data-x]'); if (!b || b.disabled) return; const k = b.dataset.x; b.disabled = true;
   try {
     toast(k === 'psd' ? 'PSD를 만드는 중… 레이어가 많으면 몇 초 걸려요.' : k === 'pdf' ? 'PDF를 만드는 중…' : 'SVG를 만드는 중…');
