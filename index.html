@@ -20,6 +20,8 @@
    Design: monochrome first (white ground, grey text, near-black actions); blue only for the one emphasised action,
    yellow only for the mark. Pills for buttons and toggles, 4px for small chips, hairlines instead of boxes,
    soft shadow only on floating surfaces, focus = white 4px ring inside a 2px near-black outline. */
+.langbtn{gap:2px;padding:0 6px}.langbtn span{padding:3px 6px;border-radius:5px;font-size:12px;font-weight:700;line-height:1;color:var(--muted)}.langbtn span.on{background:var(--ink);color:var(--bg)}
+html[lang=en] .ph.busy::after{content:"Loading…"}
 :root{
   --bg:#FFFFFF; --panel:#FFFFFF; --panel-2:#F7F8F9; --ink:#233237; --text:#45495B; --muted:#636978; --faint:#9BA2AE; --line:#DADCE0;
   --mat:#F7F8F9; --mat-dot:#EDEEF1;
@@ -864,6 +866,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
     <button class="btn ghost" id="batchBtn" title="글자만 바꿔 여러 장 만들기"><svg class="i"><use href="#i-stack"/></svg><span class="lbl-hide">여러 장</span></button>
     <button class="btn ghost" id="i18nBtn" title="같은 디자인을 여러 언어로"><svg class="i"><use href="#i-globe"/></svg><span class="lbl-hide">언어별</span></button>
     <button class="btn ghost" id="vidMakeBtn" title="음성 파일과 합쳐 영상(MP4) 만들기"><svg class="i"><use href="#i-film"/></svg><span class="lbl-hide">영상 만들기</span></button>
+    <button class="btn ghost langbtn" id="langBtn" data-noi18n aria-label="Language 한국어 / English" title="Switch to English"><span data-lg="ko">한</span><span data-lg="en">EN</span></button>
     <div class="menu-wrap">
       <button class="btn ghost" id="fileBtn" aria-haspopup="true" aria-expanded="false"><svg class="i"><use href="#i-folder"/></svg><span class="lbl-hide">파일</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
       <div class="menu" id="fileMenu" hidden role="menu">
@@ -902,7 +905,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
       <!-- templates -->
       <div data-panel="tpl">
         <h2>템플릿</h2>
-        <p class="hint">누르면 지금 아트보드를 바꿔요. 바꾼 뒤에도 <span class="kbd">Ctrl</span>+<span class="kbd">Z</span>로 되돌릴 수 있어요.</p>
+        <p data-en='Click to replace the current artboard. You can still undo with <span class="kbd">Ctrl</span>+<span class="kbd">Z</span>.' class="hint">누르면 지금 아트보드를 바꿔요. 바꾼 뒤에도 <span class="kbd">Ctrl</span>+<span class="kbd">Z</span>로 되돌릴 수 있어요.</p>
         <h3>내 템플릿</h3>
         <div class="search" style="margin-top:0"><input class="txt" id="myTplName" placeholder="예: 우리 채널 기본형"><button class="btn sm primary" id="myTplSave">지금 디자인 저장</button></div>
         <div class="tpls" id="myTplGrid" style="margin-top:10px"></div>
@@ -921,7 +924,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <p class="hint" style="margin-top:0">글자를 선택한 상태면 그 글자에, 아니면 새 글자로 넣어요.</p>
         <div class="presets" id="presetGrid" style="margin-top:8px"></div>
         <h3>글꼴 직접 올리기</h3>
-        <p class="hint" style="margin-top:0">TTF·OTF·WOFF 파일이나 <b>받은 ZIP 그대로</b> 올리면 이 브라우저에 저장돼요. Bold·Light처럼 굵기만 다른 파일은 한 글꼴로 묶어요. 상업적 사용 허용 여부는 폰트마다 확인하세요.</p>
+        <p data-en='Upload TTF · OTF · WOFF files, or <b>the ZIP as downloaded</b>, and they’re saved in this browser. Files that differ only in weight (Bold, Light…) are grouped as one font. Check each font’s license for commercial use.' class="hint" style="margin-top:0">TTF·OTF·WOFF 파일이나 <b>받은 ZIP 그대로</b> 올리면 이 브라우저에 저장돼요. Bold·Light처럼 굵기만 다른 파일은 한 글꼴로 묶어요. 상업적 사용 허용 여부는 폰트마다 확인하세요.</p>
         <div class="row" style="margin-top:8px"><button class="btn sm" id="fontUpBtn"><svg class="i"><use href="#i-upload"/></svg>폰트 파일 올리기</button><button class="btn sm" id="wfOpen"><svg class="i"><use href="#i-globe"/></svg>웹폰트 추가</button></div>
         <p class="hint">웹폰트 추가: 눈누의 ‘웹폰트로 사용’ 코드, 구글 폰트 이름이나 주소, CSS 링크를 붙여넣어요. 파일을 올리지 않아도 돼요.</p>
         <input type="file" id="fontFile" accept=".ttf,.otf,.woff,.woff2,.ttc,.zip" multiple hidden>
@@ -945,7 +948,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         </form>
         <div class="row" style="margin-top:8px">
           <select class="sel" id="photoType" style="flex:1"><option value="photo">사진</option><option value="illustration">일러스트</option><option value="vector">벡터</option><option value="all">전체</option></select>
-          <select class="sel" id="photoOri" style="flex:1"><option value="">방향 전체</option><option value="horizontal">가로</option><option value="vertical">세로</option></select>
+          <select class="sel" id="photoOri" style="flex:1"><option value="">방향 전체</option><option value="horizontal" data-en="Landscape">가로</option><option value="vertical" data-en="Portrait">세로</option></select>
         </div>
         <div class="chips" id="photoChips"></div>
         <div class="photos" id="photoGrid"></div>
@@ -1017,12 +1020,12 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <div class="masks big" id="maskGrid"></div>
         <h3 class="shape-h">액자·테두리 <small>고른 요소 둘레에, 아니면 캔버스 둘레에</small></h3>
         <div class="frames2" id="frameGrid"></div>
-        <p class="hint" style="margin:6px 0 0">더 많은 액자 그림은 <b>사진</b> 탭 Pixabay에서 ‘frame’, ‘border’를 <b>일러스트·벡터</b>로 찾아보세요 (상업적 무료).</p>
+        <p data-en='For more frame artwork, search ‘frame’ or ‘border’ on Pixabay in the <b>Photos</b> tab with <b>Illustration · Vector</b> (free for commercial use).' class="hint" style="margin:6px 0 0">더 많은 액자 그림은 <b>사진</b> 탭 Pixabay에서 ‘frame’, ‘border’를 <b>일러스트·벡터</b>로 찾아보세요 (상업적 무료).</p>
         <h3>직접 그리기</h3>
         <div class="seg grid2" id="penMode"><button data-p="off">끄기</button><button data-p="pen">펜</button><button data-p="arrow">화살표 펜</button><button data-p="hl">형광펜</button></div>
         <div class="field"><span class="lbl">색</span><div class="clr" data-clr="penC"></div></div>
         <div class="field"><span class="lbl">굵기 <output id="penWO">14</output></span><input type="range" id="penW" min="2" max="60" value="14"></div>
-        <p class="hint">켜 두는 동안 캔버스에 직접 그려요. 화살표 펜은 다 그은 끝에 화살촉이 붙어요. 끝내려면 <b>끄기</b>나 <span class="kbd">Esc</span>.</p>
+        <p data-en='While on, you draw directly on the canvas. The Arrow Pen adds an arrowhead at the end of each stroke. To finish, click <b>Off</b> or press <span class="kbd">Esc</span>.' class="hint">켜 두는 동안 캔버스에 직접 그려요. 화살표 펜은 다 그은 끝에 화살촉이 붙어요. 끝내려면 <b>끄기</b>나 <span class="kbd">Esc</span>.</p>
       </div>
 
       <!-- upload -->
@@ -1032,7 +1035,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
           <svg class="i" style="width:28px;height:28px"><use href="#i-upload"/></svg>
           <div>여기에 끌어다 놓거나</div>
           <button class="btn sm primary" id="upBtn">파일 고르기</button>
-          <div style="font-size:12px">캔버스에 바로 끌어다 놓거나 <span class="kbd">Ctrl</span>+<span class="kbd">V</span>로 붙여넣어도 돼요</div>
+          <div data-en='You can also drop onto the canvas or paste with <span class="kbd">Ctrl</span>+<span class="kbd">V</span>' style="font-size:12px">캔버스에 바로 끌어다 놓거나 <span class="kbd">Ctrl</span>+<span class="kbd">V</span>로 붙여넣어도 돼요</div>
         </div>
         <input type="file" id="upFile" accept="image/*,.heic,.heif,.psd,.ai,.pdf,.svg" multiple hidden>
         <label class="tog" style="margin-top:10px"><input type="checkbox" id="upLock">올린 이미지는 바로 자리 고정 (잠그기)</label>
@@ -1056,7 +1059,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
           <div class="seg" id="bgDir" style="flex:1"><button data-dir="v" aria-label="위에서 아래">↓</button><button data-dir="h" aria-label="왼쪽에서 오른쪽">→</button><button data-dir="d" aria-label="대각선">↘</button></div></div>
         </div>
         <h3>배경 사진</h3>
-        <p class="hint" style="margin-top:0">사진 탭이나 보관함에서 <b>배경</b> 버튼을 누르면 화면을 꽉 채워 깔려요.</p>
+        <p data-en='Click the <b>Background</b> button on a photo in the Photos tab or Library to fill the canvas with it.' class="hint" style="margin-top:0">사진 탭이나 보관함에서 <b>배경</b> 버튼을 누르면 화면을 꽉 채워 깔려요.</p>
         <div id="bgImgBox" hidden>
           <div class="field"><span class="lbl">어둡게 <output id="bgDimO">0</output></span><input type="range" id="bgDim" min="0" max="80" value="0"></div>
           <div class="field"><span class="lbl">흐리게 <output id="bgBlurO">0</output></span><input type="range" id="bgBlur" min="0" max="60" value="0"></div>
@@ -1069,7 +1072,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <h2>마이스페이스</h2>
         <div class="seg" id="msSrc"><button data-ms="drive"><svg class="i"><use href="#i-cloud"/></svg>구글 드라이브</button><button data-ms="local"><svg class="i"><use href="#i-monitor"/></svg>이 브라우저</button></div>
         <div id="msLocal" hidden>
-          <p class="hint" style="margin-top:0">지금 작업은 자동으로 기억돼요. 여러 개를 따로 보관하려면 이름을 붙여 저장하세요. 이 브라우저 안에만 저장되니, 다른 기기로 옮길 땐 위쪽 <b>파일로 저장</b>을 쓰세요.</p>
+          <p data-en='Your current work is remembered automatically. To keep several projects, save them with a name. They’re stored only in this browser — to move to another device, use <b>Save Project File</b> in the File menu.' class="hint" style="margin-top:0">지금 작업은 자동으로 기억돼요. 여러 개를 따로 보관하려면 이름을 붙여 저장하세요. 이 브라우저 안에만 저장되니, 다른 기기로 옮길 땐 위쪽 <b>파일로 저장</b>을 쓰세요.</p>
           <div class="search"><input class="txt" id="projName" placeholder="작업 이름"><button class="btn sm primary" id="projSave">저장</button></div>
           <div class="projects" id="projList"></div>
           <div class="empty" id="projEmpty">아직 저장한 작업이 없어요.</div>
@@ -1077,11 +1080,11 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <div id="msDrive">
           <div class="ms-err" id="msErr" role="alert" hidden></div>
           <div id="msSetup" hidden>
-            <p class="hint" style="margin-top:12px">내 구글 드라이브를 저장 공간으로 쓰면 작업과 사진이 어느 컴퓨터·휴대폰에서든 그대로 열려요. 처음 한 번 <b>구글 클라이언트 ID</b>를 만들어 넣어야 해요(무료, 10분쯤).</p>
+            <p data-en='Use your Google Drive as storage so projects and photos open on any computer or phone. The first time, you need to create a <b>Google Client ID</b> (free, about 10 minutes).' class="hint" style="margin-top:12px">내 구글 드라이브를 저장 공간으로 쓰면 작업과 사진이 어느 컴퓨터·휴대폰에서든 그대로 열려요. 처음 한 번 <b>구글 클라이언트 ID</b>를 만들어 넣어야 해요(무료, 10분쯤).</p>
             <button class="btn primary" id="msGoSet" style="margin-top:4px">설정에서 연결 준비하기</button>
           </div>
           <div id="msConnect" hidden>
-            <p class="hint" style="margin-top:12px" id="msConnectMsg">구글 계정으로 로그인하면 드라이브에 <b>Design by FC</b> 폴더가 생기고, 여기에 작업과 사진을 저장해요. 이 편집기는 자기가 만든 파일만 볼 수 있어요.</p>
+            <p data-en='Sign in with Google and a <b>Design by FC</b> folder is created in your Drive to store projects and photos. This editor can only see files it created.' class="hint" style="margin-top:12px" id="msConnectMsg">구글 계정으로 로그인하면 드라이브에 <b>Design by FC</b> 폴더가 생기고, 여기에 작업과 사진을 저장해요. 이 편집기는 자기가 만든 파일만 볼 수 있어요.</p>
             <button class="btn primary" id="msConnBtn" style="margin-top:4px"><svg class="i"><use href="#i-cloud"/></svg>구글 드라이브 연결</button>
           </div>
           <div id="msMain" hidden>
@@ -1106,7 +1109,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 
     <section class="stage" id="stage">
       <div class="fit" id="fitBox">
-        <div class="drawchip" id="drawChip" hidden>그리는 중 · <span class="kbd">Esc</span>로 끝내기</div>
+        <div data-en='Drawing · press <span class="kbd">Esc</span> to finish' class="drawchip" id="drawChip" hidden>그리는 중 · <span class="kbd">Esc</span>로 끝내기</div>
         <div class="canvas-wrap" id="canvasWrap">
           <span class="dims" id="dims">1280 × 720 px</span>
           <canvas id="c"></canvas>
@@ -1117,7 +1120,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         </div>
       </div>
       <div class="previews" id="previews">
-        <p class="hint" id="pvOther" hidden style="margin:0">유튜브 섬네일 비율(16:9)이 아니라서 유튜브 미리보기를 숨겼어요. 위쪽 <b>안내선</b>을 켜면 이 크기에서 가려지는 곳을 보여 줘요.</p>
+        <p data-en='This isn’t the YouTube thumbnail ratio (16:9), so the YouTube preview is hidden. Turn on <b>Guides</b> at the top to see what gets covered at this size.' class="hint" id="pvOther" hidden style="margin:0">유튜브 섬네일 비율(16:9)이 아니라서 유튜브 미리보기를 숨겼어요. 위쪽 <b>안내선</b>을 켜면 이 크기에서 가려지는 곳을 보여 줘요.</p>
         <div id="pvYT">
         <div class="previews-head">
           <strong>유튜브에서 보이는 크기</strong>
@@ -1409,7 +1412,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <div class="field" id="bxQF"><span class="lbl">품질 <output id="bxQO">85</output></span><input type="range" id="bxQ" min="40" max="100" value="85"></div>
         <div class="field" id="bxKBF"><span class="lbl">용량 목표 (선택)</span><div class="row"><input type="number" class="num wide" id="bxKB" min="20" max="50000" placeholder="예: 500"><span class="lbl">KB 이하</span></div><p class="hint" style="margin:4px 0 0">넣으면 그 용량 안에 들어가도록 품질을 자동으로 낮춰요 (JPG·WEBP).</p></div>
         <div class="field" id="bxBgF"><span class="lbl">투명한 곳 채울 색 (JPG)</span><input type="color" id="bxBg" value="#ffffff" aria-label="투명한 곳 채울 색"></div>
-        <div class="field"><label for="bxName">파일 이름</label><input class="txt" id="bxName" value="{이름}"><p class="hint" style="margin:4px 0 0"><b>{이름}</b> 원래 이름 · <b>{번호}</b> 01, 02… · <b>{가로}</b>·<b>{세로}</b> 바뀐 크기. 예: <code>블로그_{번호}</code></p></div>
+        <div class="field"><label for="bxName">파일 이름</label><input class="txt" id="bxName" value="{이름}"><p data-en='<b>{name}</b> original name · <b>{n}</b> 01, 02… · <b>{w}</b>·<b>{h}</b> new size. e.g. <code>blog_{n}</code>' class="hint" style="margin:4px 0 0"><b>{이름}</b> 원래 이름 · <b>{번호}</b> 01, 02… · <b>{가로}</b>·<b>{세로}</b> 바뀐 크기. 예: <code>블로그_{번호}</code></p></div>
       </div>
     </div>
     <div id="bxProg" hidden><div class="bar"><i id="bxBar"></i></div><p class="hint" id="bxProgT"></p></div>
@@ -1475,7 +1478,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         </div>
         <div id="cropOpts" hidden>
           <div class="seg grid3" id="cropRatio"><button data-r="0">자유</button><button data-r="1">1:1</button><button data-r="1.7778">16:9</button><button data-r="0.8">4:5</button><button data-r="0.5625">9:16</button><button data-r="doc">캔버스 비율</button></div>
-          <p class="hint">사진 위를 끌어서 남길 부분을 고른 뒤 <b>자르기 적용</b>을 눌러요.</p>
+          <p data-en='Drag over the photo to choose the area to keep, then click <b>Apply Crop</b>.' class="hint">사진 위를 끌어서 남길 부분을 고른 뒤 <b>자르기 적용</b>을 눌러요.</p>
           <button class="btn sm primary" id="cropGo" style="width:100%" disabled>자르기 적용</button>
           <h3>회전</h3>
           <div class="field"><span class="lbl">기울기 바로잡기 <output id="rotAO">0</output></span><input type="range" id="rotA" min="-45" max="45" step="0.5" value="0"></div>
@@ -1509,6 +1512,1039 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
   </div>
 </div>
 <div class="cut-brush" id="cutBrush" hidden></div>
+<script type="text/plain" id="i18nEN">
+되돌리기 (Ctrl+Z) ⇒ Undo (Ctrl+Z)
+되돌리기 ⇒ Undo
+다시 실행 (Ctrl+Shift+Z) ⇒ Redo (Ctrl+Shift+Z)
+다시 실행 ⇒ Redo
+유튜브 재생시간 표시가 가리는 자리 ⇒ Area covered by YouTube’s duration badge
+재생시간 ⇒ Duration
+삼등분선과 안전 여백 보기 (켜면 삼등분선에도 붙어요) ⇒ Show rule-of-thirds and safe margins (objects snap to thirds)
+안내선 ⇒ Guides
+유튜브에서 보이는 크기로 확인 ⇒ Preview at YouTube display size
+작게 보기 ⇒ Small Preview
+제목 없는 디자인 ⇒ Untitled Design
+작업 이름 ⇒ Project name
+캔버스 크기 바꾸기 ⇒ Canvas Size
+이 브라우저에 자동 저장돼요 ⇒ Auto-saved in this browser
+저장 상태 ⇒ Save status
+휴대폰에서도 읽히는지 검사 ⇒ Check legibility on phones
+가독성 검사 ⇒ Legibility
+다른 영상들 사이에 놓고 보기 ⇒ View among other videos
+피드 비교 ⇒ Feed Compare
+글자만 바꿔 여러 장 만들기 ⇒ Make many versions by changing only the text
+여러 장 ⇒ Batch
+같은 디자인을 여러 언어로 ⇒ Same design in multiple languages
+언어별 ⇒ Localize
+음성 파일과 합쳐 영상(MP4) 만들기 ⇒ Combine with audio into a video (MP4)
+영상 만들기 ⇒ Make Video
+파일 ⇒ File
+새로 만들기 ⇒ New
+작업 파일 열기 (.json) ⇒ Open Project File (.json)
+사진 일괄 변환 (크기·형식·용량) ⇒ Batch Image Converter (size · format · file size)
+PSD · AI · PDF · SVG 가져오기 ⇒ Import PSD · AI · PDF · SVG
+작업 파일로 저장 (.json) ⇒ Save Project File (.json)
+내 템플릿으로 저장 ⇒ Save as My Template
+구글 드라이브 저장 · 열기 ⇒ Google Drive Save · Open
+앱으로 설치 ⇒ Install as App
+설정 (사진 키 · 내 색 · 드라이브) ⇒ Settings (photo keys · my colors · Drive)
+내보내기 ⇒ Export
+도구 ⇒ Tools
+템플릿 ⇒ Templates
+텍스트 ⇒ Text
+사진 ⇒ Photos
+영상 ⇒ Video
+아이콘·이모지 ⇒ Icons
+도형 ⇒ Shapes
+업로드 ⇒ Uploads
+배경 ⇒ Background
+마이스페이스 ⇒ My Space
+내 템플릿 ⇒ My Templates
+예: 우리 채널 기본형 ⇒ e.g. Channel default
+지금 디자인 저장 ⇒ Save Current Design
+채널 고정 스타일을 저장해 두면 다음 편은 글자만 바꾸면 돼요. ⇒ Save your channel’s signature style, and next time you only need to change the text.
+큰 제목 넣기 ⇒ Add a Heading
+부제목 넣기 ⇒ Add a Subheading
+작은 글씨 넣기 ⇒ Add Body Text
+한 번에 꾸미기 ⇒ Text Styles
+글자를 선택한 상태면 그 글자에, 아니면 새 글자로 넣어요. ⇒ Applies to the selected text, or adds new text if nothing is selected.
+글꼴 직접 올리기 ⇒ Upload Fonts
+폰트 파일 올리기 ⇒ Upload Font Files
+웹폰트 추가 ⇒ Add Web Font
+웹폰트 추가: 눈누의 ‘웹폰트로 사용’ 코드, 구글 폰트 이름이나 주소, CSS 링크를 붙여넣어요. 파일을 올리지 않아도 돼요. ⇒ Add web font: paste Noonnu’s web-font code, a Google Fonts name or URL, or a CSS link. No file upload needed.
+무료 사진 ⇒ Free Photos
+API 키 붙여넣기 ⇒ Paste API key
+저장 ⇒ Save
+예: 고양이, 바다, 놀란 사람 ⇒ e.g. cat, ocean, surprised person
+검색 ⇒ Search
+일러스트 ⇒ Illustration
+벡터 ⇒ Vector
+전체 ⇒ All
+방향 전체 ⇒ Any orientation
+가로 ⇒ Width
+세로 ⇒ Height
+더 보기 ⇒ Load More
+영상에서 장면 뽑기 ⇒ Grab Frames from Video
+영상 파일을 끌어다 놓거나 ⇒ Drop a video file here, or
+영상 고르기 ⇒ Choose Video
+MP4·WebM·MOV. 영상은 이 컴퓨터 밖으로 나가지 않아요. ⇒ MP4 · WebM · MOV. Your video never leaves this computer.
+영상 위치 ⇒ Video position
+1초 뒤로 ⇒ Back 1 second
+한 프레임 뒤로 ⇒ Previous frame
+한 프레임 앞으로 ⇒ Next frame
+1초 앞으로 ⇒ Forward 1 second
+이 장면 넣기 ⇒ Add This Frame
+배경으로 ⇒ As Background
+장면 훑어보기 ⇒ Scan Frames
+16장면 자동으로 뽑기 ⇒ Auto-grab 16 Frames
+장면을 누르면 그 위치로 가요. 넣은 장면은 업로드 보관함에도 남아요. ⇒ Click a frame to jump there. Added frames are also kept in your Uploads library.
+아이콘 ⇒ Icons
+이모지 ⇒ Emoji
+예: 놀람, 하트, 불, 돈 ⇒ e.g. surprised, heart, fire, money
+구글 Noto 이모지(오픈 라이선스)로 넣어서 상업적으로 써도 돼요. ⇒ Uses Google Noto Emoji (open license), so commercial use is OK.
+예: 화살표, 체크, arrow ⇒ e.g. arrow, check, star
+넣을 때 색 (단색 아이콘) ⇒ Color on insert (single-color icons)
+MIT·Apache 라이선스 아이콘 묶음만 검색해요. 영어 검색어가 더 많이 찾아져요. ⇒ Searches only MIT/Apache-licensed icon sets. English keywords find more.
+사진 틀 ⇒ Photo Frames
+사진을 고른 상태면 그 사진에, 아니면 빈 틀을 넣어요 ⇒ Applies to the selected photo, or adds an empty frame
+액자·테두리 ⇒ Borders
+고른 요소 둘레에, 아니면 캔버스 둘레에 ⇒ Around the selection, or around the canvas
+직접 그리기 ⇒ Draw
+끄기 ⇒ Off
+펜 ⇒ Pen
+화살표 펜 ⇒ Arrow Pen
+형광펜 ⇒ Highlighter
+색 ⇒ Color
+굵기 ⇒ Weight
+내 이미지 ⇒ My Images
+여기에 끌어다 놓거나 ⇒ Drop files here, or
+파일 고르기 ⇒ Choose Files
+올린 이미지는 바로 자리 고정 (잠그기) ⇒ Lock uploaded images in place
+사진 일괄 변환 (크기·형식·용량 줄이기) ⇒ Batch Image Converter (resize · format · compress)
+여러 장을 한 번에 올리면 겹치지 않게 칸을 나눠 놓아요. 잠근 이미지는 눌러도 선택되지 않아서, 다른 걸 옮기다 같이 움직이지 않아요. ⇒ Multiple images are laid out in a grid without overlapping. Locked images can’t be selected by clicking, so they won’t move while you edit other things.
+보관함 ⇒ Library
+올린 이미지는 이 브라우저에 보관돼서 다음에도 바로 쓸 수 있어요. ⇒ Uploaded images are kept in this browser so you can reuse them later.
+단색 ⇒ Solid Color
+직접 고르기 ⇒ Custom
+그라데이션 ⇒ Gradient
+두 색 직접 고르기 ⇒ Pick two colors
+위에서 아래 ⇒ Top to bottom
+왼쪽에서 오른쪽 ⇒ Left to right
+대각선 ⇒ Diagonal
+배경 사진 ⇒ Background Photo
+어둡게 ⇒ Darken
+흐리게 ⇒ Blur
+배경 사진 지우기 ⇒ Remove Background Photo
+구글 드라이브 ⇒ Google Drive
+이 브라우저 ⇒ This Browser
+아직 저장한 작업이 없어요. ⇒ No saved projects yet.
+구글 클라이언트 ID ⇒ Google Client ID
+설정에서 연결 준비하기 ⇒ Set Up in Settings
+구글 드라이브 연결 ⇒ Connect Google Drive
+작업 ⇒ Projects
+올린 사진 ⇒ Uploaded Photos
+지금 작업 저장 ⇒ Save Current Project
+새 파일로 저장 ⇒ Save as New File
+고칠 때마다 드라이브에 자동 저장 (1분 간격) ⇒ Auto-save to Drive as you edit (every minute)
+사진 올리기 ⇒ Upload Photos
+업로드 탭에 있는 이미지를 드라이브에도 올려요 ⇒ Copy images from the Uploads tab to Drive
+업로드 탭 사진 옮기기 ⇒ Copy from Uploads
+누르면 캔버스에 들어가요. 드라이브에 있으니 다른 기기에서도 보여요. ⇒ Click to add to the canvas. They’re on Drive, so you’ll see them on other devices too.
+여기에 놓으면 이미지가 들어가요 ⇒ Drop to add image
+유튜브에서 보이는 크기 ⇒ Size as shown on YouTube
+영상 제목을 써 보면 옆에 같이 보여요 ⇒ Type a video title to preview it alongside
+홈 피드 · PC ⇒ Home feed · Desktop
+내 채널 · 조회수 1.2만회 · 3일 전 ⇒ My Channel · 12K views · 3 days ago
+검색 결과 · 모바일 ⇒ Search results · Mobile
+내 채널 · 1.2만회 ⇒ My Channel · 12K views
+다음 동영상 · 사이드 ⇒ Up next · Sidebar
+내 채널 ⇒ My Channel
+아트보드 ⇒ Artboard
+속성 ⇒ Properties
+캔버스 ⇒ Canvas
+요소를 누르면 여기서 글꼴·색·외곽선·그림자를 바꿀 수 있어요. 글자는 두 번 누르면 바로 고쳐 쓸 수 있고, 일부 글자만 드래그해서 색을 바꿀 수도 있어요. ⇒ Select an element to change its font, color, stroke and shadow here. Double-click text to edit it, or drag over part of the text to recolor just that part.
+단축키 ⇒ Shortcuts
+복제 ⇒ Duplicate
+복사 · 붙여넣기 (이미지도) ⇒ Copy · Paste (images too)
+지우기 ⇒ Delete
+잠그기 · 풀기 (잠근 건 눌러도 안 잡혀요) ⇒ Lock · Unlock (locked items can’t be clicked)
+1px 이동 (Shift는 10px) ⇒ Nudge 1px (Shift: 10px)
+선택한 글자에만 적용 ⇒ Applies to selected characters only
+글자 · 글꼴 ⇒ Character
+내용 ⇒ Content
+상자 너비 고정 · 자동 줄바꿈 ⇒ Fixed-width box · Auto wrap
+상자 너비 ⇒ Box width
+글자 단위로 끊기 (띄어쓰기 없는 긴 글자도 줄바꿈) ⇒ Break anywhere (wrap long words without spaces)
+캔버스에서 상자 양옆 손잡이를 끌면 너비가 바뀌고, 글자는 그 안에서 알아서 줄을 바꿔요. ⇒ Drag the side handles on the canvas to change the width; text wraps automatically inside.
+글꼴 ⇒ Font
+바꾸기 ⇒ Change
+크기 ⇒ Size
+굵게 ⇒ Bold
+기울임 ⇒ Italic
+밑줄 ⇒ Underline
+왼쪽 정렬 ⇒ Align Left
+가운데 정렬 ⇒ Align Center
+오른쪽 정렬 ⇒ Align Right
+양쪽 정렬 ⇒ Justify
+양쪽 정렬 (여러 줄일 때 줄 끝을 맞춰요) ⇒ Justify (aligns line ends on multi-line text)
+색 · 외곽선 ⇒ Color · Stroke
+글자색 ⇒ Text Color
+외곽선 ⇒ Stroke
+배경색 ⇒ Background Color
+켜기 ⇒ On
+간격 ⇒ Spacing
+자간 ⇒ Tracking
+줄 간격 ⇒ Leading
+효과 · 커브 ⇒ Effects · Warp
+바깥 테두리 (이중) ⇒ Outer Stroke (double)
+두께 ⇒ Thickness
+입체 ⇒ 3D Extrude
+깊이 ⇒ Depth
+방향 ⇒ Direction
+글자 안에 사진 ⇒ Photo Inside Text
+사진 고르기 ⇒ Choose Photo
+빼기 ⇒ Remove
+사진 크기 ⇒ Photo size
+가로 위치 ⇒ Horizontal position
+세로 위치 ⇒ Vertical position
+커브 ⇒ Warp
+커브는 한 줄 글자에만 돼요. +는 위로, −는 아래로 휘어요. ⇒ Warp works on single-line text only. + arcs up, − arcs down.
+이미지 ⇒ Image
+누끼 · 가리기 ⇒ Cutout · Masking
+누끼 · 배경 지우기 ⇒ Remove Background
+사진 바꾸기 (틀·크기 그대로) ⇒ Replace Photo (keeps frame & size)
+사진 편집 (도장·브러시·선택·자르기·곡선) ⇒ Edit Photo (Clone · Brush · Select · Crop · Curves)
+모자이크 · 흐림으로 가리기 ⇒ Hide with Mosaic · Blur
+원본 이미지로 되돌리기 ⇒ Revert to Original
+테두리 · 빛 · 가장자리 ⇒ Stroke · Glow · Edges
+스티커 테두리 ⇒ Sticker Outline
+뒤에 빛 번짐 ⇒ Outer Glow
+세기 ⇒ Amount
+가장자리 녹이기 ⇒ Feather Edges
+없음 ⇒ None
+왼쪽 ⇒ Left
+오른쪽 ⇒ Right
+위 ⇒ Top
+아래 ⇒ Bottom
+사방 ⇒ All sides
+녹이는 폭 ⇒ Feather width
+색 · 모양 ⇒ Color · Shape
+이 사진의 색 ⇒ Colors in this photo
+누르면 내 색에 저장 ⇒ Click to save to My Colors
+모양 ⇒ Shape
+보정 · 색 입히기 ⇒ Adjustments · Tint
+밝기 ⇒ Brightness
+대비 ⇒ Contrast
+채도 ⇒ Saturation
+흐림 ⇒ Blur
+노출 ⇒ Exposure
+색조 ⇒ Hue
+색온도 (− 차갑게 · + 따뜻하게) ⇒ Temperature (− cool · + warm)
+활기 ⇒ Vibrance
+색 입히기 ⇒ Color Overlay
+세기 100이면 로고·아이콘이 모양은 그대로, 한 가지 색으로 바뀌어요. 낮추면 사진에 색만 살짝 물들어요. ⇒ At 100, logos and icons keep their shape but turn a single color. Lower it to just tint the photo.
+보정 초기화 ⇒ Reset Adjustments
+배경으로 깔기 ⇒ Set as Background
+필터 · 효과 ⇒ Filters · Effects
+필터 ⇒ Filter
+흑백 ⇒ Grayscale
+흑백 대비 ⇒ Black & White
+세피아 ⇒ Sepia
+빈티지 ⇒ Vintage
+코다크롬 ⇒ Kodachrome
+테크니컬러 ⇒ Technicolor
+폴라로이드 ⇒ Polaroid
+브라우니 ⇒ Brownie
+반전 ⇒ Invert
+선명하게 ⇒ Sharpen
+그레인 (필름 질감) ⇒ Grain (film texture)
+픽셀화 ⇒ Pixelate
+비네팅 (가장자리 어둡게) ⇒ Vignette (darken edges)
+모션 흐림 ⇒ Motion Blur
+모션 방향 (도) ⇒ Motion angle (°)
+하프톤 점 크기 ⇒ Halftone dot size
+노이즈 줄이기 ⇒ Reduce Noise
+비네팅·모션 흐림·하프톤·노이즈 줄이기는 큰 사진에서 잠깐 걸릴 수 있어요. ⇒ Vignette, Motion Blur, Halftone and Reduce Noise may take a moment on large photos.
+아이콘 색 ⇒ Icon Color
+채우기 · 테두리 · 선 ⇒ Fill · Stroke · Line
+채우기 ⇒ Fill
+비우기 ⇒ None
+테두리 ⇒ Stroke
+선 모양 ⇒ Line style
+실선 ⇒ Solid
+파선 ⇒ Dashed
+점선 ⇒ Dotted
+긴 파선 ⇒ Long dash
+모서리 둥글기 ⇒ Corner radius
+개 선택됨 ⇒ selected
+한 덩어리로 묶기 ⇒ Group
+모두 잠그기 ⇒ Lock All
+크기 맞추기 ⇒ Match Size
+기준 ⇒ Reference
+가장 큰 것에 맞추기 ⇒ Match the largest
+가장 작은 것에 맞추기 ⇒ Match the smallest
+맨 아래 레이어에 맞추기 ⇒ Match the bottom layer
+가로 같게 ⇒ Same Width
+세로 같게 ⇒ Same Height
+숫자로 정하기 ⇒ Set by number
+모두 이 크기로 ⇒ Apply to All
+지금 크기의 몇 % ⇒ % of current size
+지금 크기의 %로 ⇒ Scale by %
+비율은 그대로 지켜요. 가로·세로를 둘 다 넣으면 그 상자 안에 꼭 맞게 들어가요. ⇒ Aspect ratio is kept. Enter both width and height to fit inside that box.
+크기 그대로 나란히 줄 세우기 ⇒ Arrange side by side (keep sizes)
+묶음 ⇒ Group
+묶음 풀기 ⇒ Ungroup
+정렬 ⇒ Align
+캔버스 기준 ⇒ To canvas
+왼쪽 맞춤 ⇒ Align left edges
+가로 가운데 맞춤 ⇒ Align horizontal centers
+오른쪽 맞춤 ⇒ Align right edges
+가로 간격 똑같이 (3개 이상) ⇒ Distribute horizontally (3 or more)
+가로 간격 똑같이 ⇒ Distribute horizontally
+위쪽 맞춤 ⇒ Align top edges
+세로 가운데 맞춤 ⇒ Align vertical centers
+아래쪽 맞춤 ⇒ Align bottom edges
+세로 간격 똑같이 (3개 이상) ⇒ Distribute vertically (3 or more)
+세로 간격 똑같이 ⇒ Distribute vertically
+여러 개도 캔버스 기준으로 맞추기 ⇒ Align multiple items to the canvas
+배치 · 순서 ⇒ Arrange
+가로 가운데 ⇒ Center H
+세로 가운데 ⇒ Center V
+좌우 뒤집기 ⇒ Flip Horizontal
+상하 뒤집기 ⇒ Flip Vertical
+맨 앞으로 ⇒ Bring to Front
+한 칸 앞으로 ⇒ Bring Forward
+한 칸 뒤로 ⇒ Send Backward
+맨 뒤로 ⇒ Send to Back
+투명도 · 혼합 모드 · 회전 · 그림자 ⇒ Opacity · Blend Mode · Rotate · Shadow
+투명도 ⇒ Opacity
+혼합 모드 ⇒ Blend Mode
+표준 ⇒ Normal
+곱하기 ⇒ Multiply
+스크린 ⇒ Screen
+오버레이 ⇒ Overlay
+밝게 ⇒ Lighten
+색상 닷지 ⇒ Color Dodge
+색상 번 ⇒ Color Burn
+하드 라이트 ⇒ Hard Light
+소프트 라이트 ⇒ Soft Light
+차이 ⇒ Difference
+제외 ⇒ Exclusion
+색상 ⇒ Color
+광도 ⇒ Luminosity
+회전 ⇒ Rotation
+그림자 ⇒ Drop Shadow
+번짐 ⇒ Blur
+거리 ⇒ Distance
+잠그기 ⇒ Lock
+레이어 ⇒ Layers
+잠금 모두 풀기 ⇒ Unlock All
+이미지 내보내기 ⇒ Export Image
+유튜브 섬네일은 1280×720, 2MB 이하가 권장이에요. ⇒ YouTube recommends 1280×720 thumbnails under 2 MB.
+내보낼 섬네일 미리보기 ⇒ Export preview
+미리보기 바탕 ⇒ Preview backdrop
+체크무늬 ⇒ Checkerboard
+흰색 ⇒ White
+검정 ⇒ Black
+올릴 곳 바탕에 따라 이렇게 보여요 ⇒ How it looks on different backgrounds
+형식 ⇒ Format
+배경 투명하게 ⇒ Transparent background
+배경색만 빼기 ⇒ Remove background color only
+배경 사진까지 빼기 ⇒ Also remove background photo
+범위 ⇒ Range
+지금 아트보드만 ⇒ Current artboard
+아트보드 전부 ⇒ All artboards
+해상도 ⇒ Resolution
+1배 ⇒ 1x
+2배 ⇒ 2x
+3배 ⇒ 3x
+4배 ⇒ 4x
+JPG 품질 ⇒ JPG Quality
+파일 이름 ⇒ File Name
+파일 크기 ⇒ File size
+계산 중… ⇒ Calculating…
+사용한 사진 출처 ⇒ Photo credits
+설명란용 출처 복사 ⇒ Copy credits for description
+닫기 ⇒ Close
+이미지 복사 ⇒ Copy Image
+내려받기 ⇒ Download
+사진 일괄 변환 ⇒ Batch Image Converter
+사진을 한꺼번에 줄이거나 형식·용량을 바꿔 ZIP으로 받아요. 이 컴퓨터 안에서만 처리되고, 사진 속 위치·촬영 정보(EXIF)는 지워져요. ⇒ Resize many photos at once or change format/file size, and download as a ZIP. Everything runs on this computer, and location/camera info (EXIF) is removed.
+사진을 끌어다 놓거나 ⇒ Drop photos here, or
+사진 고르기 (여러 장) ⇒ Choose Photos (multiple)
+모두 빼기 ⇒ Remove All
+그대로 ⇒ Original
+긴 쪽 ⇒ Long edge
+원래보다 작은 사진은 키우지 않기 ⇒ Don’t enlarge smaller photos
+원래대로 ⇒ Original
+품질 ⇒ Quality
+용량 목표 (선택) ⇒ Target file size (optional)
+예: 500 ⇒ e.g. 500
+KB 이하 ⇒ KB max
+넣으면 그 용량 안에 들어가도록 품질을 자동으로 낮춰요 (JPG·WEBP). ⇒ Quality is lowered automatically to fit under this size (JPG · WEBP).
+투명한 곳 채울 색 (JPG) ⇒ Fill color for transparency (JPG)
+투명한 곳 채울 색 ⇒ Fill color for transparency
+변환한 사진을 캔버스에 넣어요 ⇒ Place converted photos on the canvas
+캔버스에 넣기 ⇒ Place on Canvas
+변환해서 받기 ⇒ Convert & Download
+파일 가져오기 ⇒ Import File
+가져올 파일 미리보기 ⇒ Import preview
+페이지 (일러스트 아트보드) ⇒ Page (Illustrator artboard)
+넣을 곳 ⇒ Place into
+새 아트보드로 (원래 크기) ⇒ New artboard (original size)
+지금 아트보드에 맞춰 넣기 ⇒ Fit into current artboard
+조각마다 따로 넣기 (도형·선·글자를 하나씩 고르고 고칠 수 있어요) ⇒ Separate pieces (select and edit each shape, line and text)
+취소 ⇒ Cancel
+가져오기 ⇒ Import
+사진 편집 ⇒ Edit Photo
+자동으로 ⇒ Automatic
+AI로 누끼 따기 ⇒ Remove Background with AI
+빠르게 ⇒ Fast
+정밀하게 ⇒ Precise
+사람·물건·동물만 남기고 배경을 지워요. 처음 한 번 AI 모델(빠르게 44MB, 정밀하게 88MB)을 받고, 다음부터는 바로 돼요. 사진은 이 컴퓨터 밖으로 나가지 않아요. ⇒ Keeps people, objects and animals and removes the background. The AI model (Fast 44 MB, Precise 88 MB) downloads once; after that it’s instant. Your photo never leaves this computer.
+직접 다듬기 ⇒ Manual Tools
+색 지우기 ⇒ Magic Eraser
+지우개 ⇒ Eraser
+되살리기 ⇒ Restore
+모자이크 ⇒ Mosaic
+도장 ⇒ Clone Stamp
+브러시 ⇒ Brush
+선택 ⇒ Select
+자르기·회전 ⇒ Crop · Rotate
+곡선·레벨 ⇒ Curves · Levels
+비슷한 색 범위 ⇒ Tolerance
+누른 곳과 이어진 부분만 ⇒ Contiguous
+흰 배경이나 단색 배경을 누르면 그 색이 지워져요. 덜 지워지면 범위를 올리세요. ⇒ Click a white or solid background to erase that color. Raise the tolerance if some remains.
+붓 크기 ⇒ Brush size
+붓 경도 (가장자리 선명함) ⇒ Hardness (edge sharpness)
+붓 색 ⇒ Brush color
+사진에서 색 찍기 ⇒ Pick color from photo
+사진에서 찍기 ⇒ Eyedropper
+불투명도 ⇒ Opacity
+복사할 곳 정하기 (휴대폰·태블릿용) ⇒ Set clone source (for phones · tablets)
+사각형 ⇒ Rectangle
+원 ⇒ Circle
+올가미 ⇒ Lasso
+사진 위를 끌어서 영역을 고르세요. 선택한 동안에는 지우개·브러시·도장도 그 안에서만 돼요. ⇒ Drag over the photo to select an area. While selected, the eraser, brush and clone stamp only work inside it.
+선택 영역 지우기 ⇒ Delete Selection
+밖 지우기 (남기기) ⇒ Delete Outside (Keep)
+새 레이어로 복사 ⇒ Layer via Copy
+붓 색으로 채우기 ⇒ Fill with Brush Color
+선택 반전 ⇒ Inverse
+선택 해제 ⇒ Deselect
+채우기 색 ⇒ Fill color
+자유 ⇒ Free
+캔버스 비율 ⇒ Canvas ratio
+자르기 적용 ⇒ Apply Crop
+기울기 바로잡기 ⇒ Straighten
+좌우 반전 ⇒ Flip Horizontal
+빨강 ⇒ Red
+초록 ⇒ Green
+파랑 ⇒ Blue
+곡선 ⇒ Curves
+선을 눌러 점을 만들고 끌어요. 점을 두 번 누르면 지워져요. 위로 올리면 밝아지고 S자로 만들면 대비가 세져요. ⇒ Click the line to add a point and drag it. Double-click a point to remove it. Raise it to brighten; an S-curve adds contrast.
+레벨 ⇒ Levels
+검정점 ⇒ Black point
+중간톤 ⇒ Midtones
+흰점 ⇒ White point
+초기화 ⇒ Reset
+곡선·레벨 적용 ⇒ Apply Curves · Levels
+떨어진 작은 조각 지우기 ⇒ Remove Stray Specks
+확대 ⇒ Zoom
+한 단계 전 ⇒ Step Backward
+처음 사진으로 ⇒ Revert
+적용할 때 빈 여백 잘라내기 ⇒ Trim transparent edges on apply
+배경 보기 ⇒ Backdrop
+투명 ⇒ Transparent
+적용 ⇒ Apply
+음성으로 영상 만들기 ⇒ Make Video with Audio
+아트보드를 화면으로, 음성 파일을 소리로 합쳐 MP4 영상을 만들어요. 아트보드마다 길이를 정하면 그 시간만큼 나오고 순서대로 넘어가요. 음성은 없어도 돼요. 파일은 이 컴퓨터 밖으로 나가지 않아요. ⇒ Combines artboards (picture) and an audio file (sound) into an MP4. Each artboard shows for its set duration, in order. Audio is optional. Files never leave this computer.
+영상 미리보기 ⇒ Video preview
+▶ 미리보기 ⇒ ▶ Preview
+미리보기 위치 ⇒ Preview position
+음성 파일을 끌어다 놓거나 (없어도 돼요) ⇒ Drop an audio file (optional), or
+음성 파일 고르기 ⇒ Choose Audio
+음성 빼기 ⇒ Remove Audio
+화면 ⇒ Picture
+아트보드 전부, 순서대로 ⇒ All artboards, in order
+아트보드 하나만 ⇒ One artboard only
+쓸 아트보드 ⇒ Artboard to use
+화질 ⇒ Quality
+1080p (권장) ⇒ 1080p (recommended)
+720p (가볍게) ⇒ 720p (lighter)
+아트보드별 길이 ⇒ Duration per artboard
+2:12처럼 분:초로 넣어요. 비워 두면 음성 길이에서 남는 시간을 나눠 갖고, 음성이 없으면 5초씩 나와요. ⇒ Enter as m:ss, like 2:12. Blank ones split the remaining audio time; with no audio they show for 5 seconds each.
+아래에 재생 진행 막대 넣기 ⇒ Add a progress bar at the bottom
+시작·끝 소리 부드럽게 (0.5초) ⇒ Fade audio in/out (0.5 s)
+아래 중 하나를 붙여넣으세요. 여러 굵기를 한꺼번에 붙여넣으면 한 글꼴로 묶어요. ⇒ Paste one of the following. Pasting several weights at once groups them as one font.
+붙여넣기 ⇒ Paste
+목록에 보일 이름 (선택) ⇒ Display name (optional)
+비우면 글꼴 이름 그대로 ⇒ Leave blank to use the font name
+주로 쓰는 언어 ⇒ Main language
+추가 ⇒ Add
+언어별 버전 ⇒ Language Versions
+번역이 원래보다 길면 글자 크기를 줄여 같은 폭에 맞추기 ⇒ Shrink text to the original width when the translation is longer
+미리보기 ⇒ Preview
+언어별 ZIP ⇒ ZIP by language
+설정에서 연결하기 ⇒ Connect in Settings
+드라이브에 저장 ⇒ Save to Drive
+덮어쓰지 않고 새 파일로 저장 ⇒ Save as a new file instead of overwriting
+드라이브의 작업 ⇒ Projects on Drive
+새로고침 ⇒ Refresh
+글자 안에 넣을 사진 ⇒ Photo for inside text
+캔버스에 있는 사진 ⇒ Photos on canvas
+파일에서 고르기 ⇒ Choose from File
+캔버스 크기 ⇒ Canvas Size
+직접 입력 ⇒ Custom
+비율 고정 ⇒ Constrain proportions
+지금 디자인은 ⇒ Current design
+새 비율에 맞춰 재배치 ⇒ Rearrange to the new ratio
+통째로 맞춰 넣기 ⇒ Fit the whole design
+그대로 두기 ⇒ Leave as is
+재배치는 요소 위치를 새 비율로 옮기고 크기를 알맞게 줄이거나 키워요. 맞춰 넣기는 디자인 전체를 한 덩어리로 줄여 가운데 놓아요. ⇒ Rearrange moves elements to fit the new ratio and rescales them. Fit scales the whole design as one piece and centers it.
+새 아트보드로 만들기 (지금 아트보드는 그대로 두고 복제해서 바꿔요) ⇒ Create as a new artboard (keeps the current one and resizes a copy)
+아트보드 나란히 보기 ⇒ Artboards Side by Side
+아트보드 전부 ZIP으로 ⇒ All Artboards as ZIP
+여러 장 만들기 ⇒ Batch Versions
+지금 디자인은 그대로 두고 글자만 바꿔서 여러 장을 한 번에 만들어요. 시리즈물(1화, 2화…)에 좋아요. ⇒ Keeps the design and swaps only the text to make many images at once. Great for series (Ep. 1, Ep. 2…).
+바꿀 글자 1 ⇒ Text to replace 1
+바꿀 글자 2 (선택) ⇒ Text to replace 2 (optional)
+한 줄에 한 장씩 ⇒ One image per line
+ZIP으로 내려받기 ⇒ Download ZIP
+피드에서 비교 ⇒ Compare in Feed
+경쟁 영상 주소를 넣으면 그 섬네일들 사이에 내 아트보드를 섞어 보여 줘요. 내 것이 먼저 눈에 들어오는지 보세요. ⇒ Enter competing video URLs to see your artboard mixed among their thumbnails. Does yours catch the eye first?
+불러오기 ⇒ Load
+모바일 ⇒ Mobile
+섞기 ⇒ Shuffle
+내 아트보드 표시 ⇒ Highlight my artboard
+사람들은 섬네일을 1초도 안 보고 지나가요. 휴대폰 크기, 흑백, 실눈으로 봐도 핵심이 보이는지 확인하세요. ⇒ People glance at a thumbnail for less than a second. Check that the key message reads at phone size, in grayscale, and when squinting.
+휴대폰 크기 ⇒ Phone size
+휴대폰 크기 (168px) ⇒ Phone size (168px)
+흑백 — 밝기 차이만 남겨요 ⇒ Grayscale — luminance contrast only
+실눈 ⇒ Squint
+실눈 — 큰 덩어리만 남겨요 ⇒ Squint — only big shapes remain
+다시 검사 ⇒ Check Again
+설정 ⇒ Settings
+둘 다 무료예요. 가입 후 키를 받아 붙여넣으면 이 브라우저에 저장돼요. 사진 검색에는 둘 중 하나만 있어도 돼요. ⇒ Both are free. Sign up, get a key and paste it; it’s saved in this browser. Either one is enough for photo search.
+클라이언트 ID 만드는 법 (처음 한 번, 무료) ⇒ How to create a Client ID (one time, free)
+만들어진 클라이언트 ID(…apps.googleusercontent.com)를 복사해서 아래에 붙여넣어요. ⇒ Copy the new Client ID (…apps.googleusercontent.com) and paste it below.
+내 채널 색 ⇒ My Colors
+지금 작업을 비우고 빈 캔버스로 시작해요. ⇒ Clear the current work and start with a blank canvas.
+지금 작업은 ‘내 작업’에 저장하고 시작 ⇒ Save current work to ‘My Projects’ first
+저장하지 않고 시작 ⇒ Start without saving
+글꼴 찾기 ⇒ Search fonts
++ 웹폰트 ⇒ + Web Font
+편집 엔진을 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요. ⇒ Couldn’t load the editor engine. Check your internet connection and refresh.
+유튜브 섬네일 ⇒ YouTube Thumbnail
+채널 배너 ⇒ Channel Banner
+쇼츠 커버 ⇒ Shorts Cover
+커뮤니티 게시물 ⇒ Community Post
+피드 정사각 ⇒ Square Post
+피드 세로 4:5 ⇒ Portrait Post 4:5
+피드 3:4 ⇒ Post 3:4
+스토리 · 릴스 ⇒ Story · Reels
+피드 가로 ⇒ Landscape Post
+틱톡 ⇒ TikTok
+기타 ⇒ Other
+블로그 · 링크 미리보기 ⇒ Blog · Link Preview
+X 이미지 ⇒ X Image
+페이스북 커버 ⇒ Facebook Cover
+A4 인쇄용 (300dpi) ⇒ A4 Print (300 dpi)
+직접 지정 ⇒ Custom
+본문용 ⇒ Body
+제목용 ⇒ Display
+명조 ⇒ Serif
+손글씨 ⇒ Handwriting
+내 글꼴 ⇒ My Fonts
+★ 즐겨찾기 ⇒ ★ Favorites
+한국어 ⇒ Korean
+이미지를 불러오지 못했어요. ⇒ Couldn’t load the image.
+배경으로 깔았어요. ⇒ Set as background.
+작업을 불러오지 못했어요. ⇒ Couldn’t load the project.
+둥근 사각형 ⇒ Rounded Rectangle
+강조 동그라미 ⇒ Highlight Circle
+삼각형 ⇒ Triangle
+별 ⇒ Star
+쾅 터짐 ⇒ Burst
+화살표 ⇒ Arrow
+말풍선 ⇒ Speech Bubble
+선 ⇒ Line
+밑줄 띠 ⇒ Underline Bar
+타원 ⇒ Ellipse
+육각형 ⇒ Hexagon
+오각형 ⇒ Pentagon
+팔각형 ⇒ Octagon
+마름모 ⇒ Diamond
+직각삼각형 ⇒ Right Triangle
+평행사변형 ⇒ Parallelogram
+사다리꼴 ⇒ Trapezoid
+모서리 자른 사각 ⇒ Cut-corner Rectangle
+반원 ⇒ Semicircle
+아치 ⇒ Arch
+부채꼴 ⇒ Pie
+도넛 ⇒ Donut
+더하기 ⇒ Plus
+양쪽 화살표 ⇒ Double Arrow
+갈매기 화살표 ⇒ Chevron
+굽은 화살표 ⇒ Bent Arrow
+돌아가는 화살표 ⇒ U-turn Arrow
+화살표 선 ⇒ Arrow Line
+양쪽 화살표 선 ⇒ Double Arrow Line
+둥근 말풍선 ⇒ Round Bubble
+생각 풍선 ⇒ Thought Bubble
+인증 배지 ⇒ Badge
+리본 띠 ⇒ Ribbon
+꼬리표 ⇒ Tag
+하트 ⇒ Heart
+반짝이 ⇒ Sparkle
+육각 별 ⇒ Six-point Star
+번개 ⇒ Lightning
+달 ⇒ Moon
+물방울 ⇒ Drop
+구름 ⇒ Cloud
+체크 ⇒ Check
+엑스 ⇒ X Mark
+해 ⇒ Sun
+기본 도형 ⇒ Basic Shapes
+말풍선·배지 ⇒ Bubbles · Badges
+장식 ⇒ Decorative
+사진을 틀에 넣었어요. ⇒ Placed the photo in the frame.
+노랑 + 검정 테두리 ⇒ Yellow + black stroke
+흰 글씨 + 검정 테두리 ⇒ White + black stroke
+빨간 띠 ⇒ Red band
+깊은 그림자 ⇒ Deep shadow
+네온 ⇒ Neon
+형광펜 메모 ⇒ Highlighter note
+레트로 ⇒ Retro
+이중 테두리 ⇒ Double stroke
+입체 3D ⇒ 3D extrude
+여기에 제목 ⇒ Title here
+글꼴 모음(.ttc) 파일은 브라우저가 읽을 수 없어요. 같은 글꼴의 TTF·OTF 파일로 받아 주세요. ⇒ Browsers can’t read font collection (.ttc) files. Please get the TTF/OTF version.
+글꼴 파일이 아니에요. TTF·OTF·WOFF·WOFF2나 이 파일들이 든 ZIP을 올려 주세요. ⇒ Not a font file. Upload TTF · OTF · WOFF · WOFF2, or a ZIP containing them.
+브라우저의 글꼴 검사를 통과하지 못했어요. 파일이 깨졌거나 오래된 형식이에요. 같은 글꼴의 다른 형식(TTF↔OTF, WOFF)으로 받아 보세요. ⇒ The font failed the browser’s check — it may be corrupt or an old format. Try another format (TTF↔OTF, WOFF).
+압축 파일을 열지 못했어요. 인터넷 연결을 확인하거나 압축을 풀어서 올려 주세요. ⇒ Couldn’t open the ZIP. Check your connection, or unzip it and upload the files.
+압축 파일 안에 글꼴(TTF·OTF·WOFF)이 없어요. ⇒ No fonts (TTF · OTF · WOFF) found in the ZIP.
+글꼴 {}개를 추가했어요: {}. 글꼴 목록 맨 위 ‘내 글꼴’에 있어요. ⇒ Added $1 font(s): $2. Find them under ‘My Fonts’ at the top of the font list.
+{} · 굵기 {}개 ⇒ $1 · $2 weights
+즐겨찾기에서 빼기 ⇒ Remove from Favorites
+즐겨찾기에 넣기 ⇒ Add to Favorites
+즐겨찾기 ⇒ Favorite
+한 번 더 누르면 지워요 ⇒ Click again to delete
+이 글꼴 지우기 ⇒ Delete this font
+글꼴 지우기 ⇒ Delete font
+글꼴 옆 ☆를 누르면 여기에 모여요. ⇒ Click ☆ next to a font to collect it here.
+찾는 글꼴이 없어요. ⇒ No matching fonts.
+‘{}’ 글꼴을 지웠어요. 이 글꼴을 쓴 글자는 기본 글꼴로 보여요. ⇒ Deleted font ‘$1’. Text that used it will show in the default font.
+Pixabay 콘텐츠 라이선스: 상업적 사용 무료, 출처 표시 필요 없음. 한국어 검색 돼요. ⇒ Pixabay Content License: free for commercial use, no attribution required.
+Unsplash 라이선스: 상업적 사용 무료, 출처 표시 필요 없음(해 주면 좋아요). 고화질 사진이 많아요. 영어 검색어가 더 잘 맞아요. ⇒ Unsplash License: free for commercial use, no attribution required (but appreciated). Lots of high-res photos.
+키를 저장했어요. ⇒ Key saved.
+놀란 표정 ⇒ surprised
+도시 야경 ⇒ city night
+노트북 ⇒ laptop
+음식 ⇒ food
+바다 ⇒ ocean
+돈 ⇒ money
+여행 ⇒ travel
+고양이 ⇒ cat
+먼저 위에서 무료 키를 넣어 주세요. ⇒ Enter a free key above first.
+찾는 중… ⇒ Searching…
+넣기 ⇒ Add
+결과가 없어요. 다른 낱말로 찾아보세요. ⇒ No results. Try different words.
+결과가 없어요. 다른 낱말로 찾아보세요. Unsplash는 영어로 찾으면 더 많이 나와요. ⇒ No results. Try different words — Unsplash works best in English.
+키가 맞지 않아요. 위쪽 열쇠 버튼에서 키를 다시 넣어 주세요. ⇒ Invalid key. Re-enter it with the key button above.
+검색 횟수 제한에 걸렸어요(Unsplash는 처음엔 1시간에 50번). 잠시 뒤에 다시 하거나 Pixabay로 바꿔 주세요. ⇒ Search limit reached (Unsplash starts at 50/hour). Try again later or switch to Pixabay.
+검색하지 못했어요. 인터넷 연결을 확인해 주세요. ⇒ Search failed. Check your internet connection.
+출처 표시가 필요한 사진이에요. 내보내기 창에서 출처를 복사할 수 있어요. ⇒ This photo requires attribution. You can copy the credit in the Export dialog.
+사진을 가져오지 못했어요. 다른 사진을 골라 주세요. ⇒ Couldn’t get the photo. Please choose another.
+표정 ⇒ Smileys
+사람 ⇒ People
+동물·자연 ⇒ Animals & Nature
+활동 ⇒ Activities
+사물 ⇒ Objects
+기호 ⇒ Symbols
+깃발 ⇒ Flags
+맞는 이모지가 없어요. ⇒ No matching emoji.
+이모지를 넣지 못했어요. ⇒ Couldn’t add the emoji.
+못 찾았어요. 영어로 찾아보세요 (예: arrow, fire). ⇒ Nothing found. Try English (e.g. arrow, fire).
+결과가 없어요. ⇒ No results.
+아이콘을 불러오지 못했어요. 인터넷 연결을 확인해 주세요. ⇒ Couldn’t load icons. Check your internet connection.
+아이콘을 넣지 못했어요. ⇒ Couldn’t add the icon.
+아이폰 사진(HEIC)을 읽는 도구를 받는 중… 처음 한 번만 받아요. ⇒ Downloading the iPhone photo (HEIC) reader… only needed once.
+이 아이폰 사진(HEIC)을 읽지 못했어요. 인터넷 연결을 확인하거나 JPG로 바꿔서 올려 주세요. ⇒ Couldn’t read this iPhone photo (HEIC). Check your connection or convert it to JPG.
+이 아이폰 사진(HEIC)을 읽지 못했어요. ⇒ Couldn’t read this iPhone photo (HEIC).
+붙여넣은 이미지 ⇒ Pasted image
+{}: 열지 못했어요. ⇒ $1: couldn’t open.
+{}개를 넣고 자리를 고정했어요. 레이어 목록의 자물쇠로 하나씩 풀 수 있어요. ⇒ Added and locked $1 item(s). Unlock them one by one with the lock in the Layers list.
+보관함에서 빼기 ⇒ Remove from library
+보관함에서 뺐어요. 캔버스에 넣은 것은 그대로예요. ⇒ Removed from the library. Items on the canvas stay.
+배경 {} ⇒ Background $1
+스포이드: 화면에서 색 찍기 ⇒ Eyedropper: pick a color from the screen
+스포이드 ⇒ Eyedropper
+지금 색을 내 채널 색으로 저장 ⇒ Save this color to My Colors
+내 색으로 저장 ⇒ Save to My Colors
+비우기 (투명) ⇒ None (transparent)
+비우기, 투명 ⇒ None, transparent
+0이면 투명, 100이면 꽉 찬 색 ⇒ 0 = transparent, 100 = solid
+{}을 내 채널 색에 저장했어요. 모든 색 고르기 맨 앞에 나와요. ⇒ Saved $1 to My Colors. It appears first in every color picker.
+내 색 {} (오른쪽 클릭으로 빼기) ⇒ My color $1 (right-click to remove)
+내 색 {} ⇒ My color $1
+{} 빼기 ⇒ Remove $1
+아직 없어요. 색 고르는 곳의 + 버튼으로 저장해요. ⇒ None yet. Save colors with the + button in any color picker.
+내 색에서 뺐어요. ⇒ Removed from My Colors.
+{} (어울리는 반대색) ⇒ $1 (complementary)
+캔버스에서 색을 찍을 곳을 누르세요. ⇒ Click on the canvas to sample a color.
+원본 이미지로 되돌렸어요. ⇒ Reverted to the original image.
+이 이미지는 편집할 수 없어요. ⇒ This image can’t be edited.
+문지른 곳이 투명해져요. ⇒ Painted areas become transparent.
+너무 많이 지워진 곳을 문지르면 원래 사진이 돌아와요. ⇒ Paint over over-erased areas to bring the original back.
+얼굴·번호판·개인정보를 문지르면 모자이크로 가려져요. ⇒ Paint over faces, plates or personal info to pixelate them.
+문지른 곳이 뿌옇게 흐려져요. ⇒ Painted areas get blurred.
+Alt(맥은 ⌥)를 누른 채 사진을 누르면 복사할 곳이 정해져요. 그다음 가릴 곳을 문지르면 그 부분이 옮겨 그려져요. ⇒ Alt-click (⌥ on Mac) to set the clone source, then paint where you want to cover.
+고른 색으로 칠해요. 경도를 낮추면 가장자리가 부드러워요. ⇒ Paints with the chosen color. Lower hardness for softer edges.
+복사할 곳을 정했어요. 이제 가릴 곳을 문지르세요. ⇒ Clone source set. Now paint over the area to cover.
+먼저 Alt(⌥)를 누른 채 복사할 곳을 눌러 주세요. ⇒ First Alt-click (⌥) to set the clone source.
+복사한 부분 ⇒ Copied area
+선택한 부분을 새 레이어로 복사했어요. 편집 창을 닫으면 보여요. ⇒ Copied the selection to a new layer. You’ll see it after closing the editor.
+잘랐어요. 한 단계 전으로 되돌릴 수 있어요. ⇒ Cropped. You can step backward to undo.
+기울기를 바로잡았어요. 남는 모서리는 자르기로 정리하세요. ⇒ Straightened. Crop away the leftover corners.
+곡선·레벨을 적용했어요. ⇒ Applied Curves · Levels.
+사진에서 색을 찍을 곳을 누르세요. ⇒ Click on the photo to sample a color.
+붓 색을 찍었어요. ⇒ Brush color sampled.
+이미 지워진 곳이에요. ⇒ That area is already erased.
+지울 색을 찾지 못했어요. 비슷한 색 범위를 올려 보세요. ⇒ No color to erase. Try raising the tolerance.
+남은 부분이 없어요. ⇒ Nothing left.
+떨어진 조각을 지웠어요. ⇒ Removed stray specks.
+지울 조각이 없어요. ⇒ No specks to remove.
+AI 엔진을 준비하고 있어요… ⇒ Preparing the AI engine…
+AI 모델 받는 중 {}% · 처음 한 번만 받아요 ⇒ Downloading AI model $1% · only once
+배경을 지우고 있어요… (보통 5~20초) ⇒ Removing background… (usually 5–20 s)
+누끼를 땄어요. 남은 부분은 지우개·되살리기로 다듬으세요. ⇒ Background removed. Refine with Eraser and Restore.
+AI 누끼에 실패했어요. 인터넷 연결을 확인하고 다시 눌러 주세요. ⇒ AI background removal failed. Check your connection and try again.
+사진이 전부 지워졌어요. 한 단계 전으로 돌려 주세요. ⇒ The whole photo was erased. Step backward.
+적용했어요. 스티커 테두리를 켜면 섬네일에서 더 또렷해 보여요. ⇒ Applied. Turn on Sticker Outline to make it pop.
+편집 창을 열지 못했어요. ⇒ Couldn’t open the editor.
+100 · 아주 가늘게 ⇒ 100 · Thin
+200 · 더 가늘게 ⇒ 200 · Extra Light
+300 · 가늘게 ⇒ 300 · Light
+400 · 보통 ⇒ 400 · Regular
+500 · 중간 ⇒ 500 · Medium
+600 · 조금 굵게 ⇒ 600 · Semibold
+700 · 굵게 ⇒ 700 · Bold
+800 · 더 굵게 ⇒ 800 · Extra Bold
+900 · 가장 굵게 ⇒ 900 · Black
+둥근 사각 ⇒ Rounded
+조약돌 ⇒ Pebble
+톱니 원 ⇒ Scalloped
+사진을 넣어 주세요 ⇒ Add a photo
+사진 틀 · {} ⇒ Photo Frame · $1
+빈 사진 틀을 넣었어요. 고른 채로 사진을 넣거나 ‘사진 바꾸기’를 누르면 틀에 들어가요. ⇒ Added an empty frame. With it selected, add a photo or click ‘Replace Photo’ to fill it.
+사진 틀 {} ⇒ Photo frame $1
+사진을 바꿨어요. 틀과 크기는 그대로예요. ⇒ Photo replaced. Frame and size are kept.
+사진을 바꾸지 못했어요. ⇒ Couldn’t replace the photo.
+심플 ⇒ Simple
+둥근 테두리 ⇒ Rounded
+이중선 ⇒ Double Line
+꺾쇠 ⇒ Corners
+우표 ⇒ Stamp
+필름 ⇒ Film
+브라우저 창 ⇒ Browser Window
+테이프 ⇒ Tape
+장식 모서리 ⇒ Ornate Corners
+액자 · {} ⇒ Border · $1
+액자 {} ⇒ Border $1
+고른 요소 둘레에 액자를 넣었어요. 색·굵기는 오른쪽에서 바꿀 수 있어요. ⇒ Added a border around the selection. Change color and weight on the right.
+캔버스 둘레에 액자를 넣었어요. 사진을 고른 뒤 누르면 그 사진에 맞춰 들어가요. ⇒ Added a border around the canvas. Select a photo first to fit it to that photo.
+아이콘 색을 바꾸지 못했어요. ⇒ Couldn’t change the icon color.
+{}개를 잠갔어요. 이제 눌러도 선택되지 않고 아래 요소가 선택돼요. 레이어 목록의 자물쇠로 풀어요. ⇒ Locked $1 items. Clicks now select what’s underneath. Unlock with the lock icon in Layers.
+잠갔어요. 이제 눌러도 선택되지 않고 아래 요소가 선택돼요. 레이어 목록의 자물쇠로 풀어요. ⇒ Locked. Clicks now select what’s underneath. Unlock with the lock icon in Layers.
+잠금을 풀었어요. ⇒ Unlocked.
+모든 잠금을 풀었어요. ⇒ Unlocked everything.
+{}개의 가로를 {}px로 맞췄어요. ⇒ Set width of $1 items to $2px.
+{}개의 세로를 {}px로 맞췄어요. ⇒ Set height of $1 items to $2px.
+가로나 세로에 숫자를 넣어 주세요. ⇒ Enter a width or height.
+{}개를 {} 바꿨어요. ⇒ Resized $1 items ($2).
+몇 %로 바꿀지 숫자를 넣어 주세요. 예: 50 ⇒ Enter a percentage, e.g. 50
+{}개를 {}%로 바꿨어요. ⇒ Scaled $1 items to $2%.
+캔버스보다 길어서 아래쪽이 넘쳤어요. 크기를 조금 줄여 보세요. ⇒ The row is longer than the canvas and overflows. Try smaller sizes.
+간격 맞추기는 3개 이상을 함께 골랐을 때 돼요. Shift를 누른 채 눌러 여러 개를 고르세요. ⇒ Distribute needs 3 or more selected items. Shift-click to select several.
+{#}개끼리 ⇒ To each other ($1)
+잠금 풀기 ⇒ Unlock
+다른 사진으로 ⇒ Replace Photo
+선 색 ⇒ Line Color
+{} 이모지 ⇒ $1 Emoji
+아이콘 · {} ⇒ Icon · $1
+손그림 ⇒ Drawing
+묶음 ({#}개) ⇒ Group ($1)
+보이기 ⇒ Show
+숨기기 ⇒ Hide
+아직 아무것도 없어요. 왼쪽에서 글자나 사진을 넣어 보세요. ⇒ Nothing here yet. Add text or photos from the left.
+커브를 준 글자는 상자 고정을 쓸 수 없어요. 커브를 먼저 0으로 해 주세요. ⇒ Warped text can’t use a fixed-width box. Set Warp to 0 first.
+새 아트보드 크기 ⇒ New Artboard Size
+아트보드는 20개까지예요. 하나를 지우고 다시 해 주세요. ⇒ Up to 20 artboards. Delete one and try again.
+가로·세로는 100~8000px 사이로 넣어 주세요. ⇒ Width and height must be 100–8000px.
+{} 아트보드를 만들었어요. 아트보드 탭에서 골라 쓸 수 있어요. ⇒ Created a $1 artboard. Pick it from the artboard strip.
+{}로 바꿨어요. ⇒ Resized to $1.
+{}로 바꿨어요. 새 아트보드로 만들었어요. ⇒ Resized to $1 as a new artboard.
+위쪽은 앱 화면에 가려져요 (대략) ⇒ Top is covered by app UI (approx.)
+아래쪽은 자막·버튼에 가려져요 (대략) ⇒ Bottom is covered by captions/buttons (approx.)
+프로필 격자(3:4)에 보이는 부분 ⇒ Visible in profile grid (3:4)
+PC에서 보이는 띠 ⇒ Band visible on desktop
+모든 기기에서 보이는 부분 ⇒ Safe area on all devices
+영상 제목 ⇒ Video title
+가볍고 어디서나 열려요. 유튜브 섬네일에 알맞아요. ⇒ Small and opens anywhere. Ideal for YouTube thumbnails.
+선명하고, 배경을 투명하게 뺄 수 있어요. ⇒ Crisp, and supports a transparent background.
+아트보드마다 한 쪽씩 담겨요. 인쇄나 공유용이에요. ⇒ One page per artboard. For printing or sharing.
+요소마다 레이어로 나뉘어 포토샵에서 열려요. 글자는 포토샵 글자 레이어로 들어가요. ⇒ Opens in Photoshop with each element on its own layer. Text becomes Photoshop type layers.
+벡터라 일러스트레이터에서 열고 고칠 수 있어요. 사진은 그림 그대로 들어 있어요. (.ai로는 저장할 수 없어요) ⇒ Vector — open and edit in Illustrator. Photos are embedded as images. (Can’t save as .ai)
+배경 투명하게 (JPG는 투명이 안 돼서 PNG로 바꿔요) ⇒ Transparent background (JPG can’t, so it switches to PNG)
+아트보드 전부 ({#}개) ⇒ All artboards ($1)
+PDF 한 파일에 {}쪽으로 담겨요. ⇒ One PDF with $1 pages.
+아트보드마다 한 파일씩 {}개를 ZIP 하나로 받아요. 파일 이름은 01-작업이름-아트보드이름 순서예요. ⇒ $1 files, one per artboard, in a single ZIP. Names follow 01-Project-Artboard.
+투명 배경은 PNG로 저장돼요. ⇒ Transparent backgrounds are saved as PNG.
+유튜브 섬네일은 1280×720(1배), 2MB 이하가 권장이에요. ⇒ YouTube recommends 1280×720 (1x) under 2 MB.
+{}. 인쇄나 큰 화면용이면 2배 이상으로 내보내세요. ⇒ $1. For print or large screens, export at 2x or more.
+{#}쪽 · 쪽마다 {} ⇒ $1 page(s) · $2 each
+{} · 레이어 {}개 ⇒ $1 · $2 layers
+{} · 벡터 ⇒ $1 · Vector
+{}개 · ZIP (이 아트보드 {}) ⇒ $1 files · ZIP (this artboard $2)
+{} — 2MB를 넘어요. JPG로 바꾸거나 품질을 낮춰 주세요. ⇒ $1 — over 2 MB. Switch to JPG or lower the quality.
+{} — 유튜브에 올릴 수 있어요 ⇒ $1 — OK for YouTube
+아래 표시된 사진은 출처 표시가 필요해요. 영상 설명란에 붙여넣어 주세요. ⇒ Marked photos require attribution. Paste the credits into your video description.
+이 사진들은 출처 표시가 필수는 아니지만, 남겨 두면 좋아요. ⇒ Attribution isn’t required for these, but it’s nice to include.
+필수 ⇒ Required
+목록에서 빼기 ⇒ Remove from list
+내보내기 도구를 받지 못했어요. 인터넷 연결을 확인해 주세요. ⇒ Couldn’t load the export tool. Check your internet connection.
+내보내지 못했어요. 다시 해 주세요. ⇒ Export failed. Please try again.
+PDF를 만드는 중… ⇒ Creating PDF…
+PDF를 내려받았어요 ({#}쪽). ⇒ PDF downloaded ($1 pages).
+PSD를 만드는 중… 레이어가 많으면 몇 초 걸려요. ⇒ Creating PSD… may take a few seconds with many layers.
+PSD를 내려받았어요 (레이어 {#}개). ⇒ PSD downloaded ($1 layers).
+SVG를 내려받았어요. 글꼴은 설치된 글꼴로 보여요. ⇒ SVG downloaded. Fonts display using installed fonts.
+내려받았어요. ⇒ Downloaded.
+이미지를 복사했어요. 원하는 곳에 붙여넣으세요. ⇒ Image copied. Paste it anywhere.
+이 브라우저에서는 이미지 복사가 안 돼요. 내려받기를 써 주세요. ⇒ This browser can’t copy images. Please use Download.
+출처를 복사했어요. ⇒ Credits copied.
+복사하지 못했어요. 목록을 직접 선택해서 복사해 주세요. ⇒ Couldn’t copy. Select the list and copy it manually.
+작업 파일을 내려받았어요. 나중에 ‘열기’로 이어서 할 수 있어요. ⇒ Project file downloaded. Open it later to continue.
+작업 파일을 열었어요. ⇒ Project file opened.
+썸네일 공방 작업 파일(.json)이 아니에요. ⇒ Not a Design by FC project file (.json).
+‘{}’ 저장했어요. ⇒ Saved ‘$1’.
+지금 작업 ⇒ Current
+열기 ⇒ Open
+정말 지우기 ⇒ Really delete
+‘{}’ 열었어요. ⇒ Opened ‘$1’.
+저장했어요. ⇒ Saved.
+커브는 한 줄 글자에만 쓸 수 있어요. 줄마다 글자를 따로 만들어 휘어 주세요. ⇒ Warp works on single-line text only. Make each line a separate text to warp it.
+이 사진 쓰기 ⇒ Use this photo
+캔버스에 사진이 없어요. ⇒ No photos on the canvas.
+{} 쓰기 ⇒ Use $1
+보관함이 비어 있어요. ⇒ The library is empty.
+아트보드 {#} ⇒ Artboard $1
+이 아트보드 지우기 ⇒ Delete this artboard
+아트보드 지우기 ⇒ Delete artboard
+새 아트보드 추가 ⇒ Add new artboard
+이름 ⇒ Name
+영상 만들기에서 이 아트보드가 나오는 시간이에요. 2:12처럼 분:초로 넣고, 비우면 자동이에요. ⇒ How long this artboard shows in Make Video. Enter m:ss like 2:12; leave blank for auto.
+영상 길이 ⇒ Duration
+자동 ⇒ Auto
+{} 영상 길이 ⇒ $1 duration
+지금 아트보드를 복제 ⇒ Duplicate current artboard
+지금 아트보드를 이미지로 저장 ⇒ Save current artboard as image
+아트보드 전부를 한 번에 내보내기 ⇒ Export all artboards at once
+전체 저장 ⇒ Save All
+아트보드를 나란히 보기 ⇒ View artboards side by side
+나란히 보기 ⇒ Side by Side
+2분 12초 ⇒ 2 min 12 s
+영상 길이는 2:12처럼 분:초로 넣어 주세요. 4시간까지 돼요. ⇒ Enter duration as m:ss, like 2:12. Up to 4 hours.
+‘{}’ 영상 길이: {} ⇒ ‘$1’ duration: $2
+‘{}’ 영상 길이를 자동으로 바꿨어요. ⇒ ‘$1’ duration set to auto.
+이름을 ‘{}’(으)로 정했어요. ⇒ Renamed to ‘$1’.
+이 아트보드를 저장하지 못했어요. 다시 해 주세요. ⇒ Couldn’t save this artboard. Please try again.
+아트보드 {}를 만들었어요. 지금 아트보드를 복제한 거라 여기서 바꿔 보세요. ⇒ Created Artboard $1 as a copy of the current one — edit away.
+아트보드를 지웠어요. Ctrl+Z로 되돌릴 수 있어요. ⇒ Artboard deleted. Undo with Ctrl+Z.
+편집 중 ⇒ Editing
+이 아트보드 편집 ⇒ Edit this artboard
+아트보드를 묶는 중이에요… ⇒ Packing artboards…
+아트보드를 ZIP으로 내려받았어요. ⇒ Artboards downloaded as ZIP.
+ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요. ⇒ Couldn’t create the ZIP. Check your internet connection.
+‘{}’ 템플릿을 저장했어요. ⇒ Saved template ‘$1’.
+‘{}’ 템플릿을 불러왔어요. 글자만 바꾸면 돼요. ⇒ Loaded template ‘$1’. Just change the text.
+글자가 있는 디자인에서 쓸 수 있어요. ⇒ Available for designs with text.
+바꾸지 않음 ⇒ Don’t change
+한 줄에 하나씩 글자를 써 주세요. ⇒ Write one text per line.
+{#}장 ⇒ $1 images
+만드는 중 {} / {} ⇒ Creating $1 / $2
+{#}장 완료 ⇒ $1 images done
+{#}장을 ZIP으로 내려받았어요. ⇒ Downloaded $1 images as ZIP.
+영상 파일을 골라 주세요. ⇒ Please choose a video file.
+이 영상 형식은 브라우저에서 열 수 없어요. MP4(H.264)로 바꿔서 올려 주세요. ⇒ This video format can’t be opened in the browser. Convert to MP4 (H.264).
+영상을 먼저 불러와 주세요. ⇒ Load a video first.
+장면 {} ⇒ Frame $1
+영상 장면 {} ⇒ Video frame $1
+채널 ⇒ Channel
+내 영상 제목 ⇒ My video title
+{} · 조회수 1.2만회 · 3일 전 ⇒ $1 · 12K views · 3 days ago
+{} · 조회수 {}만회 · {}일 전 ⇒ $1 · $20K views · $3 days ago
+위에 경쟁 영상 주소를 넣고 ⇒ Enter competing video URLs above and click
+를 누르면 그 사이에 내 아트보드이 섞여 보여요. ⇒ to see your artboard mixed among them.
+영상 정보를 불러오지 못했어요. ⇒ Couldn’t load video info.
+글자가 없어요. 짧은 글자를 함께 넣으면 무슨 영상인지 더 빨리 전달돼요. ⇒ No text. A few short words help viewers get the video faster.
+{} 글자가 휴대폰에서 {}px로 보여서 거의 안 읽혀요. 크게 키우거나 빼 보세요. ⇒ $1 text shows at $2px on phones — barely readable. Enlarge or remove it.
+{} 글자가 휴대폰에서 {}px예요. 조금 더 키우면 좋아요. ⇒ $1 text is $2px on phones. A bit larger would help.
+{} 글자색이 뒤 배경과 비슷해서 묻혀요 (대비 {}). 외곽선이나 배경색을 넣어 보세요. ⇒ $1 text blends into the background (contrast $2). Add a stroke or background color.
+{} 글자 대비가 약해요 ({}). 작은 화면에선 흐려 보일 수 있어요. ⇒ $1 text contrast is weak ($2). It may look faint on small screens.
+{} 글자가 오른쪽 아래 재생시간 표시에 가려져요. ⇒ $1 text is covered by the duration badge (bottom right).
+{} 글자가 가장자리에 붙어 있어요. 둥근 모서리에서 잘릴 수 있어요. ⇒ $1 text touches the edge and may be clipped by rounded corners.
+글자가 너무 많아요 (한글·한자 {}자, 단어 {}개). 섬네일 글자는 핵심 단어 몇 개면 충분해요. ⇒ Too much text ($1 CJK chars, $2 words). A few key words are enough.
+글자가 조금 많아요 (한글·한자 {}자, 단어 {}개). 줄일 수 있으면 줄여 보세요. ⇒ A bit much text ($1 CJK chars, $2 words). Trim it if you can.
+문제 {#} ⇒ Issues $1
+주의 {#} ⇒ Warnings $1
+참고 {#} ⇒ Notes $1
+눈에 띄는 문제가 없어요. ⇒ No noticeable issues.
+문제 ⇒ Issue
+주의 ⇒ Warning
+참고 ⇒ Note
+{} 길이 ⇒ $1 duration
+자동 {} ⇒ Auto $1
+총 길이 ⇒ Total
+· 소리 없는 영상이에요 ⇒ · Silent video
+· 음성 {} 중 앞 {}만 들어가요 ⇒ · Only the first $2 of the $1 audio is used
+· 음성이 끝난 뒤 {}은 소리 없이 나와요 ⇒ · $1 plays silently after the audio ends
+영상 크기 {} · 예상 크기 약 {}MB ⇒ Video $1 · approx. $2 MB
+· 비율이 다른 아트보드는 검은 여백을 두고 가운데 놓아요 ⇒ · Artboards with a different ratio are centered with black bars
+■ 멈춤 ⇒ ■ Stop
+읽는 중… ⇒ Reading…
+읽지 못함 ⇒ Unreadable
+이 음성 파일을 읽지 못했어요. MP3·WAV·M4A로 바꿔서 올려 주세요. ⇒ Couldn’t read this audio file. Convert to MP3 · WAV · M4A.
+아트보드 그리는 중… ⇒ Rendering artboards…
+영상 만드는 중 {}% · {} / {} · {} ⇒ Creating video $1% · $2 / $3 · $4
+마무리하는 중… ⇒ Finishing…
+실시간으로 녹화하는 중 {} / {} (이 브라우저는 영상 길이만큼 걸려요) ⇒ Recording in real time $1 / $2 (this browser takes as long as the video)
+완료 · {} · {} · {} ⇒ Done · $1 · $2 · $3
+영상을 내려받았어요. ⇒ Video downloaded.
+영상 만들기를 취소했어요. ⇒ Video creation canceled.
+이 브라우저는 영상 만들기를 지원하지 않아요. 크롬이나 엣지 최신 버전에서 해 주세요. ⇒ This browser doesn’t support video creation. Use the latest Chrome or Edge.
+영상을 만들지 못했어요. 화질을 720p로 낮추거나 크롬·엣지 최신 버전에서 다시 해 주세요. ⇒ Couldn’t create the video. Lower the quality to 720p or try the latest Chrome/Edge.
+추가한 웹폰트 ⇒ Added web font
+붙여넣은 내용이 없어요. ⇒ Nothing pasted.
+확인하는 중… ⇒ Checking…
+@font-face 안에서 글꼴 이름과 주소(url)를 찾지 못했어요. ⇒ Couldn’t find a font name and url inside @font-face.
+구글 폰트에서 이 글꼴을 찾지 못했어요. ⇒ Couldn’t find this font on Google Fonts.
+이 주소의 CSS를 읽지 못했어요. ‘목록에 보일 이름’에 CSS 안의 font-family 이름을 정확히 적고 다시 눌러 주세요. ⇒ Couldn’t read the CSS at this URL. Enter the exact font-family name from the CSS in ‘Display name’ and try again.
+구글 폰트에서 이 이름을 찾지 못했어요. 철자와 띄어쓰기(예: Gowun Dodum)를 확인하거나 눈누 코드를 붙여넣어 주세요. ⇒ Couldn’t find this name on Google Fonts. Check spelling and spacing (e.g. Gowun Dodum) or paste Noonnu code.
+(아직 못 불러옴) ⇒ (not loaded yet)
+추가했지만 글꼴 파일을 받지 못했어요: {}. 주소가 맞는지, 그 사이트가 다른 사이트에서 쓰는 걸 막지 않는지(CORS) 확인해 주세요. ⇒ Added, but couldn’t download the font files: $1. Check the URL and whether that site blocks use from other sites (CORS).
+추가했어요: {}. 글꼴 목록 맨 위 ‘내 글꼴’에 있어요. ⇒ Added: $1. Find it under ‘My Fonts’ at the top of the font list.
+웹폰트 {}을(를) 추가했어요. ⇒ Added web font $1.
+추가하지 못했어요. ⇒ Couldn’t add it.
+원래 글자 ⇒ Original text
+비우면 원래 글자 ⇒ Blank = original text
+번역 입력 ⇒ Enter translation
+언어를 하나 이상 골라 주세요. ⇒ Choose at least one language.
+아트보드로 열기 ⇒ Open as Artboard
+{} 버전을 아트보드 {}로 열었어요. 여기서 자리나 크기를 다듬으세요. ⇒ Opened the $1 version as Artboard $2. Fine-tune position and size here.
+{#}개 언어 완료 ⇒ $1 languages done
+언어별 섬네일을 ZIP으로 내려받았어요. ⇒ Downloaded language versions as ZIP.
+앱으로 설치했어요. 바탕화면이나 앱 목록에서 열 수 있어요. ⇒ Installed as an app. Open it from your desktop or app list.
+인터넷이 끊겼어요. 사진·아이콘 검색 말고는 그대로 쓸 수 있어요. ⇒ You’re offline. Everything except photo/icon search still works.
+드라이브에 연결하지 못했어요 ⇒ Couldn’t connect to Drive
+구글이 보낸 원래 메시지 ⇒ Original message from Google
+다시 연결 ⇒ Reconnect
+드라이브 연결 문제예요. 마이스페이스에 고치는 방법을 띄웠어요. ⇒ Drive connection problem. See the fix in My Space.
+설정에서 구글 클라이언트 ID를 먼저 넣어 주세요. ⇒ Enter your Google Client ID in Settings first.
+구글 로그인 창이 닫혔거나 막혔어요. 팝업을 허용하고 다시 눌러 주세요. ⇒ The Google sign-in window was closed or blocked. Allow pop-ups and try again.
+드라이브가 요청을 거절했어요: {} ⇒ Drive refused the request: $1
+드라이브와 연결하지 못했어요. 인터넷과 설정을 확인해 주세요. ⇒ Couldn’t connect to Drive. Check your connection and settings.
+불러오는 중… ⇒ Loading…
+아직 드라이브에 저장한 작업이 없어요. ⇒ No projects saved to Drive yet.
+드라이브 목록 보기 ⇒ Show Drive Files
+드라이브에서 불러오는 중… ⇒ Loading from Drive…
+드라이브에 저장하는 중… ⇒ Saving to Drive…
+드라이브 ‘썸네일 공방’ 폴더에 {}(으)로 저장했어요. ⇒ Saved to Drive as $1.
+{#}장 · {} ⇒ $1 photos · $2
+0장 ⇒ 0 photos
+사진 파일만 넣을 수 있어요. ⇒ Only image files can be added.
+멈추기 ⇒ Stop
+변환하는 중 {} / {} · {} ⇒ Converting $1 / $2 · $3
+멈췄어요 · {}장 변환됨 ⇒ Stopped · $1 converted
+{}장을 캔버스에 넣었어요. 오른쪽 ‘크기 맞추기’로 크기를 똑같이 맞출 수 있어요. ⇒ Placed $1 photos on the canvas. Use ‘Match Size’ on the right to make them equal.
+{} 가져오기 ⇒ Import $1
+파일을 읽는 중… ⇒ Reading file…
+{}px · 레이어 {}개 · 글자 레이어 {}개 ⇒ $1px · $2 layers · $3 type layers
+글자 레이어를 고칠 수 있는 글자로 바꾸기 ⇒ Convert type layers to editable text
+끄면 포토샵에서 보이던 모양 그대로 그림으로 들어와요. 켜면 내용을 고칠 수 있지만, 같은 글꼴이 이 앱에 없으면 비슷한 글꼴로 바뀌어요. 레이어 스타일(그림자·획)과 조정 레이어는 빠질 수 있어요. ⇒ Off: text comes in as an image exactly as in Photoshop. On: you can edit it, but missing fonts are substituted. Layer styles (shadow, stroke) and adjustment layers may be dropped.
+{#}쪽 ⇒ Page $1
+{}pt · {}쪽 · 벡터(도형·선)는 벡터 그대로 들어와요 ⇒ $1pt · $2 pages · vectors (shapes, lines) stay vector
+글자를 고칠 수 있는 글자로 바꾸기 ⇒ Convert text to editable text
+끄면 원래 글꼴 모양 그대로 들어와요(내용 수정은 어려워요). 켜면 내용을 고칠 수 있지만 글꼴이 비슷한 걸로 바뀌어요. ‘조각마다 따로’를 끄면 하나로 묶여 들어오고, 나중에 오른쪽 ‘묶음 풀기’로 나눌 수 있어요. ⇒ Off: text keeps its original look (hard to edit). On: editable, but fonts may be substituted. Turn off ‘Separate pieces’ to import as one group, then split later with ‘Ungroup’.
+SVG {} · 벡터 그대로 들어와요. ‘묶음 풀기’로 조각마다 편집할 수 있어요. ⇒ SVG $1 · stays vector. Use ‘Ungroup’ to edit pieces.
+이 AI 파일은 ‘PDF 호환 파일 만들기’를 끈 채 저장돼서 열 수 없어요. 일러스트레이터에서 그 옵션을 켜고 다시 저장하거나, SVG로 내보내서 올려 주세요. ⇒ This AI file was saved without ‘Create PDF Compatible File’, so it can’t be opened. Re-save with that option in Illustrator, or export as SVG.
+PDF를 읽지 못했어요. 암호가 걸렸거나 손상된 파일일 수 있어요. ⇒ Couldn’t read the PDF. It may be password-protected or damaged.
+파일을 읽는 도구를 받지 못했어요. 인터넷 연결을 확인해 주세요. ⇒ Couldn’t load the file reader. Check your internet connection.
+이 파일을 읽지 못했어요. ⇒ Couldn’t read this file.
+레이어 {} / {} · {} ⇒ Layer $1 / $2 · $3
+벡터로 바꾸는 중… ⇒ Converting to vector…
+글자를 읽는 중… ⇒ Reading text…
+도형을 만드는 중… ⇒ Building shapes…
+벡터 그림 ⇒ Vector art
+글자 ⇒ Text
+그림 ⇒ Image
+{}을(를) 가져왔어요. 레이어 {}개 ⇒ Imported $1. $2 layers
+· 조정 레이어 등 {}개는 빠졌어요 ⇒ · $1 adjustment/other layers skipped
+· 조각이 {}개가 넘어서 한 묶음으로 넣었어요. 오른쪽 ‘묶음 풀기’로 나눌 수 있어요 ⇒ · Over $1 pieces, so imported as one group. Split with ‘Ungroup’ on the right
+가져오지 못했어요. {} ⇒ Import failed. $1
+들어올 내용이 없어요. ⇒ Nothing to import.
+파일이 너무 크거나 지원하지 않는 형식일 수 있어요. ⇒ The file may be too large or in an unsupported format.
+아트보드 {} / {} 만드는 중… ({}) ⇒ Rendering artboard $1 / $2… ($3)
+ZIP으로 묶는 중… ⇒ Zipping…
+아트보드 {}개를 {}로 ZIP에 담아 내려받았어요. ⇒ Downloaded $1 artboards as $2 in a ZIP.
+SVG를 만드는 중… ⇒ Creating SVG…
+SVG를 내려받았어요. 이미지는 그대로 들어 있고, 글꼴은 설치된 글꼴로 보여요. ⇒ SVG downloaded. Images are embedded; fonts use installed fonts.
+{#}월 {#}일 ⇒ $1/$2
+드라이브 {} 중 {} 사용 ⇒ $2 of $1 used on Drive
+드라이브에 저장한 작업이 아직 없어요. 위의 ⇒ No projects saved to Drive yet. Try
+을 눌러 보세요. ⇒ above.
+올린 사진이 아직 없어요. ⇒ No uploaded photos yet.
+이름 바꾸기 ⇒ Rename
+한 번 더 누르면 휴지통으로 ⇒ Click again to move to Trash
+휴지통으로 ⇒ Move to Trash
+드라이브에 저장됨 · {} ⇒ Saved to Drive · $1
+드라이브 파일: {} ⇒ Drive file: $1
+아직 드라이브에 저장하지 않은 작업이에요. ⇒ This project isn’t saved to Drive yet.
+이 브라우저에 자동 저장돼요. 마이스페이스에서 구글 드라이브에도 저장할 수 있어요. ⇒ Auto-saved in this browser. You can also save to Google Drive in My Space.
+드라이브에 ‘{}’(으)로 저장했어요. ⇒ Saved to Drive as ‘$1’.
+고칠 때마다 1분 간격으로 드라이브에 저장해요. ⇒ Saving to Drive every minute while you edit.
+사진 올리는 중… {} ⇒ Uploading photos… $1
+사진 {#}장을 드라이브에 올렸어요. ⇒ Uploaded $1 photos to Drive.
+업로드 탭에 사진이 없어요. ⇒ No photos in the Uploads tab.
+사진을 가져오는 중… ⇒ Fetching photo…
+캔버스에 넣었어요. ⇒ Added to the canvas.
+이름을 바꿨어요. ⇒ Renamed.
+드라이브 휴지통으로 옮겼어요. 30일 안에는 드라이브에서 되살릴 수 있어요. ⇒ Moved to Drive Trash. You can restore it from Drive within 30 days.
+드라이브 연결이 끝났어요. 마이스페이스에서 다시 연결하면 자동 저장이 이어져요. ⇒ Drive session ended. Reconnect in My Space to resume auto-save.
+드라이브 자동 저장에 실패했어요. 잠시 뒤 다시 해요. ⇒ Drive auto-save failed. Will retry shortly.
+값 ⇒ Value
+{} 직접 입력 ⇒ $1 value
+모두 펴기 ⇒ Expand All
+모두 접기 ⇒ Collapse All
+{} 넣기 ⇒ Add $1
+텍스트 ⇒ Text
+이미지 ⇒ Image
+선택 ⇒ Select
+
++1초 ⇒ +1s
+−1초 ⇒ −1s
+색 직접 고르기 ⇒ Custom color
+휴대폰 ⇒ Phone
+경고 ⇒ warning
+구독 ⇒ subscribe
+불 ⇒ fire
+왕관 ⇒ crown
+좋아요 ⇒ like
+JPG · PNG · WEBP · HEIC(아이폰) · GIF · BMP · AVIF ⇒ JPG · PNG · WEBP · HEIC (iPhone) · GIF · BMP · AVIF
+1화 \n *첫 출근* 브이로그 | 신입 일기 2화 \n *첫 회식* 브이로그 | 신입 일기 ⇒ Ep. 1 \n *First Day* vlog | Rookie Diary⏎Ep. 2 \n *Team Dinner* vlog | Rookie Diary
+유튜브 영상 주소를 한 줄에 하나씩 (최대 11개) https://www.youtube.com/watch?v=... https://youtu.be/... ⇒ One YouTube URL per line (up to 11)⏎https://www.youtube.com/watch?v=...⏎https://youtu.be/...
+</script>
 <script type="text/plain" id="bgLib">var vO=Object.create;var jp=Object.defineProperty;var wO=Object.getOwnPropertyDescriptor;var _O=Object.getOwnPropertyNames;var xO=Object.getPrototypeOf,TO=Object.prototype.hasOwnProperty;var nu=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports);var OO=(e,t,n,o)=>{if(t&&typeof t=="object"||typeof t=="function")for(let f of _O(t))!TO.call(e,f)&&f!==n&&jp(e,f,{get:()=>t[f],enumerable:!(o=wO(t,f))||o.enumerable});return e};var Io=(e,t,n)=>(n=e!=null?vO(xO(e)):{},OO(t||!e||!e.__esModule?jp(n,"default",{value:e,enumerable:!0}):n,e));var zp=nu((Po,_a)=>{(function(){var e,t="4.17.23",n=200,o="Unsupported core-js use. Try https://npms.io/search?q=ponyfill.",f="Expected a function",s="Invalid `variable` option passed into `_.template`",p="__lodash_hash_undefined__",i=500,c="__lodash_placeholder__",r=1,u=2,l=4,h=1,y=2,O=1,S=2,A=4,L=8,$=16,F=32,Z=64,ae=128,ot=256,Je=512,st=30,se="...",Me=800,yn=16,rn=1,bn=2,vt=3,Le=1/0,ve=9007199254740991,Kt=17976931348623157e292,At=NaN,Xe=4294967295,nn=Xe-1,St=Xe>>>1,Ct=[["ary",ae],["bind",O],["bindKey",S],["curry",L],["curryRight",$],["flip",Je],["partial",F],["partialRight",Z],["rearg",ot]],Mt="[object Arguments]",Nt="[object Array]",vn="[object AsyncFunction]",or="[object Boolean]",Lt="[object Date]",Gt="[object DOMException]",Ht="[object Error]",ut="[object Function]",at="[object GeneratorFunction]",dt="[object Map]",Jt="[object Number]",wn="[object Null]",It="[object Object]",Ir="[object Promise]",Un="[object Proxy]",ar="[object RegExp]",Bt="[object Set]",on="[object String]",sr="[object Symbol]",jn="[object Undefined]",ur="[object WeakMap]",zn="[object WeakSet]",Pr="[object ArrayBuffer]",lr="[object DataView]",_n="[object Float32Array]",xn="[object Float64Array]",an="[object Int8Array]",Vn="[object Int16Array]",Ge="[object Int32Array]",be="[object Uint8Array]",sn="[object Uint8ClampedArray]",Gn="[object Uint16Array]",Tn="[object Uint32Array]",to=/\b__p \+= '';/g,de=/\b(__p \+=) '' \+/g,On=/(__e\(.*?\)|\b__t\)) \+\n'';/g,hi=/&(?:amp|lt|gt|quot|#39);/g,$r=/[&<>"']/g,gi=RegExp(hi.source),T=RegExp($r.source),D=/<%-([\s\S]+?)%>/g,k=/<%([\s\S]+?)%>/g,V=/<%=([\s\S]+?)%>/g,ee=/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,le=/^\w*$/,$e=/[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,pt=/[\\^$.*+?()[\]{}|]/g,Ut=RegExp(pt.source),wt=/^\s+/,Pt=/\s/,mi=/\{(?:\n\/\* \[wrapped with .+\] \*\/)?\n?/,yi=/\{\n\/\* \[wrapped with (.+)\] \*/,U=/,? & /,Be=/[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g,Qe=/[()=,{}\[\]\/\s]/,Dr=/\\(\\)?/g,bi=/\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g,Yo=/\w*$/,rs=/^[-+]0x[0-9a-f]+$/i,ns=/^0b[01]+$/i,Xo=/^\[object .+?Constructor\]$/,ro=/^0o[0-7]+$/i,Ko=/^(?:0|[1-9]\d*)$/,Hn=/[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g,vi=/($^)/,is=/['\n\r\u2028\u2029\\]/g,wi="\\ud800-\\udfff",os="\\u0300-\\u036f",as="\\ufe20-\\ufe2f",Jo="\\u20d0-\\u20ff",no=os+as+Jo,Qo="\\u2700-\\u27bf",io="a-z\\xdf-\\xf6\\xf8-\\xff",ss="\\xac\\xb1\\xd7\\xf7",us="\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf",ls="\\u2000-\\u206f",cs=" \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000",ea="A-Z\\xc0-\\xd6\\xd8-\\xde",fs="\\ufe0e\\ufe0f",ta=ss+us+ls+cs,oo="['\u2019]",ds="["+wi+"]",ps="["+ta+"]",ao="["+no+"]",ra="\\d+",Mu="["+Qo+"]",hs="["+io+"]",ce="[^"+wi+ta+ra+Qo+io+ea+"]",so="\\ud83c[\\udffb-\\udfff]",uo="(?:"+ao+"|"+so+")",na="[^"+wi+"]",lo="(?:\\ud83c[\\udde6-\\uddff]){2}",co="[\\ud800-\\udbff][\\udc00-\\udfff]",un="["+ea+"]",fo="\\u200d",ia="(?:"+hs+"|"+ce+")",gs="(?:"+un+"|"+ce+")",oa="(?:"+oo+"(?:d|ll|m|re|s|t|ve))?",po="(?:"+oo+"(?:D|LL|M|RE|S|T|VE))?",_i=uo+"?",ho="["+fs+"]?",Lu="(?:"+fo+"(?:"+[na,lo,co].join("|")+")"+ho+_i+")*",go="\\d*(?:1st|2nd|3rd|(?![123])\\dth)(?=\\b|[A-Z_])",ms="\\d*(?:1ST|2ND|3RD|(?![123])\\dTH)(?=\\b|[a-z_])",b=ho+_i+Lu,x="(?:"+[Mu,lo,co].join("|")+")"+b,I="(?:"+[na+ao+"?",ao,lo,co,ds].join("|")+")",M=RegExp(oo,"g"),Y=RegExp(ao,"g"),X=RegExp(so+"(?="+so+")|"+I+b,"g"),oe=RegExp([un+"?"+hs+"+"+oa+"(?="+[ps,un,"$"].join("|")+")",gs+"+"+po+"(?="+[ps,un+ia,"$"].join("|")+")",un+"?"+ia+"+"+oa,un+"+"+po,ms,go,ra,x].join("|"),"g"),lt=RegExp("["+fo+wi+no+fs+"]"),Cr=/[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/,Et=["Array","Buffer","DataView","Date","Error","Float32Array","Float64Array","Function","Int8Array","Int16Array","Int32Array","Map","Math","Object","Promise","RegExp","Set","String","Symbol","TypeError","Uint8Array","Uint8ClampedArray","Uint16Array","Uint32Array","WeakMap","_","clearTimeout","isFinite","parseInt","setTimeout"],Wt=-1,Ke={};Ke[_n]=Ke[xn]=Ke[an]=Ke[Vn]=Ke[Ge]=Ke[be]=Ke[sn]=Ke[Gn]=Ke[Tn]=!0,Ke[Mt]=Ke[Nt]=Ke[Pr]=Ke[or]=Ke[lr]=Ke[Lt]=Ke[Ht]=Ke[ut]=Ke[dt]=Ke[Jt]=Ke[It]=Ke[ar]=Ke[Bt]=Ke[on]=Ke[ur]=!1;var Ze={};Ze[Mt]=Ze[Nt]=Ze[Pr]=Ze[lr]=Ze[or]=Ze[Lt]=Ze[_n]=Ze[xn]=Ze[an]=Ze[Vn]=Ze[Ge]=Ze[dt]=Ze[Jt]=Ze[It]=Ze[ar]=Ze[Bt]=Ze[on]=Ze[sr]=Ze[be]=Ze[sn]=Ze[Gn]=Ze[Tn]=!0,Ze[Ht]=Ze[ut]=Ze[ur]=!1;var z={\u00C0:"A",\u00C1:"A",\u00C2:"A",\u00C3:"A",\u00C4:"A",\u00C5:"A",\u00E0:"a",\u00E1:"a",\u00E2:"a",\u00E3:"a",\u00E4:"a",\u00E5:"a",\u00C7:"C",\u00E7:"c",\u00D0:"D",\u00F0:"d",\u00C8:"E",\u00C9:"E",\u00CA:"E",\u00CB:"E",\u00E8:"e",\u00E9:"e",\u00EA:"e",\u00EB:"e",\u00CC:"I",\u00CD:"I",\u00CE:"I",\u00CF:"I",\u00EC:"i",\u00ED:"i",\u00EE:"i",\u00EF:"i",\u00D1:"N",\u00F1:"n",\u00D2:"O",\u00D3:"O",\u00D4:"O",\u00D5:"O",\u00D6:"O",\u00D8:"O",\u00F2:"o",\u00F3:"o",\u00F4:"o",\u00F5:"o",\u00F6:"o",\u00F8:"o",\u00D9:"U",\u00DA:"U",\u00DB:"U",\u00DC:"U",\u00F9:"u",\u00FA:"u",\u00FB:"u",\u00FC:"u",\u00DD:"Y",\u00FD:"y",\u00FF:"y",\u00C6:"Ae",\u00E6:"ae",\u00DE:"Th",\u00FE:"th",\u00DF:"ss",\u0100:"A",\u0102:"A",\u0104:"A",\u0101:"a",\u0103:"a",\u0105:"a",\u0106:"C",\u0108:"C",\u010A:"C",\u010C:"C",\u0107:"c",\u0109:"c",\u010B:"c",\u010D:"c",\u010E:"D",\u0110:"D",\u010F:"d",\u0111:"d",\u0112:"E",\u0114:"E",\u0116:"E",\u0118:"E",\u011A:"E",\u0113:"e",\u0115:"e",\u0117:"e",\u0119:"e",\u011B:"e",\u011C:"G",\u011E:"G",\u0120:"G",\u0122:"G",\u011D:"g",\u011F:"g",\u0121:"g",\u0123:"g",\u0124:"H",\u0126:"H",\u0125:"h",\u0127:"h",\u0128:"I",\u012A:"I",\u012C:"I",\u012E:"I",\u0130:"I",\u0129:"i",\u012B:"i",\u012D:"i",\u012F:"i",\u0131:"i",\u0134:"J",\u0135:"j",\u0136:"K",\u0137:"k",\u0138:"k",\u0139:"L",\u013B:"L",\u013D:"L",\u013F:"L",\u0141:"L",\u013A:"l",\u013C:"l",\u013E:"l",\u0140:"l",\u0142:"l",\u0143:"N",\u0145:"N",\u0147:"N",\u014A:"N",\u0144:"n",\u0146:"n",\u0148:"n",\u014B:"n",\u014C:"O",\u014E:"O",\u0150:"O",\u014D:"o",\u014F:"o",\u0151:"o",\u0154:"R",\u0156:"R",\u0158:"R",\u0155:"r",\u0157:"r",\u0159:"r",\u015A:"S",\u015C:"S",\u015E:"S",\u0160:"S",\u015B:"s",\u015D:"s",\u015F:"s",\u0161:"s",\u0162:"T",\u0164:"T",\u0166:"T",\u0163:"t",\u0165:"t",\u0167:"t",\u0168:"U",\u016A:"U",\u016C:"U",\u016E:"U",\u0170:"U",\u0172:"U",\u0169:"u",\u016B:"u",\u016D:"u",\u016F:"u",\u0171:"u",\u0173:"u",\u0174:"W",\u0175:"w",\u0176:"Y",\u0177:"y",\u0178:"Y",\u0179:"Z",\u017B:"Z",\u017D:"Z",\u017A:"z",\u017C:"z",\u017E:"z",\u0132:"IJ",\u0133:"ij",\u0152:"Oe",\u0153:"oe",\u0149:"'n",\u017F:"s"},Ye={"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"},ct={"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"',"&#39;":"'"},Sn={"\\":"\\","'":"'","\n":"n","\r":"r","\u2028":"u2028","\u2029":"u2029"},ys=parseFloat,Uv=parseInt,kf=typeof global=="object"&&global&&global.Object===Object&&global,jv=typeof self=="object"&&self&&self.Object===Object&&self,kt=kf||jv||Function("return this")(),Bu=typeof Po=="object"&&Po&&!Po.nodeType&&Po,xi=Bu&&typeof _a=="object"&&_a&&!_a.nodeType&&_a,Rf=xi&&xi.exports===Bu,Uu=Rf&&kf.process,Nr=function(){try{var C=xi&&xi.require&&xi.require("util").types;return C||Uu&&Uu.binding&&Uu.binding("util")}catch{}}(),Ff=Nr&&Nr.isArrayBuffer,Mf=Nr&&Nr.isDate,Lf=Nr&&Nr.isMap,Bf=Nr&&Nr.isRegExp,Uf=Nr&&Nr.isSet,jf=Nr&&Nr.isTypedArray;function gr(C,j,B){switch(B.length){case 0:return C.call(j);case 1:return C.call(j,B[0]);case 2:return C.call(j,B[0],B[1]);case 3:return C.call(j,B[0],B[1],B[2])}return C.apply(j,B)}function zv(C,j,B,ne){for(var we=-1,ze=C==null?0:C.length;++we<ze;){var $t=C[we];j(ne,$t,B($t),C)}return ne}function kr(C,j){for(var B=-1,ne=C==null?0:C.length;++B<ne&&j(C[B],B,C)!==!1;);return C}function Vv(C,j){for(var B=C==null?0:C.length;B--&&j(C[B],B,C)!==!1;);return C}function zf(C,j){for(var B=-1,ne=C==null?0:C.length;++B<ne;)if(!j(C[B],B,C))return!1;return!0}function Wn(C,j){for(var B=-1,ne=C==null?0:C.length,we=0,ze=[];++B<ne;){var $t=C[B];j($t,B,C)&&(ze[we++]=$t)}return ze}function bs(C,j){var B=C==null?0:C.length;return!!B&&mo(C,j,0)>-1}function ju(C,j,B){for(var ne=-1,we=C==null?0:C.length;++ne<we;)if(B(j,C[ne]))return!0;return!1}function ft(C,j){for(var B=-1,ne=C==null?0:C.length,we=Array(ne);++B<ne;)we[B]=j(C[B],B,C);return we}function qn(C,j){for(var B=-1,ne=j.length,we=C.length;++B<ne;)C[we+B]=j[B];return C}function zu(C,j,B,ne){var we=-1,ze=C==null?0:C.length;for(ne&&ze&&(B=C[++we]);++we<ze;)B=j(B,C[we],we,C);return B}function Gv(C,j,B,ne){var we=C==null?0:C.length;for(ne&&we&&(B=C[--we]);we--;)B=j(B,C[we],we,C);return B}function Vu(C,j){for(var B=-1,ne=C==null?0:C.length;++B<ne;)if(j(C[B],B,C))return!0;return!1}var Hv=Gu("length");function Wv(C){return C.split("")}function qv(C){return C.match(Be)||[]}function Vf(C,j,B){var ne;return B(C,function(we,ze,$t){if(j(we,ze,$t))return ne=ze,!1}),ne}function vs(C,j,B,ne){for(var we=C.length,ze=B+(ne?1:-1);ne?ze--:++ze<we;)if(j(C[ze],ze,C))return ze;return-1}function mo(C,j,B){return j===j?ow(C,j,B):vs(C,Gf,B)}function Zv(C,j,B,ne){for(var we=B-1,ze=C.length;++we<ze;)if(ne(C[we],j))return we;return-1}function Gf(C){return C!==C}function Hf(C,j){var B=C==null?0:C.length;return B?Wu(C,j)/B:At}function Gu(C){return function(j){return j==null?e:j[C]}}function Hu(C){return function(j){return C==null?e:C[j]}}function Wf(C,j,B,ne,we){return we(C,function(ze,$t,et){B=ne?(ne=!1,ze):j(B,ze,$t,et)}),B}function Yv(C,j){var B=C.length;for(C.sort(j);B--;)C[B]=C[B].value;return C}function Wu(C,j){for(var B,ne=-1,we=C.length;++ne<we;){var ze=j(C[ne]);ze!==e&&(B=B===e?ze:B+ze)}return B}function qu(C,j){for(var B=-1,ne=Array(C);++B<C;)ne[B]=j(B);return ne}function Xv(C,j){return ft(j,function(B){return[B,C[B]]})}function qf(C){return C&&C.slice(0,Kf(C)+1).replace(wt,"")}function mr(C){return function(j){return C(j)}}function Zu(C,j){return ft(j,function(B){return C[B]})}function aa(C,j){return C.has(j)}function Zf(C,j){for(var B=-1,ne=C.length;++B<ne&&mo(j,C[B],0)>-1;);return B}function Yf(C,j){for(var B=C.length;B--&&mo(j,C[B],0)>-1;);return B}function Kv(C,j){for(var B=C.length,ne=0;B--;)C[B]===j&&++ne;return ne}var Jv=Hu(z),Qv=Hu(Ye);function ew(C){return"\\"+Sn[C]}function tw(C,j){return C==null?e:C[j]}function yo(C){return lt.test(C)}function rw(C){return Cr.test(C)}function nw(C){for(var j,B=[];!(j=C.next()).done;)B.push(j.value);return B}function Yu(C){var j=-1,B=Array(C.size);return C.forEach(function(ne,we){B[++j]=[we,ne]}),B}function Xf(C,j){return function(B){return C(j(B))}}function Zn(C,j){for(var B=-1,ne=C.length,we=0,ze=[];++B<ne;){var $t=C[B];($t===j||$t===c)&&(C[B]=c,ze[we++]=B)}return ze}function ws(C){var j=-1,B=Array(C.size);return C.forEach(function(ne){B[++j]=ne}),B}function iw(C){var j=-1,B=Array(C.size);return C.forEach(function(ne){B[++j]=[ne,ne]}),B}function ow(C,j,B){for(var ne=B-1,we=C.length;++ne<we;)if(C[ne]===j)return ne;return-1}function aw(C,j,B){for(var ne=B+1;ne--;)if(C[ne]===j)return ne;return ne}function bo(C){return yo(C)?uw(C):Hv(C)}function qr(C){return yo(C)?lw(C):Wv(C)}function Kf(C){for(var j=C.length;j--&&Pt.test(C.charAt(j)););return j}var sw=Hu(ct);function uw(C){for(var j=X.lastIndex=0;X.test(C);)++j;return j}function lw(C){return C.match(X)||[]}function cw(C){return C.match(oe)||[]}var fw=function C(j){j=j==null?kt:Yn.defaults(kt.Object(),j,Yn.pick(kt,Et));var B=j.Array,ne=j.Date,we=j.Error,ze=j.Function,$t=j.Math,et=j.Object,Xu=j.RegExp,dw=j.String,Rr=j.TypeError,_s=B.prototype,pw=ze.prototype,vo=et.prototype,xs=j["__core-js_shared__"],Ts=pw.toString,He=vo.hasOwnProperty,hw=0,Jf=function(){var a=/[^.]+$/.exec(xs&&xs.keys&&xs.keys.IE_PROTO||"");return a?"Symbol(src)_1."+a:""}(),Os=vo.toString,gw=Ts.call(et),mw=kt._,yw=Xu("^"+Ts.call(He).replace(pt,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$"),Ss=Rf?j.Buffer:e,Xn=j.Symbol,Es=j.Uint8Array,Qf=Ss?Ss.allocUnsafe:e,As=Xf(et.getPrototypeOf,et),ed=et.create,td=vo.propertyIsEnumerable,Is=_s.splice,rd=Xn?Xn.isConcatSpreadable:e,sa=Xn?Xn.iterator:e,Ti=Xn?Xn.toStringTag:e,Ps=function(){try{var a=Ii(et,"defineProperty");return a({},"",{}),a}catch{}}(),bw=j.clearTimeout!==kt.clearTimeout&&j.clearTimeout,vw=ne&&ne.now!==kt.Date.now&&ne.now,ww=j.setTimeout!==kt.setTimeout&&j.setTimeout,$s=$t.ceil,Ds=$t.floor,Ku=et.getOwnPropertySymbols,_w=Ss?Ss.isBuffer:e,nd=j.isFinite,xw=_s.join,Tw=Xf(et.keys,et),Dt=$t.max,qt=$t.min,Ow=ne.now,Sw=j.parseInt,id=$t.random,Ew=_s.reverse,Ju=Ii(j,"DataView"),ua=Ii(j,"Map"),Qu=Ii(j,"Promise"),wo=Ii(j,"Set"),la=Ii(j,"WeakMap"),ca=Ii(et,"create"),Cs=la&&new la,_o={},Aw=Pi(Ju),Iw=Pi(ua),Pw=Pi(Qu),$w=Pi(wo),Dw=Pi(la),Ns=Xn?Xn.prototype:e,fa=Ns?Ns.valueOf:e,od=Ns?Ns.toString:e;function w(a){if(mt(a)&&!xe(a)&&!(a instanceof Ne)){if(a instanceof Fr)return a;if(He.call(a,"__wrapped__"))return ap(a)}return new Fr(a)}var xo=function(){function a(){}return function(d){if(!ht(d))return{};if(ed)return ed(d);a.prototype=d;var g=new a;return a.prototype=e,g}}();function ks(){}function Fr(a,d){this.__wrapped__=a,this.__actions__=[],this.__chain__=!!d,this.__index__=0,this.__values__=e}w.templateSettings={escape:D,evaluate:k,interpolate:V,variable:"",imports:{_:w}},w.prototype=ks.prototype,w.prototype.constructor=w,Fr.prototype=xo(ks.prototype),Fr.prototype.constructor=Fr;function Ne(a){this.__wrapped__=a,this.__actions__=[],this.__dir__=1,this.__filtered__=!1,this.__iteratees__=[],this.__takeCount__=Xe,this.__views__=[]}function Cw(){var a=new Ne(this.__wrapped__);return a.__actions__=cr(this.__actions__),a.__dir__=this.__dir__,a.__filtered__=this.__filtered__,a.__iteratees__=cr(this.__iteratees__),a.__takeCount__=this.__takeCount__,a.__views__=cr(this.__views__),a}function Nw(){if(this.__filtered__){var a=new Ne(this);a.__dir__=-1,a.__filtered__=!0}else a=this.clone(),a.__dir__*=-1;return a}function kw(){var a=this.__wrapped__.value(),d=this.__dir__,g=xe(a),m=d<0,v=g?a.length:0,_=W1(0,v,this.__views__),E=_.start,P=_.end,N=P-E,H=m?P:E-1,W=this.__iteratees__,q=W.length,Q=0,ue=qt(N,this.__takeCount__);if(!g||!m&&v==N&&ue==N)return Pd(a,this.__actions__);var he=[];e:for(;N--&&Q<ue;){H+=d;for(var Ae=-1,ge=a[H];++Ae<q;){var De=W[Ae],ke=De.iteratee,vr=De.type,tr=ke(ge);if(vr==bn)ge=tr;else if(!tr){if(vr==rn)continue e;break e}}he[Q++]=ge}return he}Ne.prototype=xo(ks.prototype),Ne.prototype.constructor=Ne;function Oi(a){var d=-1,g=a==null?0:a.length;for(this.clear();++d<g;){var m=a[d];this.set(m[0],m[1])}}function Rw(){this.__data__=ca?ca(null):{},this.size=0}function Fw(a){var d=this.has(a)&&delete this.__data__[a];return this.size-=d?1:0,d}function Mw(a){var d=this.__data__;if(ca){var g=d[a];return g===p?e:g}return He.call(d,a)?d[a]:e}function Lw(a){var d=this.__data__;return ca?d[a]!==e:He.call(d,a)}function Bw(a,d){var g=this.__data__;return this.size+=this.has(a)?0:1,g[a]=ca&&d===e?p:d,this}Oi.prototype.clear=Rw,Oi.prototype.delete=Fw,Oi.prototype.get=Mw,Oi.prototype.has=Lw,Oi.prototype.set=Bw;function En(a){var d=-1,g=a==null?0:a.length;for(this.clear();++d<g;){var m=a[d];this.set(m[0],m[1])}}function Uw(){this.__data__=[],this.size=0}function jw(a){var d=this.__data__,g=Rs(d,a);if(g<0)return!1;var m=d.length-1;return g==m?d.pop():Is.call(d,g,1),--this.size,!0}function zw(a){var d=this.__data__,g=Rs(d,a);return g<0?e:d[g][1]}function Vw(a){return Rs(this.__data__,a)>-1}function Gw(a,d){var g=this.__data__,m=Rs(g,a);return m<0?(++this.size,g.push([a,d])):g[m][1]=d,this}En.prototype.clear=Uw,En.prototype.delete=jw,En.prototype.get=zw,En.prototype.has=Vw,En.prototype.set=Gw;function An(a){var d=-1,g=a==null?0:a.length;for(this.clear();++d<g;){var m=a[d];this.set(m[0],m[1])}}function Hw(){this.size=0,this.__data__={hash:new Oi,map:new(ua||En),string:new Oi}}function Ww(a){var d=qs(this,a).delete(a);return this.size-=d?1:0,d}function qw(a){return qs(this,a).get(a)}function Zw(a){return qs(this,a).has(a)}function Yw(a,d){var g=qs(this,a),m=g.size;return g.set(a,d),this.size+=g.size==m?0:1,this}An.prototype.clear=Hw,An.prototype.delete=Ww,An.prototype.get=qw,An.prototype.has=Zw,An.prototype.set=Yw;function Si(a){var d=-1,g=a==null?0:a.length;for(this.__data__=new An;++d<g;)this.add(a[d])}function Xw(a){return this.__data__.set(a,p),this}function Kw(a){return this.__data__.has(a)}Si.prototype.add=Si.prototype.push=Xw,Si.prototype.has=Kw;function Zr(a){var d=this.__data__=new En(a);this.size=d.size}function Jw(){this.__data__=new En,this.size=0}function Qw(a){var d=this.__data__,g=d.delete(a);return this.size=d.size,g}function e1(a){return this.__data__.get(a)}function t1(a){return this.__data__.has(a)}function r1(a,d){var g=this.__data__;if(g instanceof En){var m=g.__data__;if(!ua||m.length<n-1)return m.push([a,d]),this.size=++g.size,this;g=this.__data__=new An(m)}return g.set(a,d),this.size=g.size,this}Zr.prototype.clear=Jw,Zr.prototype.delete=Qw,Zr.prototype.get=e1,Zr.prototype.has=t1,Zr.prototype.set=r1;function ad(a,d){var g=xe(a),m=!g&&$i(a),v=!g&&!m&&ti(a),_=!g&&!m&&!v&&Eo(a),E=g||m||v||_,P=E?qu(a.length,dw):[],N=P.length;for(var H in a)(d||He.call(a,H))&&!(E&&(H=="length"||v&&(H=="offset"||H=="parent")||_&&(H=="buffer"||H=="byteLength"||H=="byteOffset")||Dn(H,N)))&&P.push(H);return P}function sd(a){var d=a.length;return d?a[cl(0,d-1)]:e}function n1(a,d){return Zs(cr(a),Ei(d,0,a.length))}function i1(a){return Zs(cr(a))}function el(a,d,g){(g!==e&&!Yr(a[d],g)||g===e&&!(d in a))&&In(a,d,g)}function da(a,d,g){var m=a[d];(!(He.call(a,d)&&Yr(m,g))||g===e&&!(d in a))&&In(a,d,g)}function Rs(a,d){for(var g=a.length;g--;)if(Yr(a[g][0],d))return g;return-1}function o1(a,d,g,m){return Kn(a,function(v,_,E){d(m,v,g(v),E)}),m}function ud(a,d){return a&&cn(d,Rt(d),a)}function a1(a,d){return a&&cn(d,dr(d),a)}function In(a,d,g){d=="__proto__"&&Ps?Ps(a,d,{configurable:!0,enumerable:!0,value:g,writable:!0}):a[d]=g}function tl(a,d){for(var g=-1,m=d.length,v=B(m),_=a==null;++g<m;)v[g]=_?e:Rl(a,d[g]);return v}function Ei(a,d,g){return a===a&&(g!==e&&(a=a<=g?a:g),d!==e&&(a=a>=d?a:d)),a}function Mr(a,d,g,m,v,_){var E,P=d&r,N=d&u,H=d&l;if(g&&(E=v?g(a,m,v,_):g(a)),E!==e)return E;if(!ht(a))return a;var W=xe(a);if(W){if(E=Z1(a),!P)return cr(a,E)}else{var q=Zt(a),Q=q==ut||q==at;if(ti(a))return Cd(a,P);if(q==It||q==Mt||Q&&!v){if(E=N||Q?{}:Kd(a),!P)return N?M1(a,a1(E,a)):F1(a,ud(E,a))}else{if(!Ze[q])return v?a:{};E=Y1(a,q,P)}}_||(_=new Zr);var ue=_.get(a);if(ue)return ue;_.set(a,E),Ep(a)?a.forEach(function(ge){E.add(Mr(ge,d,g,ge,a,_))}):Op(a)&&a.forEach(function(ge,De){E.set(De,Mr(ge,d,g,De,a,_))});var he=H?N?_l:wl:N?dr:Rt,Ae=W?e:he(a);return kr(Ae||a,function(ge,De){Ae&&(De=ge,ge=a[De]),da(E,De,Mr(ge,d,g,De,a,_))}),E}function s1(a){var d=Rt(a);return function(g){return ld(g,a,d)}}function ld(a,d,g){var m=g.length;if(a==null)return!m;for(a=et(a);m--;){var v=g[m],_=d[v],E=a[v];if(E===e&&!(v in a)||!_(E))return!1}return!0}function cd(a,d,g){if(typeof a!="function")throw new Rr(f);return va(function(){a.apply(e,g)},d)}function pa(a,d,g,m){var v=-1,_=bs,E=!0,P=a.length,N=[],H=d.length;if(!P)return N;g&&(d=ft(d,mr(g))),m?(_=ju,E=!1):d.length>=n&&(_=aa,E=!1,d=new Si(d));e:for(;++v<P;){var W=a[v],q=g==null?W:g(W);if(W=m||W!==0?W:0,E&&q===q){for(var Q=H;Q--;)if(d[Q]===q)continue e;N.push(W)}else _(d,q,m)||N.push(W)}return N}var Kn=Md(ln),fd=Md(nl,!0);function u1(a,d){var g=!0;return Kn(a,function(m,v,_){return g=!!d(m,v,_),g}),g}function Fs(a,d,g){for(var m=-1,v=a.length;++m<v;){var _=a[m],E=d(_);if(E!=null&&(P===e?E===E&&!br(E):g(E,P)))var P=E,N=_}return N}function l1(a,d,g,m){var v=a.length;for(g=Oe(g),g<0&&(g=-g>v?0:v+g),m=m===e||m>v?v:Oe(m),m<0&&(m+=v),m=g>m?0:Ip(m);g<m;)a[g++]=d;return a}function dd(a,d){var g=[];return Kn(a,function(m,v,_){d(m,v,_)&&g.push(m)}),g}function jt(a,d,g,m,v){var _=-1,E=a.length;for(g||(g=K1),v||(v=[]);++_<E;){var P=a[_];d>0&&g(P)?d>1?jt(P,d-1,g,m,v):qn(v,P):m||(v[v.length]=P)}return v}var rl=Ld(),pd=Ld(!0);function ln(a,d){return a&&rl(a,d,Rt)}function nl(a,d){return a&&pd(a,d,Rt)}function Ms(a,d){return Wn(d,function(g){return Cn(a[g])})}function Ai(a,d){d=Qn(d,a);for(var g=0,m=d.length;a!=null&&g<m;)a=a[fn(d[g++])];return g&&g==m?a:e}function hd(a,d,g){var m=d(a);return xe(a)?m:qn(m,g(a))}function Qt(a){return a==null?a===e?jn:wn:Ti&&Ti in et(a)?H1(a):i_(a)}function il(a,d){return a>d}function c1(a,d){return a!=null&&He.call(a,d)}function f1(a,d){return a!=null&&d in et(a)}function d1(a,d,g){return a>=qt(d,g)&&a<Dt(d,g)}function ol(a,d,g){for(var m=g?ju:bs,v=a[0].length,_=a.length,E=_,P=B(_),N=1/0,H=[];E--;){var W=a[E];E&&d&&(W=ft(W,mr(d))),N=qt(W.length,N),P[E]=!g&&(d||v>=120&&W.length>=120)?new Si(E&&W):e}W=a[0];var q=-1,Q=P[0];e:for(;++q<v&&H.length<N;){var ue=W[q],he=d?d(ue):ue;if(ue=g||ue!==0?ue:0,!(Q?aa(Q,he):m(H,he,g))){for(E=_;--E;){var Ae=P[E];if(!(Ae?aa(Ae,he):m(a[E],he,g)))continue e}Q&&Q.push(he),H.push(ue)}}return H}function p1(a,d,g,m){return ln(a,function(v,_,E){d(m,g(v),_,E)}),m}function ha(a,d,g){d=Qn(d,a),a=tp(a,d);var m=a==null?a:a[fn(Br(d))];return m==null?e:gr(m,a,g)}function gd(a){return mt(a)&&Qt(a)==Mt}function h1(a){return mt(a)&&Qt(a)==Pr}function g1(a){return mt(a)&&Qt(a)==Lt}function ga(a,d,g,m,v){return a===d?!0:a==null||d==null||!mt(a)&&!mt(d)?a!==a&&d!==d:m1(a,d,g,m,ga,v)}function m1(a,d,g,m,v,_){var E=xe(a),P=xe(d),N=E?Nt:Zt(a),H=P?Nt:Zt(d);N=N==Mt?It:N,H=H==Mt?It:H;var W=N==It,q=H==It,Q=N==H;if(Q&&ti(a)){if(!ti(d))return!1;E=!0,W=!1}if(Q&&!W)return _||(_=new Zr),E||Eo(a)?Zd(a,d,g,m,v,_):V1(a,d,N,g,m,v,_);if(!(g&h)){var ue=W&&He.call(a,"__wrapped__"),he=q&&He.call(d,"__wrapped__");if(ue||he){var Ae=ue?a.value():a,ge=he?d.value():d;return _||(_=new Zr),v(Ae,ge,g,m,_)}}return Q?(_||(_=new Zr),G1(a,d,g,m,v,_)):!1}function y1(a){return mt(a)&&Zt(a)==dt}function al(a,d,g,m){var v=g.length,_=v,E=!m;if(a==null)return!_;for(a=et(a);v--;){var P=g[v];if(E&&P[2]?P[1]!==a[P[0]]:!(P[0]in a))return!1}for(;++v<_;){P=g[v];var N=P[0],H=a[N],W=P[1];if(E&&P[2]){if(H===e&&!(N in a))return!1}else{var q=new Zr;if(m)var Q=m(H,W,N,a,d,q);if(!(Q===e?ga(W,H,h|y,m,q):Q))return!1}}return!0}function md(a){if(!ht(a)||Q1(a))return!1;var d=Cn(a)?yw:Xo;return d.test(Pi(a))}function b1(a){return mt(a)&&Qt(a)==ar}function v1(a){return mt(a)&&Zt(a)==Bt}function w1(a){return mt(a)&&eu(a.length)&&!!Ke[Qt(a)]}function yd(a){return typeof a=="function"?a:a==null?pr:typeof a=="object"?xe(a)?wd(a[0],a[1]):vd(a):Bp(a)}function sl(a){if(!ba(a))return Tw(a);var d=[];for(var g in et(a))He.call(a,g)&&g!="constructor"&&d.push(g);return d}function _1(a){if(!ht(a))return n_(a);var d=ba(a),g=[];for(var m in a)m=="constructor"&&(d||!He.call(a,m))||g.push(m);return g}function ul(a,d){return a<d}function bd(a,d){var g=-1,m=fr(a)?B(a.length):[];return Kn(a,function(v,_,E){m[++g]=d(v,_,E)}),m}function vd(a){var d=Tl(a);return d.length==1&&d[0][2]?Qd(d[0][0],d[0][1]):function(g){return g===a||al(g,a,d)}}function wd(a,d){return Sl(a)&&Jd(d)?Qd(fn(a),d):function(g){var m=Rl(g,a);return m===e&&m===d?Fl(g,a):ga(d,m,h|y)}}function Ls(a,d,g,m,v){a!==d&&rl(d,function(_,E){if(v||(v=new Zr),ht(_))x1(a,d,E,g,Ls,m,v);else{var P=m?m(Al(a,E),_,E+"",a,d,v):e;P===e&&(P=_),el(a,E,P)}},dr)}function x1(a,d,g,m,v,_,E){var P=Al(a,g),N=Al(d,g),H=E.get(N);if(H){el(a,g,H);return}var W=_?_(P,N,g+"",a,d,E):e,q=W===e;if(q){var Q=xe(N),ue=!Q&&ti(N),he=!Q&&!ue&&Eo(N);W=N,Q||ue||he?xe(P)?W=P:_t(P)?W=cr(P):ue?(q=!1,W=Cd(N,!0)):he?(q=!1,W=Nd(N,!0)):W=[]:wa(N)||$i(N)?(W=P,$i(P)?W=Pp(P):(!ht(P)||Cn(P))&&(W=Kd(N))):q=!1}q&&(E.set(N,W),v(W,N,m,_,E),E.delete(N)),el(a,g,W)}function _d(a,d){var g=a.length;if(g)return d+=d<0?g:0,Dn(d,g)?a[d]:e}function xd(a,d,g){d.length?d=ft(d,function(_){return xe(_)?function(E){return Ai(E,_.length===1?_[0]:_)}:_}):d=[pr];var m=-1;d=ft(d,mr(pe()));var v=bd(a,function(_,E,P){var N=ft(d,function(H){return H(_)});return{criteria:N,index:++m,value:_}});return Yv(v,function(_,E){return R1(_,E,g)})}function T1(a,d){return Td(a,d,function(g,m){return Fl(a,m)})}function Td(a,d,g){for(var m=-1,v=d.length,_={};++m<v;){var E=d[m],P=Ai(a,E);g(P,E)&&ma(_,Qn(E,a),P)}return _}function O1(a){return function(d){return Ai(d,a)}}function ll(a,d,g,m){var v=m?Zv:mo,_=-1,E=d.length,P=a;for(a===d&&(d=cr(d)),g&&(P=ft(a,mr(g)));++_<E;)for(var N=0,H=d[_],W=g?g(H):H;(N=v(P,W,N,m))>-1;)P!==a&&Is.call(P,N,1),Is.call(a,N,1);return a}function Od(a,d){for(var g=a?d.length:0,m=g-1;g--;){var v=d[g];if(g==m||v!==_){var _=v;Dn(v)?Is.call(a,v,1):pl(a,v)}}return a}function cl(a,d){return a+Ds(id()*(d-a+1))}function S1(a,d,g,m){for(var v=-1,_=Dt($s((d-a)/(g||1)),0),E=B(_);_--;)E[m?_:++v]=a,a+=g;return E}function fl(a,d){var g="";if(!a||d<1||d>ve)return g;do d%2&&(g+=a),d=Ds(d/2),d&&(a+=a);while(d);return g}function Pe(a,d){return Il(ep(a,d,pr),a+"")}function E1(a){return sd(Ao(a))}function A1(a,d){var g=Ao(a);return Zs(g,Ei(d,0,g.length))}function ma(a,d,g,m){if(!ht(a))return a;d=Qn(d,a);for(var v=-1,_=d.length,E=_-1,P=a;P!=null&&++v<_;){var N=fn(d[v]),H=g;if(N==="__proto__"||N==="constructor"||N==="prototype")return a;if(v!=E){var W=P[N];H=m?m(W,N,P):e,H===e&&(H=ht(W)?W:Dn(d[v+1])?[]:{})}da(P,N,H),P=P[N]}return a}var Sd=Cs?function(a,d){return Cs.set(a,d),a}:pr,I1=Ps?function(a,d){return Ps(a,"toString",{configurable:!0,enumerable:!1,value:Ll(d),writable:!0})}:pr;function P1(a){return Zs(Ao(a))}function Lr(a,d,g){var m=-1,v=a.length;d<0&&(d=-d>v?0:v+d),g=g>v?v:g,g<0&&(g+=v),v=d>g?0:g-d>>>0,d>>>=0;for(var _=B(v);++m<v;)_[m]=a[m+d];return _}function $1(a,d){var g;return Kn(a,function(m,v,_){return g=d(m,v,_),!g}),!!g}function Bs(a,d,g){var m=0,v=a==null?m:a.length;if(typeof d=="number"&&d===d&&v<=St){for(;m<v;){var _=m+v>>>1,E=a[_];E!==null&&!br(E)&&(g?E<=d:E<d)?m=_+1:v=_}return v}return dl(a,d,pr,g)}function dl(a,d,g,m){var v=0,_=a==null?0:a.length;if(_===0)return 0;d=g(d);for(var E=d!==d,P=d===null,N=br(d),H=d===e;v<_;){var W=Ds((v+_)/2),q=g(a[W]),Q=q!==e,ue=q===null,he=q===q,Ae=br(q);if(E)var ge=m||he;else H?ge=he&&(m||Q):P?ge=he&&Q&&(m||!ue):N?ge=he&&Q&&!ue&&(m||!Ae):ue||Ae?ge=!1:ge=m?q<=d:q<d;ge?v=W+1:_=W}return qt(_,nn)}function Ed(a,d){for(var g=-1,m=a.length,v=0,_=[];++g<m;){var E=a[g],P=d?d(E):E;if(!g||!Yr(P,N)){var N=P;_[v++]=E===0?0:E}}return _}function Ad(a){return typeof a=="number"?a:br(a)?At:+a}function yr(a){if(typeof a=="string")return a;if(xe(a))return ft(a,yr)+"";if(br(a))return od?od.call(a):"";var d=a+"";return d=="0"&&1/a==-Le?"-0":d}function Jn(a,d,g){var m=-1,v=bs,_=a.length,E=!0,P=[],N=P;if(g)E=!1,v=ju;else if(_>=n){var H=d?null:j1(a);if(H)return ws(H);E=!1,v=aa,N=new Si}else N=d?[]:P;e:for(;++m<_;){var W=a[m],q=d?d(W):W;if(W=g||W!==0?W:0,E&&q===q){for(var Q=N.length;Q--;)if(N[Q]===q)continue e;d&&N.push(q),P.push(W)}else v(N,q,g)||(N!==P&&N.push(q),P.push(W))}return P}function pl(a,d){d=Qn(d,a);var g=-1,m=d.length;if(!m)return!0;for(var v=a==null||typeof a!="object"&&typeof a!="function";++g<m;){var _=d[g];if(typeof _=="string"){if(_==="__proto__"&&!He.call(a,"__proto__"))return!1;if(_==="constructor"&&g+1<m&&typeof d[g+1]=="string"&&d[g+1]==="prototype"){if(v&&g===0)continue;return!1}}}var E=tp(a,d);return E==null||delete E[fn(Br(d))]}function Id(a,d,g,m){return ma(a,d,g(Ai(a,d)),m)}function Us(a,d,g,m){for(var v=a.length,_=m?v:-1;(m?_--:++_<v)&&d(a[_],_,a););return g?Lr(a,m?0:_,m?_+1:v):Lr(a,m?_+1:0,m?v:_)}function Pd(a,d){var g=a;return g instanceof Ne&&(g=g.value()),zu(d,function(m,v){return v.func.apply(v.thisArg,qn([m],v.args))},g)}function hl(a,d,g){var m=a.length;if(m<2)return m?Jn(a[0]):[];for(var v=-1,_=B(m);++v<m;)for(var E=a[v],P=-1;++P<m;)P!=v&&(_[v]=pa(_[v]||E,a[P],d,g));return Jn(jt(_,1),d,g)}function $d(a,d,g){for(var m=-1,v=a.length,_=d.length,E={};++m<v;){var P=m<_?d[m]:e;g(E,a[m],P)}return E}function gl(a){return _t(a)?a:[]}function ml(a){return typeof a=="function"?a:pr}function Qn(a,d){return xe(a)?a:Sl(a,d)?[a]:op(We(a))}var D1=Pe;function ei(a,d,g){var m=a.length;return g=g===e?m:g,!d&&g>=m?a:Lr(a,d,g)}var Dd=bw||function(a){return kt.clearTimeout(a)};function Cd(a,d){if(d)return a.slice();var g=a.length,m=Qf?Qf(g):new a.constructor(g);return a.copy(m),m}function yl(a){var d=new a.constructor(a.byteLength);return new Es(d).set(new Es(a)),d}function C1(a,d){var g=d?yl(a.buffer):a.buffer;return new a.constructor(g,a.byteOffset,a.byteLength)}function N1(a){var d=new a.constructor(a.source,Yo.exec(a));return d.lastIndex=a.lastIndex,d}function k1(a){return fa?et(fa.call(a)):{}}function Nd(a,d){var g=d?yl(a.buffer):a.buffer;return new a.constructor(g,a.byteOffset,a.length)}function kd(a,d){if(a!==d){var g=a!==e,m=a===null,v=a===a,_=br(a),E=d!==e,P=d===null,N=d===d,H=br(d);if(!P&&!H&&!_&&a>d||_&&E&&N&&!P&&!H||m&&E&&N||!g&&N||!v)return 1;if(!m&&!_&&!H&&a<d||H&&g&&v&&!m&&!_||P&&g&&v||!E&&v||!N)return-1}return 0}function R1(a,d,g){for(var m=-1,v=a.criteria,_=d.criteria,E=v.length,P=g.length;++m<E;){var N=kd(v[m],_[m]);if(N){if(m>=P)return N;var H=g[m];return N*(H=="desc"?-1:1)}}return a.index-d.index}function Rd(a,d,g,m){for(var v=-1,_=a.length,E=g.length,P=-1,N=d.length,H=Dt(_-E,0),W=B(N+H),q=!m;++P<N;)W[P]=d[P];for(;++v<E;)(q||v<_)&&(W[g[v]]=a[v]);for(;H--;)W[P++]=a[v++];return W}function Fd(a,d,g,m){for(var v=-1,_=a.length,E=-1,P=g.length,N=-1,H=d.length,W=Dt(_-P,0),q=B(W+H),Q=!m;++v<W;)q[v]=a[v];for(var ue=v;++N<H;)q[ue+N]=d[N];for(;++E<P;)(Q||v<_)&&(q[ue+g[E]]=a[v++]);return q}function cr(a,d){var g=-1,m=a.length;for(d||(d=B(m));++g<m;)d[g]=a[g];return d}function cn(a,d,g,m){var v=!g;g||(g={});for(var _=-1,E=d.length;++_<E;){var P=d[_],N=m?m(g[P],a[P],P,g,a):e;N===e&&(N=a[P]),v?In(g,P,N):da(g,P,N)}return g}function F1(a,d){return cn(a,Ol(a),d)}function M1(a,d){return cn(a,Yd(a),d)}function js(a,d){return function(g,m){var v=xe(g)?zv:o1,_=d?d():{};return v(g,a,pe(m,2),_)}}function To(a){return Pe(function(d,g){var m=-1,v=g.length,_=v>1?g[v-1]:e,E=v>2?g[2]:e;for(_=a.length>3&&typeof _=="function"?(v--,_):e,E&&er(g[0],g[1],E)&&(_=v<3?e:_,v=1),d=et(d);++m<v;){var P=g[m];P&&a(d,P,m,_)}return d})}function Md(a,d){return function(g,m){if(g==null)return g;if(!fr(g))return a(g,m);for(var v=g.length,_=d?v:-1,E=et(g);(d?_--:++_<v)&&m(E[_],_,E)!==!1;);return g}}function Ld(a){return function(d,g,m){for(var v=-1,_=et(d),E=m(d),P=E.length;P--;){var N=E[a?P:++v];if(g(_[N],N,_)===!1)break}return d}}function L1(a,d,g){var m=d&O,v=ya(a);function _(){var E=this&&this!==kt&&this instanceof _?v:a;return E.apply(m?g:this,arguments)}return _}function Bd(a){return function(d){d=We(d);var g=yo(d)?qr(d):e,m=g?g[0]:d.charAt(0),v=g?ei(g,1).join(""):d.slice(1);return m[a]()+v}}function Oo(a){return function(d){return zu(Mp(Fp(d).replace(M,"")),a,"")}}function ya(a){return function(){var d=arguments;switch(d.length){case 0:return new a;case 1:return new a(d[0]);case 2:return new a(d[0],d[1]);case 3:return new a(d[0],d[1],d[2]);case 4:return new a(d[0],d[1],d[2],d[3]);case 5:return new a(d[0],d[1],d[2],d[3],d[4]);case 6:return new a(d[0],d[1],d[2],d[3],d[4],d[5]);case 7:return new a(d[0],d[1],d[2],d[3],d[4],d[5],d[6])}var g=xo(a.prototype),m=a.apply(g,d);return ht(m)?m:g}}function B1(a,d,g){var m=ya(a);function v(){for(var _=arguments.length,E=B(_),P=_,N=So(v);P--;)E[P]=arguments[P];var H=_<3&&E[0]!==N&&E[_-1]!==N?[]:Zn(E,N);if(_-=H.length,_<g)return Gd(a,d,zs,v.placeholder,e,E,H,e,e,g-_);var W=this&&this!==kt&&this instanceof v?m:a;return gr(W,this,E)}return v}function Ud(a){return function(d,g,m){var v=et(d);if(!fr(d)){var _=pe(g,3);d=Rt(d),g=function(P){return _(v[P],P,v)}}var E=a(d,g,m);return E>-1?v[_?d[E]:E]:e}}function jd(a){return $n(function(d){var g=d.length,m=g,v=Fr.prototype.thru;for(a&&d.reverse();m--;){var _=d[m];if(typeof _!="function")throw new Rr(f);if(v&&!E&&Ws(_)=="wrapper")var E=new Fr([],!0)}for(m=E?m:g;++m<g;){_=d[m];var P=Ws(_),N=P=="wrapper"?xl(_):e;N&&El(N[0])&&N[1]==(ae|L|F|ot)&&!N[4].length&&N[9]==1?E=E[Ws(N[0])].apply(E,N[3]):E=_.length==1&&El(_)?E[P]():E.thru(_)}return function(){var H=arguments,W=H[0];if(E&&H.length==1&&xe(W))return E.plant(W).value();for(var q=0,Q=g?d[q].apply(this,H):W;++q<g;)Q=d[q].call(this,Q);return Q}})}function zs(a,d,g,m,v,_,E,P,N,H){var W=d&ae,q=d&O,Q=d&S,ue=d&(L|$),he=d&Je,Ae=Q?e:ya(a);function ge(){for(var De=arguments.length,ke=B(De),vr=De;vr--;)ke[vr]=arguments[vr];if(ue)var tr=So(ge),wr=Kv(ke,tr);if(m&&(ke=Rd(ke,m,v,ue)),_&&(ke=Fd(ke,_,E,ue)),De-=wr,ue&&De<H){var xt=Zn(ke,tr);return Gd(a,d,zs,ge.placeholder,g,ke,xt,P,N,H-De)}var Xr=q?g:this,kn=Q?Xr[a]:a;return De=ke.length,P?ke=o_(ke,P):he&&De>1&&ke.reverse(),W&&N<De&&(ke.length=N),this&&this!==kt&&this instanceof ge&&(kn=Ae||ya(kn)),kn.apply(Xr,ke)}return ge}function zd(a,d){return function(g,m){return p1(g,a,d(m),{})}}function Vs(a,d){return function(g,m){var v;if(g===e&&m===e)return d;if(g!==e&&(v=g),m!==e){if(v===e)return m;typeof g=="string"||typeof m=="string"?(g=yr(g),m=yr(m)):(g=Ad(g),m=Ad(m)),v=a(g,m)}return v}}function bl(a){return $n(function(d){return d=ft(d,mr(pe())),Pe(function(g){var m=this;return a(d,function(v){return gr(v,m,g)})})})}function Gs(a,d){d=d===e?" ":yr(d);var g=d.length;if(g<2)return g?fl(d,a):d;var m=fl(d,$s(a/bo(d)));return yo(d)?ei(qr(m),0,a).join(""):m.slice(0,a)}function U1(a,d,g,m){var v=d&O,_=ya(a);function E(){for(var P=-1,N=arguments.length,H=-1,W=m.length,q=B(W+N),Q=this&&this!==kt&&this instanceof E?_:a;++H<W;)q[H]=m[H];for(;N--;)q[H++]=arguments[++P];return gr(Q,v?g:this,q)}return E}function Vd(a){return function(d,g,m){return m&&typeof m!="number"&&er(d,g,m)&&(g=m=e),d=Nn(d),g===e?(g=d,d=0):g=Nn(g),m=m===e?d<g?1:-1:Nn(m),S1(d,g,m,a)}}function Hs(a){return function(d,g){return typeof d=="string"&&typeof g=="string"||(d=Ur(d),g=Ur(g)),a(d,g)}}function Gd(a,d,g,m,v,_,E,P,N,H){var W=d&L,q=W?E:e,Q=W?e:E,ue=W?_:e,he=W?e:_;d|=W?F:Z,d&=~(W?Z:F),d&A||(d&=~(O|S));var Ae=[a,d,v,ue,q,he,Q,P,N,H],ge=g.apply(e,Ae);return El(a)&&rp(ge,Ae),ge.placeholder=m,np(ge,a,d)}function vl(a){var d=$t[a];return function(g,m){if(g=Ur(g),m=m==null?0:qt(Oe(m),292),m&&nd(g)){var v=(We(g)+"e").split("e"),_=d(v[0]+"e"+(+v[1]+m));return v=(We(_)+"e").split("e"),+(v[0]+"e"+(+v[1]-m))}return d(g)}}var j1=wo&&1/ws(new wo([,-0]))[1]==Le?function(a){return new wo(a)}:jl;function Hd(a){return function(d){var g=Zt(d);return g==dt?Yu(d):g==Bt?iw(d):Xv(d,a(d))}}function Pn(a,d,g,m,v,_,E,P){var N=d&S;if(!N&&typeof a!="function")throw new Rr(f);var H=m?m.length:0;if(H||(d&=~(F|Z),m=v=e),E=E===e?E:Dt(Oe(E),0),P=P===e?P:Oe(P),H-=v?v.length:0,d&Z){var W=m,q=v;m=v=e}var Q=N?e:xl(a),ue=[a,d,g,m,v,W,q,_,E,P];if(Q&&r_(ue,Q),a=ue[0],d=ue[1],g=ue[2],m=ue[3],v=ue[4],P=ue[9]=ue[9]===e?N?0:a.length:Dt(ue[9]-H,0),!P&&d&(L|$)&&(d&=~(L|$)),!d||d==O)var he=L1(a,d,g);else d==L||d==$?he=B1(a,d,P):(d==F||d==(O|F))&&!v.length?he=U1(a,d,g,m):he=zs.apply(e,ue);var Ae=Q?Sd:rp;return np(Ae(he,ue),a,d)}function Wd(a,d,g,m){return a===e||Yr(a,vo[g])&&!He.call(m,g)?d:a}function qd(a,d,g,m,v,_){return ht(a)&&ht(d)&&(_.set(d,a),Ls(a,d,e,qd,_),_.delete(d)),a}function z1(a){return wa(a)?e:a}function Zd(a,d,g,m,v,_){var E=g&h,P=a.length,N=d.length;if(P!=N&&!(E&&N>P))return!1;var H=_.get(a),W=_.get(d);if(H&&W)return H==d&&W==a;var q=-1,Q=!0,ue=g&y?new Si:e;for(_.set(a,d),_.set(d,a);++q<P;){var he=a[q],Ae=d[q];if(m)var ge=E?m(Ae,he,q,d,a,_):m(he,Ae,q,a,d,_);if(ge!==e){if(ge)continue;Q=!1;break}if(ue){if(!Vu(d,function(De,ke){if(!aa(ue,ke)&&(he===De||v(he,De,g,m,_)))return ue.push(ke)})){Q=!1;break}}else if(!(he===Ae||v(he,Ae,g,m,_))){Q=!1;break}}return _.delete(a),_.delete(d),Q}function V1(a,d,g,m,v,_,E){switch(g){case lr:if(a.byteLength!=d.byteLength||a.byteOffset!=d.byteOffset)return!1;a=a.buffer,d=d.buffer;case Pr:return!(a.byteLength!=d.byteLength||!_(new Es(a),new Es(d)));case or:case Lt:case Jt:return Yr(+a,+d);case Ht:return a.name==d.name&&a.message==d.message;case ar:case on:return a==d+"";case dt:var P=Yu;case Bt:var N=m&h;if(P||(P=ws),a.size!=d.size&&!N)return!1;var H=E.get(a);if(H)return H==d;m|=y,E.set(a,d);var W=Zd(P(a),P(d),m,v,_,E);return E.delete(a),W;case sr:if(fa)return fa.call(a)==fa.call(d)}return!1}function G1(a,d,g,m,v,_){var E=g&h,P=wl(a),N=P.length,H=wl(d),W=H.length;if(N!=W&&!E)return!1;for(var q=N;q--;){var Q=P[q];if(!(E?Q in d:He.call(d,Q)))return!1}var ue=_.get(a),he=_.get(d);if(ue&&he)return ue==d&&he==a;var Ae=!0;_.set(a,d),_.set(d,a);for(var ge=E;++q<N;){Q=P[q];var De=a[Q],ke=d[Q];if(m)var vr=E?m(ke,De,Q,d,a,_):m(De,ke,Q,a,d,_);if(!(vr===e?De===ke||v(De,ke,g,m,_):vr)){Ae=!1;break}ge||(ge=Q=="constructor")}if(Ae&&!ge){var tr=a.constructor,wr=d.constructor;tr!=wr&&"constructor"in a&&"constructor"in d&&!(typeof tr=="function"&&tr instanceof tr&&typeof wr=="function"&&wr instanceof wr)&&(Ae=!1)}return _.delete(a),_.delete(d),Ae}function $n(a){return Il(ep(a,e,lp),a+"")}function wl(a){return hd(a,Rt,Ol)}function _l(a){return hd(a,dr,Yd)}var xl=Cs?function(a){return Cs.get(a)}:jl;function Ws(a){for(var d=a.name+"",g=_o[d],m=He.call(_o,d)?g.length:0;m--;){var v=g[m],_=v.func;if(_==null||_==a)return v.name}return d}function So(a){var d=He.call(w,"placeholder")?w:a;return d.placeholder}function pe(){var a=w.iteratee||Bl;return a=a===Bl?yd:a,arguments.length?a(arguments[0],arguments[1]):a}function qs(a,d){var g=a.__data__;return J1(d)?g[typeof d=="string"?"string":"hash"]:g.map}function Tl(a){for(var d=Rt(a),g=d.length;g--;){var m=d[g],v=a[m];d[g]=[m,v,Jd(v)]}return d}function Ii(a,d){var g=tw(a,d);return md(g)?g:e}function H1(a){var d=He.call(a,Ti),g=a[Ti];try{a[Ti]=e;var m=!0}catch{}var v=Os.call(a);return m&&(d?a[Ti]=g:delete a[Ti]),v}var Ol=Ku?function(a){return a==null?[]:(a=et(a),Wn(Ku(a),function(d){return td.call(a,d)}))}:zl,Yd=Ku?function(a){for(var d=[];a;)qn(d,Ol(a)),a=As(a);return d}:zl,Zt=Qt;(Ju&&Zt(new Ju(new ArrayBuffer(1)))!=lr||ua&&Zt(new ua)!=dt||Qu&&Zt(Qu.resolve())!=Ir||wo&&Zt(new wo)!=Bt||la&&Zt(new la)!=ur)&&(Zt=function(a){var d=Qt(a),g=d==It?a.constructor:e,m=g?Pi(g):"";if(m)switch(m){case Aw:return lr;case Iw:return dt;case Pw:return Ir;case $w:return Bt;case Dw:return ur}return d});function W1(a,d,g){for(var m=-1,v=g.length;++m<v;){var _=g[m],E=_.size;switch(_.type){case"drop":a+=E;break;case"dropRight":d-=E;break;case"take":d=qt(d,a+E);break;case"takeRight":a=Dt(a,d-E);break}}return{start:a,end:d}}function q1(a){var d=a.match(yi);return d?d[1].split(U):[]}function Xd(a,d,g){d=Qn(d,a);for(var m=-1,v=d.length,_=!1;++m<v;){var E=fn(d[m]);if(!(_=a!=null&&g(a,E)))break;a=a[E]}return _||++m!=v?_:(v=a==null?0:a.length,!!v&&eu(v)&&Dn(E,v)&&(xe(a)||$i(a)))}function Z1(a){var d=a.length,g=new a.constructor(d);return d&&typeof a[0]=="string"&&He.call(a,"index")&&(g.index=a.index,g.input=a.input),g}function Kd(a){return typeof a.constructor=="function"&&!ba(a)?xo(As(a)):{}}function Y1(a,d,g){var m=a.constructor;switch(d){case Pr:return yl(a);case or:case Lt:return new m(+a);case lr:return C1(a,g);case _n:case xn:case an:case Vn:case Ge:case be:case sn:case Gn:case Tn:return Nd(a,g);case dt:return new m;case Jt:case on:return new m(a);case ar:return N1(a);case Bt:return new m;case sr:return k1(a)}}function X1(a,d){var g=d.length;if(!g)return a;var m=g-1;return d[m]=(g>1?"& ":"")+d[m],d=d.join(g>2?", ":" "),a.replace(mi,`{
 /* [wrapped with `+d+`] */
 `)}function K1(a){return xe(a)||$i(a)||!!(rd&&a&&a[rd])}function Dn(a,d){var g=typeof a;return d=d??ve,!!d&&(g=="number"||g!="symbol"&&Ko.test(a))&&a>-1&&a%1==0&&a<d}function er(a,d,g){if(!ht(g))return!1;var m=typeof d;return(m=="number"?fr(g)&&Dn(d,g.length):m=="string"&&d in g)?Yr(g[d],a):!1}function Sl(a,d){if(xe(a))return!1;var g=typeof a;return g=="number"||g=="symbol"||g=="boolean"||a==null||br(a)?!0:le.test(a)||!ee.test(a)||d!=null&&a in et(d)}function J1(a){var d=typeof a;return d=="string"||d=="number"||d=="symbol"||d=="boolean"?a!=="__proto__":a===null}function El(a){var d=Ws(a),g=w[d];if(typeof g!="function"||!(d in Ne.prototype))return!1;if(a===g)return!0;var m=xl(g);return!!m&&a===m[0]}function Q1(a){return!!Jf&&Jf in a}var e_=xs?Cn:Vl;function ba(a){var d=a&&a.constructor,g=typeof d=="function"&&d.prototype||vo;return a===g}function Jd(a){return a===a&&!ht(a)}function Qd(a,d){return function(g){return g==null?!1:g[a]===d&&(d!==e||a in et(g))}}function t_(a){var d=Js(a,function(m){return g.size===i&&g.clear(),m}),g=d.cache;return d}function r_(a,d){var g=a[1],m=d[1],v=g|m,_=v<(O|S|ae),E=m==ae&&g==L||m==ae&&g==ot&&a[7].length<=d[8]||m==(ae|ot)&&d[7].length<=d[8]&&g==L;if(!(_||E))return a;m&O&&(a[2]=d[2],v|=g&O?0:A);var P=d[3];if(P){var N=a[3];a[3]=N?Rd(N,P,d[4]):P,a[4]=N?Zn(a[3],c):d[4]}return P=d[5],P&&(N=a[5],a[5]=N?Fd(N,P,d[6]):P,a[6]=N?Zn(a[5],c):d[6]),P=d[7],P&&(a[7]=P),m&ae&&(a[8]=a[8]==null?d[8]:qt(a[8],d[8])),a[9]==null&&(a[9]=d[9]),a[0]=d[0],a[1]=v,a}function n_(a){var d=[];if(a!=null)for(var g in et(a))d.push(g);return d}function i_(a){return Os.call(a)}function ep(a,d,g){return d=Dt(d===e?a.length-1:d,0),function(){for(var m=arguments,v=-1,_=Dt(m.length-d,0),E=B(_);++v<_;)E[v]=m[d+v];v=-1;for(var P=B(d+1);++v<d;)P[v]=m[v];return P[d]=g(E),gr(a,this,P)}}function tp(a,d){return d.length<2?a:Ai(a,Lr(d,0,-1))}function o_(a,d){for(var g=a.length,m=qt(d.length,g),v=cr(a);m--;){var _=d[m];a[m]=Dn(_,g)?v[_]:e}return a}function Al(a,d){if(!(d==="constructor"&&typeof a[d]=="function")&&d!="__proto__")return a[d]}var rp=ip(Sd),va=ww||function(a,d){return kt.setTimeout(a,d)},Il=ip(I1);function np(a,d,g){var m=d+"";return Il(a,X1(m,a_(q1(m),g)))}function ip(a){var d=0,g=0;return function(){var m=Ow(),v=yn-(m-g);if(g=m,v>0){if(++d>=Me)return arguments[0]}else d=0;return a.apply(e,arguments)}}function Zs(a,d){var g=-1,m=a.length,v=m-1;for(d=d===e?m:d;++g<d;){var _=cl(g,v),E=a[_];a[_]=a[g],a[g]=E}return a.length=d,a}var op=t_(function(a){var d=[];return a.charCodeAt(0)===46&&d.push(""),a.replace($e,function(g,m,v,_){d.push(v?_.replace(Dr,"$1"):m||g)}),d});function fn(a){if(typeof a=="string"||br(a))return a;var d=a+"";return d=="0"&&1/a==-Le?"-0":d}function Pi(a){if(a!=null){try{return Ts.call(a)}catch{}try{return a+""}catch{}}return""}function a_(a,d){return kr(Ct,function(g){var m="_."+g[0];d&g[1]&&!bs(a,m)&&a.push(m)}),a.sort()}function ap(a){if(a instanceof Ne)return a.clone();var d=new Fr(a.__wrapped__,a.__chain__);return d.__actions__=cr(a.__actions__),d.__index__=a.__index__,d.__values__=a.__values__,d}function s_(a,d,g){(g?er(a,d,g):d===e)?d=1:d=Dt(Oe(d),0);var m=a==null?0:a.length;if(!m||d<1)return[];for(var v=0,_=0,E=B($s(m/d));v<m;)E[_++]=Lr(a,v,v+=d);return E}function u_(a){for(var d=-1,g=a==null?0:a.length,m=0,v=[];++d<g;){var _=a[d];_&&(v[m++]=_)}return v}function l_(){var a=arguments.length;if(!a)return[];for(var d=B(a-1),g=arguments[0],m=a;m--;)d[m-1]=arguments[m];return qn(xe(g)?cr(g):[g],jt(d,1))}var c_=Pe(function(a,d){return _t(a)?pa(a,jt(d,1,_t,!0)):[]}),f_=Pe(function(a,d){var g=Br(d);return _t(g)&&(g=e),_t(a)?pa(a,jt(d,1,_t,!0),pe(g,2)):[]}),d_=Pe(function(a,d){var g=Br(d);return _t(g)&&(g=e),_t(a)?pa(a,jt(d,1,_t,!0),e,g):[]});function p_(a,d,g){var m=a==null?0:a.length;return m?(d=g||d===e?1:Oe(d),Lr(a,d<0?0:d,m)):[]}function h_(a,d,g){var m=a==null?0:a.length;return m?(d=g||d===e?1:Oe(d),d=m-d,Lr(a,0,d<0?0:d)):[]}function g_(a,d){return a&&a.length?Us(a,pe(d,3),!0,!0):[]}function m_(a,d){return a&&a.length?Us(a,pe(d,3),!0):[]}function y_(a,d,g,m){var v=a==null?0:a.length;return v?(g&&typeof g!="number"&&er(a,d,g)&&(g=0,m=v),l1(a,d,g,m)):[]}function sp(a,d,g){var m=a==null?0:a.length;if(!m)return-1;var v=g==null?0:Oe(g);return v<0&&(v=Dt(m+v,0)),vs(a,pe(d,3),v)}function up(a,d,g){var m=a==null?0:a.length;if(!m)return-1;var v=m-1;return g!==e&&(v=Oe(g),v=g<0?Dt(m+v,0):qt(v,m-1)),vs(a,pe(d,3),v,!0)}function lp(a){var d=a==null?0:a.length;return d?jt(a,1):[]}function b_(a){var d=a==null?0:a.length;return d?jt(a,Le):[]}function v_(a,d){var g=a==null?0:a.length;return g?(d=d===e?1:Oe(d),jt(a,d)):[]}function w_(a){for(var d=-1,g=a==null?0:a.length,m={};++d<g;){var v=a[d];m[v[0]]=v[1]}return m}function cp(a){return a&&a.length?a[0]:e}function __(a,d,g){var m=a==null?0:a.length;if(!m)return-1;var v=g==null?0:Oe(g);return v<0&&(v=Dt(m+v,0)),mo(a,d,v)}function x_(a){var d=a==null?0:a.length;return d?Lr(a,0,-1):[]}var T_=Pe(function(a){var d=ft(a,gl);return d.length&&d[0]===a[0]?ol(d):[]}),O_=Pe(function(a){var d=Br(a),g=ft(a,gl);return d===Br(g)?d=e:g.pop(),g.length&&g[0]===a[0]?ol(g,pe(d,2)):[]}),S_=Pe(function(a){var d=Br(a),g=ft(a,gl);return d=typeof d=="function"?d:e,d&&g.pop(),g.length&&g[0]===a[0]?ol(g,e,d):[]});function E_(a,d){return a==null?"":xw.call(a,d)}function Br(a){var d=a==null?0:a.length;return d?a[d-1]:e}function A_(a,d,g){var m=a==null?0:a.length;if(!m)return-1;var v=m;return g!==e&&(v=Oe(g),v=v<0?Dt(m+v,0):qt(v,m-1)),d===d?aw(a,d,v):vs(a,Gf,v,!0)}function I_(a,d){return a&&a.length?_d(a,Oe(d)):e}var P_=Pe(fp);function fp(a,d){return a&&a.length&&d&&d.length?ll(a,d):a}function $_(a,d,g){return a&&a.length&&d&&d.length?ll(a,d,pe(g,2)):a}function D_(a,d,g){return a&&a.length&&d&&d.length?ll(a,d,e,g):a}var C_=$n(function(a,d){var g=a==null?0:a.length,m=tl(a,d);return Od(a,ft(d,function(v){return Dn(v,g)?+v:v}).sort(kd)),m});function N_(a,d){var g=[];if(!(a&&a.length))return g;var m=-1,v=[],_=a.length;for(d=pe(d,3);++m<_;){var E=a[m];d(E,m,a)&&(g.push(E),v.push(m))}return Od(a,v),g}function Pl(a){return a==null?a:Ew.call(a)}function k_(a,d,g){var m=a==null?0:a.length;return m?(g&&typeof g!="number"&&er(a,d,g)?(d=0,g=m):(d=d==null?0:Oe(d),g=g===e?m:Oe(g)),Lr(a,d,g)):[]}function R_(a,d){return Bs(a,d)}function F_(a,d,g){return dl(a,d,pe(g,2))}function M_(a,d){var g=a==null?0:a.length;if(g){var m=Bs(a,d);if(m<g&&Yr(a[m],d))return m}return-1}function L_(a,d){return Bs(a,d,!0)}function B_(a,d,g){return dl(a,d,pe(g,2),!0)}function U_(a,d){var g=a==null?0:a.length;if(g){var m=Bs(a,d,!0)-1;if(Yr(a[m],d))return m}return-1}function j_(a){return a&&a.length?Ed(a):[]}function z_(a,d){return a&&a.length?Ed(a,pe(d,2)):[]}function V_(a){var d=a==null?0:a.length;return d?Lr(a,1,d):[]}function G_(a,d,g){return a&&a.length?(d=g||d===e?1:Oe(d),Lr(a,0,d<0?0:d)):[]}function H_(a,d,g){var m=a==null?0:a.length;return m?(d=g||d===e?1:Oe(d),d=m-d,Lr(a,d<0?0:d,m)):[]}function W_(a,d){return a&&a.length?Us(a,pe(d,3),!1,!0):[]}function q_(a,d){return a&&a.length?Us(a,pe(d,3)):[]}var Z_=Pe(function(a){return Jn(jt(a,1,_t,!0))}),Y_=Pe(function(a){var d=Br(a);return _t(d)&&(d=e),Jn(jt(a,1,_t,!0),pe(d,2))}),X_=Pe(function(a){var d=Br(a);return d=typeof d=="function"?d:e,Jn(jt(a,1,_t,!0),e,d)});function K_(a){return a&&a.length?Jn(a):[]}function J_(a,d){return a&&a.length?Jn(a,pe(d,2)):[]}function Q_(a,d){return d=typeof d=="function"?d:e,a&&a.length?Jn(a,e,d):[]}function $l(a){if(!(a&&a.length))return[];var d=0;return a=Wn(a,function(g){if(_t(g))return d=Dt(g.length,d),!0}),qu(d,function(g){return ft(a,Gu(g))})}function dp(a,d){if(!(a&&a.length))return[];var g=$l(a);return d==null?g:ft(g,function(m){return gr(d,e,m)})}var ex=Pe(function(a,d){return _t(a)?pa(a,d):[]}),tx=Pe(function(a){return hl(Wn(a,_t))}),rx=Pe(function(a){var d=Br(a);return _t(d)&&(d=e),hl(Wn(a,_t),pe(d,2))}),nx=Pe(function(a){var d=Br(a);return d=typeof d=="function"?d:e,hl(Wn(a,_t),e,d)}),ix=Pe($l);function ox(a,d){return $d(a||[],d||[],da)}function ax(a,d){return $d(a||[],d||[],ma)}var sx=Pe(function(a){var d=a.length,g=d>1?a[d-1]:e;return g=typeof g=="function"?(a.pop(),g):e,dp(a,g)});function pp(a){var d=w(a);return d.__chain__=!0,d}function ux(a,d){return d(a),a}function Ys(a,d){return d(a)}var lx=$n(function(a){var d=a.length,g=d?a[0]:0,m=this.__wrapped__,v=function(_){return tl(_,a)};return d>1||this.__actions__.length||!(m instanceof Ne)||!Dn(g)?this.thru(v):(m=m.slice(g,+g+(d?1:0)),m.__actions__.push({func:Ys,args:[v],thisArg:e}),new Fr(m,this.__chain__).thru(function(_){return d&&!_.length&&_.push(e),_}))});function cx(){return pp(this)}function fx(){return new Fr(this.value(),this.__chain__)}function dx(){this.__values__===e&&(this.__values__=Ap(this.value()));var a=this.__index__>=this.__values__.length,d=a?e:this.__values__[this.__index__++];return{done:a,value:d}}function px(){return this}function hx(a){for(var d,g=this;g instanceof ks;){var m=ap(g);m.__index__=0,m.__values__=e,d?v.__wrapped__=m:d=m;var v=m;g=g.__wrapped__}return v.__wrapped__=a,d}function gx(){var a=this.__wrapped__;if(a instanceof Ne){var d=a;return this.__actions__.length&&(d=new Ne(this)),d=d.reverse(),d.__actions__.push({func:Ys,args:[Pl],thisArg:e}),new Fr(d,this.__chain__)}return this.thru(Pl)}function mx(){return Pd(this.__wrapped__,this.__actions__)}var yx=js(function(a,d,g){He.call(a,g)?++a[g]:In(a,g,1)});function bx(a,d,g){var m=xe(a)?zf:u1;return g&&er(a,d,g)&&(d=e),m(a,pe(d,3))}function vx(a,d){var g=xe(a)?Wn:dd;return g(a,pe(d,3))}var wx=Ud(sp),_x=Ud(up);function xx(a,d){return jt(Xs(a,d),1)}function Tx(a,d){return jt(Xs(a,d),Le)}function Ox(a,d,g){return g=g===e?1:Oe(g),jt(Xs(a,d),g)}function hp(a,d){var g=xe(a)?kr:Kn;return g(a,pe(d,3))}function gp(a,d){var g=xe(a)?Vv:fd;return g(a,pe(d,3))}var Sx=js(function(a,d,g){He.call(a,g)?a[g].push(d):In(a,g,[d])});function Ex(a,d,g,m){a=fr(a)?a:Ao(a),g=g&&!m?Oe(g):0;var v=a.length;return g<0&&(g=Dt(v+g,0)),tu(a)?g<=v&&a.indexOf(d,g)>-1:!!v&&mo(a,d,g)>-1}var Ax=Pe(function(a,d,g){var m=-1,v=typeof d=="function",_=fr(a)?B(a.length):[];return Kn(a,function(E){_[++m]=v?gr(d,E,g):ha(E,d,g)}),_}),Ix=js(function(a,d,g){In(a,g,d)});function Xs(a,d){var g=xe(a)?ft:bd;return g(a,pe(d,3))}function Px(a,d,g,m){return a==null?[]:(xe(d)||(d=d==null?[]:[d]),g=m?e:g,xe(g)||(g=g==null?[]:[g]),xd(a,d,g))}var $x=js(function(a,d,g){a[g?0:1].push(d)},function(){return[[],[]]});function Dx(a,d,g){var m=xe(a)?zu:Wf,v=arguments.length<3;return m(a,pe(d,4),g,v,Kn)}function Cx(a,d,g){var m=xe(a)?Gv:Wf,v=arguments.length<3;return m(a,pe(d,4),g,v,fd)}function Nx(a,d){var g=xe(a)?Wn:dd;return g(a,Qs(pe(d,3)))}function kx(a){var d=xe(a)?sd:E1;return d(a)}function Rx(a,d,g){(g?er(a,d,g):d===e)?d=1:d=Oe(d);var m=xe(a)?n1:A1;return m(a,d)}function Fx(a){var d=xe(a)?i1:P1;return d(a)}function Mx(a){if(a==null)return 0;if(fr(a))return tu(a)?bo(a):a.length;var d=Zt(a);return d==dt||d==Bt?a.size:sl(a).length}function Lx(a,d,g){var m=xe(a)?Vu:$1;return g&&er(a,d,g)&&(d=e),m(a,pe(d,3))}var Bx=Pe(function(a,d){if(a==null)return[];var g=d.length;return g>1&&er(a,d[0],d[1])?d=[]:g>2&&er(d[0],d[1],d[2])&&(d=[d[0]]),xd(a,jt(d,1),[])}),Ks=vw||function(){return kt.Date.now()};function Ux(a,d){if(typeof d!="function")throw new Rr(f);return a=Oe(a),function(){if(--a<1)return d.apply(this,arguments)}}function mp(a,d,g){return d=g?e:d,d=a&&d==null?a.length:d,Pn(a,ae,e,e,e,e,d)}function yp(a,d){var g;if(typeof d!="function")throw new Rr(f);return a=Oe(a),function(){return--a>0&&(g=d.apply(this,arguments)),a<=1&&(d=e),g}}var Dl=Pe(function(a,d,g){var m=O;if(g.length){var v=Zn(g,So(Dl));m|=F}return Pn(a,m,d,g,v)}),bp=Pe(function(a,d,g){var m=O|S;if(g.length){var v=Zn(g,So(bp));m|=F}return Pn(d,m,a,g,v)});function vp(a,d,g){d=g?e:d;var m=Pn(a,L,e,e,e,e,e,d);return m.placeholder=vp.placeholder,m}function wp(a,d,g){d=g?e:d;var m=Pn(a,$,e,e,e,e,e,d);return m.placeholder=wp.placeholder,m}function _p(a,d,g){var m,v,_,E,P,N,H=0,W=!1,q=!1,Q=!0;if(typeof a!="function")throw new Rr(f);d=Ur(d)||0,ht(g)&&(W=!!g.leading,q="maxWait"in g,_=q?Dt(Ur(g.maxWait)||0,d):_,Q="trailing"in g?!!g.trailing:Q);function ue(xt){var Xr=m,kn=v;return m=v=e,H=xt,E=a.apply(kn,Xr),E}function he(xt){return H=xt,P=va(De,d),W?ue(xt):E}function Ae(xt){var Xr=xt-N,kn=xt-H,Up=d-Xr;return q?qt(Up,_-kn):Up}function ge(xt){var Xr=xt-N,kn=xt-H;return N===e||Xr>=d||Xr<0||q&&kn>=_}function De(){var xt=Ks();if(ge(xt))return ke(xt);P=va(De,Ae(xt))}function ke(xt){return P=e,Q&&m?ue(xt):(m=v=e,E)}function vr(){P!==e&&Dd(P),H=0,m=N=v=P=e}function tr(){return P===e?E:ke(Ks())}function wr(){var xt=Ks(),Xr=ge(xt);if(m=arguments,v=this,N=xt,Xr){if(P===e)return he(N);if(q)return Dd(P),P=va(De,d),ue(N)}return P===e&&(P=va(De,d)),E}return wr.cancel=vr,wr.flush=tr,wr}var jx=Pe(function(a,d){return cd(a,1,d)}),zx=Pe(function(a,d,g){return cd(a,Ur(d)||0,g)});function Vx(a){return Pn(a,Je)}function Js(a,d){if(typeof a!="function"||d!=null&&typeof d!="function")throw new Rr(f);var g=function(){var m=arguments,v=d?d.apply(this,m):m[0],_=g.cache;if(_.has(v))return _.get(v);var E=a.apply(this,m);return g.cache=_.set(v,E)||_,E};return g.cache=new(Js.Cache||An),g}Js.Cache=An;function Qs(a){if(typeof a!="function")throw new Rr(f);return function(){var d=arguments;switch(d.length){case 0:return!a.call(this);case 1:return!a.call(this,d[0]);case 2:return!a.call(this,d[0],d[1]);case 3:return!a.call(this,d[0],d[1],d[2])}return!a.apply(this,d)}}function Gx(a){return yp(2,a)}var Hx=D1(function(a,d){d=d.length==1&&xe(d[0])?ft(d[0],mr(pe())):ft(jt(d,1),mr(pe()));var g=d.length;return Pe(function(m){for(var v=-1,_=qt(m.length,g);++v<_;)m[v]=d[v].call(this,m[v]);return gr(a,this,m)})}),Cl=Pe(function(a,d){var g=Zn(d,So(Cl));return Pn(a,F,e,d,g)}),xp=Pe(function(a,d){var g=Zn(d,So(xp));return Pn(a,Z,e,d,g)}),Wx=$n(function(a,d){return Pn(a,ot,e,e,e,d)});function qx(a,d){if(typeof a!="function")throw new Rr(f);return d=d===e?d:Oe(d),Pe(a,d)}function Zx(a,d){if(typeof a!="function")throw new Rr(f);return d=d==null?0:Dt(Oe(d),0),Pe(function(g){var m=g[d],v=ei(g,0,d);return m&&qn(v,m),gr(a,this,v)})}function Yx(a,d,g){var m=!0,v=!0;if(typeof a!="function")throw new Rr(f);return ht(g)&&(m="leading"in g?!!g.leading:m,v="trailing"in g?!!g.trailing:v),_p(a,d,{leading:m,maxWait:d,trailing:v})}function Xx(a){return mp(a,1)}function Kx(a,d){return Cl(ml(d),a)}function Jx(){if(!arguments.length)return[];var a=arguments[0];return xe(a)?a:[a]}function Qx(a){return Mr(a,l)}function e2(a,d){return d=typeof d=="function"?d:e,Mr(a,l,d)}function t2(a){return Mr(a,r|l)}function r2(a,d){return d=typeof d=="function"?d:e,Mr(a,r|l,d)}function n2(a,d){return d==null||ld(a,d,Rt(d))}function Yr(a,d){return a===d||a!==a&&d!==d}var i2=Hs(il),o2=Hs(function(a,d){return a>=d}),$i=gd(function(){return arguments}())?gd:function(a){return mt(a)&&He.call(a,"callee")&&!td.call(a,"callee")},xe=B.isArray,a2=Ff?mr(Ff):h1;function fr(a){return a!=null&&eu(a.length)&&!Cn(a)}function _t(a){return mt(a)&&fr(a)}function s2(a){return a===!0||a===!1||mt(a)&&Qt(a)==or}var ti=_w||Vl,u2=Mf?mr(Mf):g1;function l2(a){return mt(a)&&a.nodeType===1&&!wa(a)}function c2(a){if(a==null)return!0;if(fr(a)&&(xe(a)||typeof a=="string"||typeof a.splice=="function"||ti(a)||Eo(a)||$i(a)))return!a.length;var d=Zt(a);if(d==dt||d==Bt)return!a.size;if(ba(a))return!sl(a).length;for(var g in a)if(He.call(a,g))return!1;return!0}function f2(a,d){return ga(a,d)}function d2(a,d,g){g=typeof g=="function"?g:e;var m=g?g(a,d):e;return m===e?ga(a,d,e,g):!!m}function Nl(a){if(!mt(a))return!1;var d=Qt(a);return d==Ht||d==Gt||typeof a.message=="string"&&typeof a.name=="string"&&!wa(a)}function p2(a){return typeof a=="number"&&nd(a)}function Cn(a){if(!ht(a))return!1;var d=Qt(a);return d==ut||d==at||d==vn||d==Un}function Tp(a){return typeof a=="number"&&a==Oe(a)}function eu(a){return typeof a=="number"&&a>-1&&a%1==0&&a<=ve}function ht(a){var d=typeof a;return a!=null&&(d=="object"||d=="function")}function mt(a){return a!=null&&typeof a=="object"}var Op=Lf?mr(Lf):y1;function h2(a,d){return a===d||al(a,d,Tl(d))}function g2(a,d,g){return g=typeof g=="function"?g:e,al(a,d,Tl(d),g)}function m2(a){return Sp(a)&&a!=+a}function y2(a){if(e_(a))throw new we(o);return md(a)}function b2(a){return a===null}function v2(a){return a==null}function Sp(a){return typeof a=="number"||mt(a)&&Qt(a)==Jt}function wa(a){if(!mt(a)||Qt(a)!=It)return!1;var d=As(a);if(d===null)return!0;var g=He.call(d,"constructor")&&d.constructor;return typeof g=="function"&&g instanceof g&&Ts.call(g)==gw}var kl=Bf?mr(Bf):b1;function w2(a){return Tp(a)&&a>=-ve&&a<=ve}var Ep=Uf?mr(Uf):v1;function tu(a){return typeof a=="string"||!xe(a)&&mt(a)&&Qt(a)==on}function br(a){return typeof a=="symbol"||mt(a)&&Qt(a)==sr}var Eo=jf?mr(jf):w1;function _2(a){return a===e}function x2(a){return mt(a)&&Zt(a)==ur}function T2(a){return mt(a)&&Qt(a)==zn}var O2=Hs(ul),S2=Hs(function(a,d){return a<=d});function Ap(a){if(!a)return[];if(fr(a))return tu(a)?qr(a):cr(a);if(sa&&a[sa])return nw(a[sa]());var d=Zt(a),g=d==dt?Yu:d==Bt?ws:Ao;return g(a)}function Nn(a){if(!a)return a===0?a:0;if(a=Ur(a),a===Le||a===-Le){var d=a<0?-1:1;return d*Kt}return a===a?a:0}function Oe(a){var d=Nn(a),g=d%1;return d===d?g?d-g:d:0}function Ip(a){return a?Ei(Oe(a),0,Xe):0}function Ur(a){if(typeof a=="number")return a;if(br(a))return At;if(ht(a)){var d=typeof a.valueOf=="function"?a.valueOf():a;a=ht(d)?d+"":d}if(typeof a!="string")return a===0?a:+a;a=qf(a);var g=ns.test(a);return g||ro.test(a)?Uv(a.slice(2),g?2:8):rs.test(a)?At:+a}function Pp(a){return cn(a,dr(a))}function E2(a){return a?Ei(Oe(a),-ve,ve):a===0?a:0}function We(a){return a==null?"":yr(a)}var A2=To(function(a,d){if(ba(d)||fr(d)){cn(d,Rt(d),a);return}for(var g in d)He.call(d,g)&&da(a,g,d[g])}),$p=To(function(a,d){cn(d,dr(d),a)}),ru=To(function(a,d,g,m){cn(d,dr(d),a,m)}),I2=To(function(a,d,g,m){cn(d,Rt(d),a,m)}),P2=$n(tl);function $2(a,d){var g=xo(a);return d==null?g:ud(g,d)}var D2=Pe(function(a,d){a=et(a);var g=-1,m=d.length,v=m>2?d[2]:e;for(v&&er(d[0],d[1],v)&&(m=1);++g<m;)for(var _=d[g],E=dr(_),P=-1,N=E.length;++P<N;){var H=E[P],W=a[H];(W===e||Yr(W,vo[H])&&!He.call(a,H))&&(a[H]=_[H])}return a}),C2=Pe(function(a){return a.push(e,qd),gr(Dp,e,a)});function N2(a,d){return Vf(a,pe(d,3),ln)}function k2(a,d){return Vf(a,pe(d,3),nl)}function R2(a,d){return a==null?a:rl(a,pe(d,3),dr)}function F2(a,d){return a==null?a:pd(a,pe(d,3),dr)}function M2(a,d){return a&&ln(a,pe(d,3))}function L2(a,d){return a&&nl(a,pe(d,3))}function B2(a){return a==null?[]:Ms(a,Rt(a))}function U2(a){return a==null?[]:Ms(a,dr(a))}function Rl(a,d,g){var m=a==null?e:Ai(a,d);return m===e?g:m}function j2(a,d){return a!=null&&Xd(a,d,c1)}function Fl(a,d){return a!=null&&Xd(a,d,f1)}var z2=zd(function(a,d,g){d!=null&&typeof d.toString!="function"&&(d=Os.call(d)),a[d]=g},Ll(pr)),V2=zd(function(a,d,g){d!=null&&typeof d.toString!="function"&&(d=Os.call(d)),He.call(a,d)?a[d].push(g):a[d]=[g]},pe),G2=Pe(ha);function Rt(a){return fr(a)?ad(a):sl(a)}function dr(a){return fr(a)?ad(a,!0):_1(a)}function H2(a,d){var g={};return d=pe(d,3),ln(a,function(m,v,_){In(g,d(m,v,_),m)}),g}function W2(a,d){var g={};return d=pe(d,3),ln(a,function(m,v,_){In(g,v,d(m,v,_))}),g}var q2=To(function(a,d,g){Ls(a,d,g)}),Dp=To(function(a,d,g,m){Ls(a,d,g,m)}),Z2=$n(function(a,d){var g={};if(a==null)return g;var m=!1;d=ft(d,function(_){return _=Qn(_,a),m||(m=_.length>1),_}),cn(a,_l(a),g),m&&(g=Mr(g,r|u|l,z1));for(var v=d.length;v--;)pl(g,d[v]);return g});function Y2(a,d){return Cp(a,Qs(pe(d)))}var X2=$n(function(a,d){return a==null?{}:T1(a,d)});function Cp(a,d){if(a==null)return{};var g=ft(_l(a),function(m){return[m]});return d=pe(d),Td(a,g,function(m,v){return d(m,v[0])})}function K2(a,d,g){d=Qn(d,a);var m=-1,v=d.length;for(v||(v=1,a=e);++m<v;){var _=a==null?e:a[fn(d[m])];_===e&&(m=v,_=g),a=Cn(_)?_.call(a):_}return a}function J2(a,d,g){return a==null?a:ma(a,d,g)}function Q2(a,d,g,m){return m=typeof m=="function"?m:e,a==null?a:ma(a,d,g,m)}var Np=Hd(Rt),kp=Hd(dr);function eT(a,d,g){var m=xe(a),v=m||ti(a)||Eo(a);if(d=pe(d,4),g==null){var _=a&&a.constructor;v?g=m?new _:[]:ht(a)?g=Cn(_)?xo(As(a)):{}:g={}}return(v?kr:ln)(a,function(E,P,N){return d(g,E,P,N)}),g}function tT(a,d){return a==null?!0:pl(a,d)}function rT(a,d,g){return a==null?a:Id(a,d,ml(g))}function nT(a,d,g,m){return m=typeof m=="function"?m:e,a==null?a:Id(a,d,ml(g),m)}function Ao(a){return a==null?[]:Zu(a,Rt(a))}function iT(a){return a==null?[]:Zu(a,dr(a))}function oT(a,d,g){return g===e&&(g=d,d=e),g!==e&&(g=Ur(g),g=g===g?g:0),d!==e&&(d=Ur(d),d=d===d?d:0),Ei(Ur(a),d,g)}function aT(a,d,g){return d=Nn(d),g===e?(g=d,d=0):g=Nn(g),a=Ur(a),d1(a,d,g)}function sT(a,d,g){if(g&&typeof g!="boolean"&&er(a,d,g)&&(d=g=e),g===e&&(typeof d=="boolean"?(g=d,d=e):typeof a=="boolean"&&(g=a,a=e)),a===e&&d===e?(a=0,d=1):(a=Nn(a),d===e?(d=a,a=0):d=Nn(d)),a>d){var m=a;a=d,d=m}if(g||a%1||d%1){var v=id();return qt(a+v*(d-a+ys("1e-"+((v+"").length-1))),d)}return cl(a,d)}var uT=Oo(function(a,d,g){return d=d.toLowerCase(),a+(g?Rp(d):d)});function Rp(a){return Ml(We(a).toLowerCase())}function Fp(a){return a=We(a),a&&a.replace(Hn,Jv).replace(Y,"")}function lT(a,d,g){a=We(a),d=yr(d);var m=a.length;g=g===e?m:Ei(Oe(g),0,m);var v=g;return g-=d.length,g>=0&&a.slice(g,v)==d}function cT(a){return a=We(a),a&&T.test(a)?a.replace($r,Qv):a}function fT(a){return a=We(a),a&&Ut.test(a)?a.replace(pt,"\\$&"):a}var dT=Oo(function(a,d,g){return a+(g?"-":"")+d.toLowerCase()}),pT=Oo(function(a,d,g){return a+(g?" ":"")+d.toLowerCase()}),hT=Bd("toLowerCase");function gT(a,d,g){a=We(a),d=Oe(d);var m=d?bo(a):0;if(!d||m>=d)return a;var v=(d-m)/2;return Gs(Ds(v),g)+a+Gs($s(v),g)}function mT(a,d,g){a=We(a),d=Oe(d);var m=d?bo(a):0;return d&&m<d?a+Gs(d-m,g):a}function yT(a,d,g){a=We(a),d=Oe(d);var m=d?bo(a):0;return d&&m<d?Gs(d-m,g)+a:a}function bT(a,d,g){return g||d==null?d=0:d&&(d=+d),Sw(We(a).replace(wt,""),d||0)}function vT(a,d,g){return(g?er(a,d,g):d===e)?d=1:d=Oe(d),fl(We(a),d)}function wT(){var a=arguments,d=We(a[0]);return a.length<3?d:d.replace(a[1],a[2])}var _T=Oo(function(a,d,g){return a+(g?"_":"")+d.toLowerCase()});function xT(a,d,g){return g&&typeof g!="number"&&er(a,d,g)&&(d=g=e),g=g===e?Xe:g>>>0,g?(a=We(a),a&&(typeof d=="string"||d!=null&&!kl(d))&&(d=yr(d),!d&&yo(a))?ei(qr(a),0,g):a.split(d,g)):[]}var TT=Oo(function(a,d,g){return a+(g?" ":"")+Ml(d)});function OT(a,d,g){return a=We(a),g=g==null?0:Ei(Oe(g),0,a.length),d=yr(d),a.slice(g,g+d.length)==d}function ST(a,d,g){var m=w.templateSettings;g&&er(a,d,g)&&(d=e),a=We(a),d=ru({},d,m,Wd);var v=ru({},d.imports,m.imports,Wd),_=Rt(v),E=Zu(v,_),P,N,H=0,W=d.interpolate||vi,q="__p += '",Q=Xu((d.escape||vi).source+"|"+W.source+"|"+(W===V?bi:vi).source+"|"+(d.evaluate||vi).source+"|$","g"),ue="//# sourceURL="+(He.call(d,"sourceURL")?(d.sourceURL+"").replace(/\s/g," "):"lodash.templateSources["+ ++Wt+"]")+`
@@ -3429,9 +4465,9 @@ onnxruntime-web/dist/esm/ort.min.js:
     <div class="cut-head"><h2 id="wfTitle">웹폰트 추가</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
     <p class="hint" style="margin-top:0">아래 중 하나를 붙여넣으세요. 여러 굵기를 한꺼번에 붙여넣으면 한 글꼴로 묶어요.</p>
     <ul class="wf-help">
-      <li><b>눈누 코드</b>: 글꼴 페이지의 ‘웹폰트로 사용’ 상자에 있는 <code>@font-face {…}</code> 전부</li>
-      <li><b>구글 폰트</b>: 이름(예: <code>Gowun Dodum</code>) 또는 fonts.google.com 주소</li>
-      <li><b>CSS 링크</b>: <code>https://…/font.css</code> 또는 <code>&lt;link …&gt;</code> 한 줄</li>
+      <li data-en='<b>Noonnu code</b>: the entire <code>@font-face {…}</code> from the ‘use as web font’ box on the font page'><b>눈누 코드</b>: 글꼴 페이지의 ‘웹폰트로 사용’ 상자에 있는 <code>@font-face {…}</code> 전부</li>
+      <li data-en='<b>Google Fonts</b>: a name (e.g. <code>Gowun Dodum</code>) or a fonts.google.com URL'><b>구글 폰트</b>: 이름(예: <code>Gowun Dodum</code>) 또는 fonts.google.com 주소</li>
+      <li data-en='<b>CSS link</b>: <code>https://…/font.css</code> or a single <code>&lt;link …&gt;</code> line'><b>CSS 링크</b>: <code>https://…/font.css</code> 또는 <code>&lt;link …&gt;</code> 한 줄</li>
     </ul>
     <div class="field"><label for="wfIn">붙여넣기</label><textarea class="txt" id="wfIn" rows="6" spellcheck="false" placeholder="@font-face {&#10;    font-family: 'GmarketSansMedium';&#10;    src: url('https://…/GmarketSansMedium.woff') format('woff');&#10;    font-weight: normal;&#10;}"></textarea></div>
     <div class="row two">
@@ -3447,7 +4483,7 @@ onnxruntime-web/dist/esm/ort.min.js:
 <div class="modal" id="i18nModal" hidden role="dialog" aria-modal="true" aria-labelledby="i18nTitle">
   <div class="dlg" style="width:min(1140px,100%)">
     <div class="cut-head"><h2 id="i18nTitle">언어별 버전</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
-    <p class="hint" style="margin-top:0">같은 디자인을 언어마다 만들어요. 칸을 비워 두면 원래 글자를 써요. 글꼴은 <b>자동</b>이면 지금 글꼴이 그 언어를 지원할 때 그대로 두고, 아니면 그 언어 제목용 글꼴로 바꿔요. <b>*별표*</b>로 감싸면 강조색이 들어가요.</p>
+    <p data-en='Makes the same design in each language. Blank cells keep the original text. With font set to <b>Auto</b>, the current font is kept if it supports the language; otherwise a display font for that language is used. Wrap text in <b>*asterisks*</b> for the accent color.' class="hint" style="margin-top:0">같은 디자인을 언어마다 만들어요. 칸을 비워 두면 원래 글자를 써요. 글꼴은 <b>자동</b>이면 지금 글꼴이 그 언어를 지원할 때 그대로 두고, 아니면 그 언어 제목용 글꼴로 바꿔요. <b>*별표*</b>로 감싸면 강조색이 들어가요.</p>
     <div class="chips" id="i18nLangs"></div>
     <div class="i18n-wrap"><table class="i18n" id="i18nTable"></table></div>
     <label class="tog" style="margin-top:10px"><input type="checkbox" id="i18nShrink">번역이 원래보다 길면 글자 크기를 줄여 같은 폭에 맞추기</label>
@@ -3461,11 +4497,11 @@ onnxruntime-web/dist/esm/ort.min.js:
   <div class="dlg" style="width:min(640px,100%)">
     <div class="cut-head"><h2 id="drvTitle">구글 드라이브</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
     <div id="drvSetup" hidden>
-      <p style="margin:4px 0 0">드라이브에 저장하려면 처음 한 번 <b>구글 클라이언트 ID</b>가 필요해요. 무료이고 10분쯤 걸려요.</p>
+      <p data-en='To save to Drive, you first need a <b>Google Client ID</b>. It’s free and takes about 10 minutes.' style="margin:4px 0 0">드라이브에 저장하려면 처음 한 번 <b>구글 클라이언트 ID</b>가 필요해요. 무료이고 10분쯤 걸려요.</p>
       <div class="acts" style="justify-content:flex-start"><button class="btn primary" id="drvGoSet">설정에서 연결하기</button></div>
     </div>
     <div id="drvMain" hidden>
-      <p class="hint" style="margin-top:0">내 드라이브의 <b>썸네일 공방</b> 폴더에 저장돼요. 이 편집기는 자기가 만든 파일만 볼 수 있어요.</p>
+      <p data-en='Saved to the <b>Design by FC</b> folder in your Drive. This editor can only see files it created.' class="hint" style="margin-top:0">내 드라이브의 <b>썸네일 공방</b> 폴더에 저장돼요. 이 편집기는 자기가 만든 파일만 볼 수 있어요.</p>
       <div class="search"><input class="txt" id="drvName" placeholder="파일 이름"><button class="btn sm primary" id="drvSaveBtn">드라이브에 저장</button></div>
       <label class="tog" id="drvNewWrap" hidden style="margin-top:8px"><input type="checkbox" id="drvAsNew">덮어쓰지 않고 새 파일로 저장</label>
       <h3 class="mh">드라이브의 작업 <button class="btn sm ghost" id="drvRefresh" style="height:24px">새로고침</button></h3>
@@ -3511,7 +4547,7 @@ onnxruntime-web/dist/esm/ort.min.js:
 <div class="modal" id="boardModal" hidden role="dialog" aria-modal="true" aria-labelledby="boardTitle">
   <div class="dlg" style="width:min(1060px,100%)">
     <div class="cut-head"><h2 id="boardTitle">아트보드 나란히 보기</h2><button class="btn icon ghost" data-close aria-label="닫기"><svg class="i"><use href="#i-x"/></svg></button></div>
-    <p class="hint" style="margin-top:0">유튜브 스튜디오의 섬네일 <b>테스트 및 비교</b>에는 최대 3개까지 올릴 수 있어요. 아트보드를 모두 ZIP으로 받아 그대로 올리세요.</p>
+    <p data-en='YouTube Studio’s <b>Test &amp; Compare</b> accepts up to 3 thumbnails. Download all artboards as a ZIP and upload them as is.' class="hint" style="margin-top:0">유튜브 스튜디오의 섬네일 <b>테스트 및 비교</b>에는 최대 3개까지 올릴 수 있어요. 아트보드를 모두 ZIP으로 받아 그대로 올리세요.</p>
     <div class="board" id="board"></div>
     <div class="acts"><button class="btn" data-close>닫기</button><button class="btn primary" id="boardZip"><svg class="i"><use href="#i-down"/></svg>아트보드 전부 ZIP으로</button></div>
   </div>
@@ -3527,7 +4563,7 @@ onnxruntime-web/dist/esm/ort.min.js:
       <div class="field"><label for="bF2">바꿀 글자 2 (선택)</label><select class="sel" id="bF2"></select></div>
     </div>
     <div class="field"><label for="bLines">한 줄에 한 장씩</label><textarea class="txt" id="bLines" rows="6" placeholder="1화 \n *첫 출근* 브이로그 | 신입 일기&#10;2화 \n *첫 회식* 브이로그 | 신입 일기"></textarea></div>
-    <p class="hint">글자 1과 2는 <b>|</b>로 나누고, 줄바꿈은 <b>\n</b>, 강조색은 <b>*별표*</b>로 감싸요. 최대 50장.</p>
+    <p data-en='Separate text 1 and 2 with <b>|</b>, use <b>\n</b> for line breaks, and wrap in <b>*asterisks*</b> for the accent color. Up to 50 images.' class="hint">글자 1과 2는 <b>|</b>로 나누고, 줄바꿈은 <b>\n</b>, 강조색은 <b>*별표*</b>로 감싸요. 최대 50장.</p>
     <div class="bgrid" id="bGrid"></div>
     <div class="acts"><span class="meter" id="bInfo" style="margin-right:auto"></span><button class="btn" data-close>닫기</button><button class="btn" id="bPreview">미리보기</button><button class="btn primary" id="bZip"><svg class="i"><use href="#i-down"/></svg>ZIP으로 내려받기</button></div>
   </div>
@@ -3573,15 +4609,15 @@ onnxruntime-web/dist/esm/ort.min.js:
   <div class="dlg">
     <h2 id="setTitle">설정</h2>
     <p class="hint" style="margin-top:0">둘 다 무료예요. 가입 후 키를 받아 붙여넣으면 이 브라우저에 저장돼요. 사진 검색에는 둘 중 하나만 있어도 돼요.</p>
-    <div class="field"><label for="setPixabay">Pixabay 키 — <a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">pixabay.com/api/docs</a> 에서 로그인하면 바로 보여요</label><input class="txt" id="setPixabay" autocomplete="off"></div>
-    <div class="field"><label for="setUnsplash">Unsplash 키 (Access Key) — <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">unsplash.com/oauth/applications</a> 에서 앱을 만들면 보여요</label><input class="txt" id="setUnsplash" autocomplete="off"></div>
+    <div class="field"><label data-en='Pixabay key — shown at <a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">pixabay.com/api/docs</a> once you’re logged in' for="setPixabay">Pixabay 키 — <a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">pixabay.com/api/docs</a> 에서 로그인하면 바로 보여요</label><input class="txt" id="setPixabay" autocomplete="off"></div>
+    <div class="field"><label data-en='Unsplash key (Access Key) — shown after creating an app at <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">unsplash.com/oauth/applications</a>' for="setUnsplash">Unsplash 키 (Access Key) — <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">unsplash.com/oauth/applications</a> 에서 앱을 만들면 보여요</label><input class="txt" id="setUnsplash" autocomplete="off"></div>
     <h3 class="mh">구글 드라이브 연결</h3>
     <details class="steps"><summary>클라이언트 ID 만드는 법 (처음 한 번, 무료)</summary>
       <ol>
-        <li><a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a>에 들어가 새 프로젝트를 만들어요.</li>
-        <li><b>API 및 서비스 → 라이브러리</b>에서 <b>Google Drive API</b>를 찾아 <b>사용</b>을 눌러요.</li>
-        <li><b>Google 인증 플랫폼</b>(예전 이름: OAuth 동의 화면)에서 앱 이름과 이메일을 넣고, 대상은 <b>외부</b>로 고른 뒤 <b>테스트 사용자</b>에 내 구글 계정을 추가해요.</li>
-        <li><b>클라이언트 → 클라이언트 만들기</b>(또는 사용자 인증 정보 → OAuth 클라이언트 ID)에서 유형은 <b>웹 애플리케이션</b>, <b>승인된 자바스크립트 원본</b>에 아래 주소를 넣어요.<br><code id="originNow"></code></li>
+        <li data-en='Go to <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> and create a new project.'><a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a>에 들어가 새 프로젝트를 만들어요.</li>
+        <li data-en='In <b>APIs &amp; Services → Library</b>, find <b>Google Drive API</b> and click <b>Enable</b>.'><b>API 및 서비스 → 라이브러리</b>에서 <b>Google Drive API</b>를 찾아 <b>사용</b>을 눌러요.</li>
+        <li data-en='In <b>Google Auth Platform</b> (formerly OAuth consent screen), enter an app name and email, choose <b>External</b> as the audience, and add your Google account under <b>Test users</b>.'><b>Google 인증 플랫폼</b>(예전 이름: OAuth 동의 화면)에서 앱 이름과 이메일을 넣고, 대상은 <b>외부</b>로 고른 뒤 <b>테스트 사용자</b>에 내 구글 계정을 추가해요.</li>
+        <li data-en='In <b>Clients → Create client</b> (or Credentials → OAuth client ID), choose <b>Web application</b> and add the address below to <b>Authorized JavaScript origins</b>.<br><code id="originNow"></code>'><b>클라이언트 → 클라이언트 만들기</b>(또는 사용자 인증 정보 → OAuth 클라이언트 ID)에서 유형은 <b>웹 애플리케이션</b>, <b>승인된 자바스크립트 원본</b>에 아래 주소를 넣어요.<br><code id="originNow"></code></li>
         <li>만들어진 클라이언트 ID(…apps.googleusercontent.com)를 복사해서 아래에 붙여넣어요.</li>
       </ol>
     </details>
@@ -3631,6 +4667,97 @@ if (!window.fabric) {
 /* ---------------- toast ---------------- */
 let toastT;
 function toast(msg, ms = 2600) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, ms); }
+/* ---------- 한/EN UI language ---------- */
+function isEN() { return document.documentElement.lang === 'en'; }
+function enb(ko, en) { return `<span data-en="${String(en).replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">${ko}</span>`; }
+const UILANG = (() => {
+  const KO = /[가-힣]/, ATTRS = ['title', 'placeholder', 'aria-label', 'alt'];
+  const SKIP = 'script,style,textarea,[data-noi18n],.fopt span,.canvas-container', SKIPA = '[data-noi18n],.fopt span,.canvas-container';
+  const norm = t => t.replace(/\s+/g, ' ').trim();
+  const dict = new Map(), pats = [];
+  const src = (document.getElementById('i18nEN') || {}).textContent || '';
+  for (const line of src.split('\n')) {
+    const k = line.indexOf(' ⇒ '); if (k < 0) continue;
+    const ko = norm(line.slice(0, k)), en = line.slice(k + 3).trim().replace(/⏎/g, '\n');
+    if (!/\{#?\}/.test(ko)) { dict.set(ko, en); continue; }
+    const re = '^' + ko.split(/(\{#?\})/).map(x => x === '{}' ? '([\\s\\S]+?)' : x === '{#}' ? '([\\d.,]+)' : x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('') + '$';
+    pats.push([new RegExp(re), en, ko.replace(/\{#?\}/g, '').length]);
+  }
+  pats.sort((a, b) => b[2] - a[2]);
+  function tr(t, depth = 0) {
+    if (!t || !KO.test(t) || depth > 2) return null;
+    const n = norm(t);
+    let r = dict.get(n);
+    if (r == null) for (const [re, en] of pats) {
+      const m = n.match(re); if (!m) continue;
+      r = en.replace(/\$(\d)/g, (_, d) => { const v = m[+d] || ''; const x = tr(v, depth + 1); return x != null ? x : v; });
+      break;
+    }
+    if (r == null && n.includes(' · ')) {
+      let ch = false; const o = n.split(' · ').map(p => { const x = tr(p, depth + 1); if (x != null) { ch = true; return x; } return p; });
+      if (ch) r = o.join(' · ');
+    }
+    if (r == null) return null;
+    return t.match(/^\s*/)[0] + r + t.match(/\s*$/)[0];
+  }
+  let lang = 'ko';
+  const tT = new Set(), tA = new Set(), tH = new Set();
+  const skipped = el => !!(el && el.closest && el.closest(SKIP));
+  function doText(n) {
+    const v = n.nodeValue; if (!v || v === n.__en || !KO.test(v) || skipped(n.parentElement)) return;
+    const r = tr(v); if (r == null) return;
+    n.__ko = v; n.__en = r; tT.add(n); n.nodeValue = r;
+  }
+  function doAttr(el, a) {
+    const v = el.getAttribute(a); if (!v || !KO.test(v) || (el.__enA && el.__enA[a] === v)) return;
+    const r = tr(v); if (r == null) return;
+    (el.__koA = el.__koA || {})[a] = v; (el.__enA = el.__enA || {})[a] = r; tA.add(el); el.setAttribute(a, r);
+  }
+  function doEl(el) { // returns true when its children are already handled
+    if (!el.closest(SKIPA)) for (const a of ATTRS) if (el.hasAttribute(a)) doAttr(el, a);
+    if (skipped(el)) return true;
+    if (el.hasAttribute('data-en')) {
+      if (!el.__enDone) { el.__koH = el.innerHTML; el.innerHTML = el.getAttribute('data-en'); el.__enH = el.innerHTML; el.__enDone = true; tH.add(el); }
+      return true;
+    }
+    return false;
+  }
+  function walk(root) {
+    if (root.nodeType === 3) return doText(root);
+    if (root.nodeType !== 1 || doEl(root)) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, { acceptNode: nd => nd.nodeType === 1 && doEl(nd) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    const texts = []; let nd; while ((nd = w.nextNode())) if (nd.nodeType === 3) texts.push(nd);
+    texts.forEach(doText);
+  }
+  const mo = new MutationObserver(ms => {
+    for (const m of ms) {
+      if (m.type === 'childList') m.addedNodes.forEach(walk);
+      else if (m.type === 'characterData') doText(m.target);
+      else if (m.type === 'attributes') { if (!m.target.closest(SKIPA)) doAttr(m.target, m.attributeName); }
+    }
+  });
+  function restore() {
+    tT.forEach(n => { if (n.nodeValue === n.__en) n.nodeValue = n.__ko; n.__en = null; });
+    tA.forEach(el => { for (const a in el.__koA) if (el.getAttribute(a) === el.__enA[a]) el.setAttribute(a, el.__koA[a]); el.__koA = el.__enA = null; });
+    tH.forEach(el => { if (el.innerHTML === el.__enH) el.innerHTML = el.__koH; el.__enDone = false; });
+    tT.clear(); tA.clear(); tH.clear();
+  }
+  function paintBtn() {
+    const b = document.getElementById('langBtn'); if (!b) return;
+    b.querySelectorAll('[data-lg]').forEach(s => s.classList.toggle('on', s.dataset.lg === lang));
+    b.title = lang === 'en' ? '한국어로 바꾸기' : 'Switch to English';
+  }
+  function set(l, quiet) {
+    lang = l === 'en' ? 'en' : 'ko';
+    document.documentElement.lang = lang; lsSet('tg.lang', lang);
+    mo.disconnect();
+    if (lang === 'en') { walk(document.body); mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS }); }
+    else restore();
+    paintBtn();
+    if (!quiet) toast(lang === 'en' ? 'Switched to English.' : '한국어로 바꿨어요.');
+  }
+  return { tr, set, get lang() { return lang; }, init() { const b = document.getElementById('langBtn'); if (b) b.onclick = () => set(lang === 'en' ? 'ko' : 'en'); set(lsGet('tg.lang') === 'en' ? 'en' : 'ko', true); } };
+})();
 
 /* ---------------- storage (IndexedDB) ---------------- */
 const DB = (() => {
@@ -4349,7 +5476,7 @@ function renderFontList(q) {
       + (f.mine ? `<button class="fdel${fontDelArm.has(f.id) ? ' arm' : ''}" data-fdel="${esc(f.id)}" title="${fontDelArm.has(f.id) ? '한 번 더 누르면 지워요' : '이 글꼴 지우기'}" aria-label="글꼴 지우기"><svg class="i"><use href="#i-${fontDelArm.has(f.id) ? 'trash' : 'x'}"/></svg></button>` : '') + '</div>';
   }).join('')).join('');
   fontIO.disconnect();
-  $('#fontList').innerHTML = html || `<p class="hint" style="padding:8px">${fontLang === 'mine' && !q ? '텍스트 탭의 <b>폰트 파일 올리기</b>로 올린 글꼴이 여기 맨 위에 보여요.' : fontLang === 'fav' && !q ? '글꼴 옆 ☆를 누르면 여기에 모여요.' : '찾는 글꼴이 없어요.'}</p>`;
+  $('#fontList').innerHTML = html || `<p class="hint" style="padding:8px">${fontLang === 'mine' && !q ? enb('텍스트 탭의 <b>폰트 파일 올리기</b>로 올린 글꼴이 여기 맨 위에 보여요.', 'Fonts uploaded with <b>Upload Font Files</b> in the Text tab appear here at the top.') : fontLang === 'fav' && !q ? '글꼴 옆 ☆를 누르면 여기에 모여요.' : '찾는 글꼴이 없어요.'}</p>`;
 }
 $('#fontQ').oninput = e => renderFontList(e.target.value);
 $('#fontList').onclick = async e => {
@@ -4383,7 +5510,7 @@ let photoPage = 1, photoQuery = '', photoBusy = false;
 const SRC = {
   pixabay: {
     note: 'Pixabay 콘텐츠 라이선스: 상업적 사용 무료, 출처 표시 필요 없음. 한국어 검색 돼요.',
-    help: 'Pixabay는 무료 키가 필요해요. <a href="https://pixabay.com/accounts/register/" target="_blank" rel="noopener">가입</a> 후 <a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">API 문서</a> 페이지의 “key” 값을 복사해 붙여넣으세요.',
+    help: enb('Pixabay는 무료 키가 필요해요. <a href="https://pixabay.com/accounts/register/" target="_blank" rel="noopener">가입</a> 후 <a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">API 문서</a> 페이지의 “key” 값을 복사해 붙여넣으세요.', 'Pixabay needs a free key. <a href="https://pixabay.com/accounts/register/" target="_blank" rel="noopener">Sign up</a>, then copy the “key” value from the <a href="https://pixabay.com/api/docs/" target="_blank" rel="noopener">API docs</a> page and paste it here.'),
     async search(q, page) {
       const type = $('#photoType').value, ori = $('#photoOri').value;
       const u = `https://pixabay.com/api/?key=${encodeURIComponent(KEYS.pixabay)}&q=${encodeURIComponent(q)}&lang=ko&per_page=30&page=${page}&safesearch=true&image_type=${type}${ori ? '&orientation=' + ori : ''}`;
@@ -4394,7 +5521,7 @@ const SRC = {
     } },
   unsplash: {
     note: 'Unsplash 라이선스: 상업적 사용 무료, 출처 표시 필요 없음(해 주면 좋아요). 고화질 사진이 많아요. 영어 검색어가 더 잘 맞아요.',
-    help: 'Unsplash는 무료 키가 필요해요. <a href="https://unsplash.com/join" target="_blank" rel="noopener">가입</a> 후 <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">내 앱 목록</a>에서 <b>New Application</b>을 만들고, 앱 화면의 <b>Access Key</b>를 복사해 붙여넣으세요. 처음엔 1시간에 50번까지 검색돼요.',
+    help: enb('Unsplash는 무료 키가 필요해요. <a href="https://unsplash.com/join" target="_blank" rel="noopener">가입</a> 후 <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">내 앱 목록</a>에서 <b>New Application</b>을 만들고, 앱 화면의 <b>Access Key</b>를 복사해 붙여넣으세요. 처음엔 1시간에 50번까지 검색돼요.', 'Unsplash needs a free key. <a href="https://unsplash.com/join" target="_blank" rel="noopener">Sign up</a>, create a <b>New Application</b> in <a href="https://unsplash.com/oauth/applications" target="_blank" rel="noopener">Your apps</a>, then copy its <b>Access Key</b> and paste it here. Starts at 50 searches per hour.'),
     async search(q, page) {
       const ori = { horizontal: 'landscape', vertical: 'portrait' }[$('#photoOri').value] || '';
       const r = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=30&page=${page}&content_filter=high${ori ? '&orientation=' + ori : ''}`, { headers: { Authorization: 'Client-ID ' + KEYS.unsplash, 'Accept-Version': 'v1' } });
@@ -4421,7 +5548,7 @@ $('#keySave').onclick = () => { const v = $('#keyInput').value.trim(); if (!v) r
 const PHOTO_CHIPS = ['놀란 표정', '도시 야경', '노트북', '음식', '바다', '돈', '여행', '고양이'];
 const PHOTO_CHIPS_EN = { '놀란 표정': 'surprised face', '도시 야경': 'city night', '노트북': 'laptop', '음식': 'food', '바다': 'ocean', '돈': 'money', '여행': 'travel', '고양이': 'cat' };
 $('#photoChips').innerHTML = PHOTO_CHIPS.map(c => `<button type="button" data-q="${esc(c)}">${esc(c)}</button>`).join('');
-$('#photoChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('#photoQ').value = photoSrc === 'unsplash' ? PHOTO_CHIPS_EN[b.dataset.q] : b.dataset.q; doPhotoSearch(true); };
+$('#photoChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('#photoQ').value = (photoSrc === 'unsplash' || isEN()) && PHOTO_CHIPS_EN[b.dataset.q] ? PHOTO_CHIPS_EN[b.dataset.q] : b.dataset.q; doPhotoSearch(true); };
 $('#photoForm').onsubmit = e => { e.preventDefault(); doPhotoSearch(true); };
 $('#photoType').onchange = $('#photoOri').onchange = () => photoQuery && doPhotoSearch(true);
 $('#photoMore').onclick = () => doPhotoSearch(false);
@@ -4488,7 +5615,7 @@ const KO2EN = { '화살표':'arrow','체크':'check','하트':'heart','불':'fir
 const ICON_CHIPS = ['화살표','체크','엑스','하트','불','별','경고','왕관','돈','번개','구독','좋아요'];
 let iconColor = '#111111';
 $('#iconChips').innerHTML = ICON_CHIPS.map(c => `<button type="button" data-q="${c}">${c}</button>`).join('');
-$('#iconChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('#iconQ').value = b.dataset.q; searchIcons(); };
+$('#iconChips').onclick = e => { const b = e.target.closest('button'); if (!b) return; $('#iconQ').value = isEN() ? (KO2EN[b.dataset.q] || b.textContent.trim()) : b.dataset.q; searchIcons(); };
 $('#iconForm').onsubmit = e => { e.preventDefault(); searchIcons(); };
 async function searchIcons() {
   let q = $('#iconQ').value.trim(); if (!q) return;
@@ -5726,7 +6853,7 @@ function refreshLayers() {
   $('#layerCount').textContent = objs.length;
   $('#layerList').innerHTML = objs.map((o, i) => [o, i]).reverse().map(([o, i]) => {
     const glyph = isTxt(o) ? '<span style="font-family:var(--display);font-size:14px;color:var(--ink)">T</span>' : o.kind === 'emoji' ? `<span style="font-family:var(--emoji);font-size:15px">${esc(o.meta && o.meta.ch)}</span>` : o.type === 'image' ? '<svg class="i" style="width:15px;height:15px"><use href="#i-photo"/></svg>' : '<svg class="i" style="width:15px;height:15px"><use href="#i-shapes"/></svg>';
-    return `<div class="layer${sel.includes(o) ? ' on' : ''}${o.visible === false ? ' dim' : ''}" data-i="${i}"><span class="lk">${glyph}</span><span class="nm">${esc(layerName(o))}</span><button data-vis="${i}" aria-label="${o.visible === false ? '보이기' : '숨기기'}" title="${o.visible === false ? '보이기' : '숨기기'}"><svg class="i"><use href="#${o.visible === false ? 'i-eyeoff' : 'i-eye'}"/></svg></button><button data-lock="${i}" aria-label="${o.lockedByUser ? '잠금 풀기' : '잠그기'}" title="${o.lockedByUser ? '잠금 풀기' : '잠그기'}"><svg class="i"><use href="#${o.lockedByUser ? 'i-lock' : 'i-unlock'}"/></svg></button></div>`;
+    return `<div class="layer${sel.includes(o) ? ' on' : ''}${o.visible === false ? ' dim' : ''}" data-i="${i}"><span class="lk">${glyph}</span><span class="nm"${isTxt(o) ? ' data-noi18n' : ''}>${esc(layerName(o))}</span><button data-vis="${i}" aria-label="${o.visible === false ? '보이기' : '숨기기'}" title="${o.visible === false ? '보이기' : '숨기기'}"><svg class="i"><use href="#${o.visible === false ? 'i-eyeoff' : 'i-eye'}"/></svg></button><button data-lock="${i}" aria-label="${o.lockedByUser ? '잠금 풀기' : '잠그기'}" title="${o.lockedByUser ? '잠금 풀기' : '잠그기'}"><svg class="i"><use href="#${o.lockedByUser ? 'i-lock' : 'i-unlock'}"/></svg></button></div>`;
   }).join('') || '<p class="hint" style="margin:0">아직 아무것도 없어요. 왼쪽에서 글자나 사진을 넣어 보세요.</p>';
 }
 const refreshLayersSoon = debounce(refreshLayers, 200);
@@ -6008,7 +7135,7 @@ const buildExport = debounce(async () => {
 function openExport() {
   cv.discardActiveObject(); cv.requestRenderAll();
   syncExpUI();
-  if (!$('#expName').value) $('#expName').value = '썸네일-' + stamp();
+  if (!$('#expName').value) $('#expName').value = (isEN() ? 'design-' : '썸네일-') + stamp();
   $('#expSize').textContent = '계산 중…'; $('#expSize').className = 'meter';
   const cr = doc.credits || [];
   $('#credBox').hidden = !cr.length;
@@ -6076,7 +7203,7 @@ async function renderProjects() {
   const ps = (await DB.all('projects')).sort((a, b) => b.at - a.at);
   $('#projEmpty').hidden = ps.length > 0;
   const cur = ps.find(p => p.id === currentProjectId); if (cur && !$('#projName').value) setProjTitle(cur.name);
-  $('#projList').innerHTML = ps.map(p => `<div class="proj"><img src="${p.thumb}" alt=""><div style="min-width:0"><div class="nm">${esc(p.name)}${p.id === currentProjectId ? ' <span class="chip">지금 작업</span>' : ''}</div><div class="dt">${new Date(p.at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div><div class="row" style="margin-top:6px"><button class="btn sm" data-open="${p.id}">열기</button><button class="btn sm ghost danger" data-del="${p.id}">${delArm.has(p.id) ? '정말 지우기' : '지우기'}</button></div></div></div>`).join('');
+  $('#projList').innerHTML = ps.map(p => `<div class="proj"><img src="${p.thumb}" alt=""><div style="min-width:0"><div class="nm">${esc(p.name)}${p.id === currentProjectId ? ' <span class="chip">지금 작업</span>' : ''}</div><div class="dt">${new Date(p.at).toLocaleString(isEN() ? 'en-US' : 'ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div><div class="row" style="margin-top:6px"><button class="btn sm" data-open="${p.id}">열기</button><button class="btn sm ghost danger" data-del="${p.id}">${delArm.has(p.id) ? '정말 지우기' : '지우기'}</button></div></div></div>`).join('');
 }
 $('#projList').onclick = async e => {
   const o = e.target.closest('[data-open]');
@@ -6200,8 +7327,8 @@ async function getZip() { await loadScript('https://cdnjs.cloudflare.com/ajax/li
 const fmtExt = () => rasterFmt() === 'png' ? 'png' : 'jpg';
 
 /* ---------------- variants (아트보드) ---------------- */
-const artName = i => (proj.vars[i] && proj.vars[i].title) || `아트보드 ${i + 1}`;
-const fileBase = i => `${proj.title || '썸네일'}-${artName(i)}`.replace(/[\\/:*?"<>|]+/g, '_');
+const artName = i => (proj.vars[i] && proj.vars[i].title) || `${isEN() ? 'Artboard' : '아트보드'} ${i + 1}`;
+const fileBase = i => `${proj.title || (isEN() ? 'design' : '썸네일')}-${artName(i)}`.replace(/[\\/:*?"<>|]+/g, '_');
 // ---- page thumbnails (kept in memory only) ----
 const thumbs = new Map(), thumbPending = new Set();
 function curThumb() { try { return renderOut(200).toDataURL('image/jpeg', 0.72); } catch (e) { return ''; } }
@@ -6391,7 +7518,7 @@ $('#bZip').onclick = async () => {
   try {
     cv.discardActiveObject(); const zip = await getZip(); const pad = String(rows.length).length;
     for (let i = 0; i < rows.length; i++) { $('#bInfo').textContent = `만드는 중 ${i + 1} / ${rows.length}`; const c = await batchRender(rows[i], outW(doc)); const nm = rows[i].split('|')[0].replace(/\\n|\*/g, ' ').replace(/[\\/:*?"<>|]/g, '').trim().slice(0, 30); zip.file(`${String(i + 1).padStart(pad, '0')}-${nm || '썸네일'}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
-    downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-여러장-${stamp()}.zip`); $('#bInfo').textContent = `${rows.length}장 완료`; toast(`${rows.length}장을 ZIP으로 내려받았어요.`);
+    downloadBlob(await zip.generateAsync({ type: 'blob' }), `${isEN() ? 'design-batch' : '썸네일-여러장'}-${stamp()}.zip`); $('#bInfo').textContent = `${rows.length}장 완료`; toast(`${rows.length}장을 ZIP으로 내려받았어요.`);
   } catch (e) { console.error(e); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 };
 
@@ -6504,7 +7631,7 @@ function renderFeed() {
     const av = AV_COLORS[hashN(x.ch, AV_COLORS.length)];
     const sub = x.mine ? `${esc(x.ch)} · 조회수 1.2만회 · 3일 전` : `${esc(x.ch)} · 조회수 ${1 + hashN(x.id, 90)}만회 · ${1 + hashN(x.id + 'd', 11)}일 전`;
     return `<div class="fcard${x.mine ? ' mine' : ''}${x.mine && $('#feedMark').checked ? ' mark' : ''}"><div class="fthumb"><img src="${img}" alt="" ${x.mine ? '' : `data-yt="${x.id}"`}><b>${dur}</b></div><div class="fmeta"><span class="fav" style="background:${av}">${esc((x.ch || '?').slice(0, 1))}</span><div style="min-width:0"><div class="ftitle">${esc(x.title)}</div><div class="fsub">${sub}</div></div></div></div>`;
-  }).join('') + (feedItems.length ? '' : `<p class="hint" style="grid-column:1/-1;margin:0;color:var(--f-mut)">위에 경쟁 영상 주소를 넣고 <b>불러오기</b>를 누르면 그 사이에 내 아트보드이 섞여 보여요.</p>`);
+  }).join('') + (feedItems.length ? '' : `<p class="hint" style="grid-column:1/-1;margin:0;color:var(--f-mut)">${enb('위에 경쟁 영상 주소를 넣고 <b>불러오기</b>를 누르면 그 사이에 내 아트보드가 섞여 보여요.', 'Enter competing video URLs above and click <b>Load</b> to see your artboard mixed among them.')}</p>`);
   f.querySelectorAll('img[data-yt]').forEach(im => im.addEventListener('load', () => { if (im.naturalWidth <= 120 && !im.dataset.fb) { im.dataset.fb = 1; im.src = `https://i.ytimg.com/vi/${im.dataset.yt}/mqdefault.jpg`; } }));
 }
 let feedView = lsGet('tg.feedv') || 'pc', feedTheme = lsGet('tg.feedt') || 'light';
@@ -6560,7 +7687,7 @@ function runCheck() {
   else if (load > 18) items.push(['warn', `글자가 조금 많아요 (한글·한자 ${cjk}자, 단어 ${words}개). 줄일 수 있으면 줄여 보세요.`, null]);
   const rank = { bad: 0, warn: 1, info: 2 }; items.sort((a, b) => rank[a[0]] - rank[b[0]]);
   const n = k => items.filter(i => i[0] === k).length;
-  $('#chkSum').innerHTML = items.length ? `<span class="sev bad">문제 ${n('bad')}</span><span class="sev warn">주의 ${n('warn')}</span><span class="sev info">참고 ${n('info')}</span>` : '<span class="sev ok">좋아요</span> <span class="hint" style="margin:0">눈에 띄는 문제가 없어요.</span>';
+  $('#chkSum').innerHTML = items.length ? `<span class="sev bad">문제 ${n('bad')}</span><span class="sev warn">주의 ${n('warn')}</span><span class="sev info">참고 ${n('info')}</span>` : '<span class="sev ok" data-en="Good">좋아요</span> <span class="hint" style="margin:0">눈에 띄는 문제가 없어요.</span>';
   const label = { bad: '문제', warn: '주의', info: '참고' };
   checkObjs = items.map(i => i[2]);
   $('#chkList').innerHTML = items.map((it, i) => `<li><span class="sev ${it[0]}">${label[it[0]]}</span><span class="m">${esc(it[1])}</span>${it[2] ? `<button class="btn sm" data-chk="${i}">선택</button>` : ''}</li>`).join('');
@@ -6934,7 +8061,7 @@ $('#i18nZip').onclick = async () => {
   try {
     cv.discardActiveObject(); commit(); const zip = await getZip();
     for (let i = 0; i < st.langs.length; i++) { const k = st.langs[i]; $('#i18nInfo').textContent = `만드는 중 ${i + 1} / ${st.langs.length}`; const c = await renderState(curState(), outW(doc), sc => applyLang(sc, k)); zip.file(`썸네일-${k}.${fmtExt()}`, await canvasBlob(c, rasterFmt(), +$('#expQ').value / 100)); }
-    downloadBlob(await zip.generateAsync({ type: 'blob' }), `썸네일-언어별-${stamp()}.zip`); $('#i18nInfo').textContent = `${st.langs.length}개 언어 완료`; toast('언어별 섬네일을 ZIP으로 내려받았어요.');
+    downloadBlob(await zip.generateAsync({ type: 'blob' }), `${isEN() ? 'design-languages' : '썸네일-언어별'}-${stamp()}.zip`); $('#i18nInfo').textContent = `${st.langs.length}개 언어 완료`; toast('언어별 섬네일을 ZIP으로 내려받았어요.');
   } catch (err) { console.error(err); toast('ZIP을 만들지 못했어요. 인터넷 연결을 확인해 주세요.'); }
 };
 
@@ -7009,10 +8136,10 @@ async function drvUpload(name, blob, thumb, fileId) {
   return (await drvFetch(base + '?uploadType=multipart&fields=id,name', { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'multipart/related; boundary=' + bd }, body })).json();
 }
 const DRV_FIX = {
-  api: { t: '구글 클라우드 프로젝트에서 <b>Google Drive API</b>가 아직 꺼져 있어요.', s: ['<a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">Google Drive API 페이지</a>를 열어요. (클라이언트 ID를 만든 프로젝트가 위쪽에 선택돼 있는지 확인)', '파란 <b>사용</b>(Enable) 버튼을 눌러요.', '1~2분 기다린 뒤 여기서 <b>다시 연결</b>을 눌러요.'] },
-  scope: { t: '구글 로그인 때 <b>드라이브 권한</b>에 체크가 안 됐어요.', s: ['아래 <b>다시 연결</b>을 눌러요.', '구글 창에서 <b>“이 앱에서 사용하는 Google Drive 파일만 보기, 수정, 생성, 삭제”</b> 항목의 <b>체크 상자를 꼭 켜고</b> 계속을 눌러요.', '체크 상자가 안 보이면 <b>모두 선택</b>을 눌러요.'] },
-  tester: { t: '이 구글 계정이 앱의 <b>테스트 사용자</b>로 등록돼 있지 않아요.', s: ['구글 클라우드 → <b>API 및 서비스 → OAuth 동의 화면</b>(또는 <b>대상</b>)으로 가요.', '<b>테스트 사용자 → 사용자 추가</b>에 지금 로그인하는 Gmail 주소를 넣고 저장해요.', '여기서 <b>다시 연결</b>을 눌러요.'] },
-  origin: { t: '이 사이트 주소가 클라이언트 ID에 <b>승인된 자바스크립트 원본</b>으로 등록돼 있지 않아요.', s: ['구글 클라우드 → <b>API 및 서비스 → 사용자 인증 정보</b> → 만든 OAuth 클라이언트 ID를 눌러요.', '<b>승인된 자바스크립트 원본</b>에 <code>' + location.origin + '</code> 를 추가하고 저장해요 (끝에 / 없이).', '5분쯤 뒤 <b>다시 연결</b>을 눌러요.'] },
+  api: { t: enb('구글 클라우드 프로젝트에서 <b>Google Drive API</b>가 아직 꺼져 있어요.', '<b>Google Drive API</b> is still disabled in your Google Cloud project.'), s: [enb('<a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">Google Drive API 페이지</a>를 열어요. (클라이언트 ID를 만든 프로젝트가 위쪽에 선택돼 있는지 확인)', 'Open the <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">Google Drive API page</a>. (Make sure the project with your Client ID is selected at the top.)'), enb('파란 <b>사용</b>(Enable) 버튼을 눌러요.', 'Click the blue <b>Enable</b> button.'), enb('1~2분 기다린 뒤 여기서 <b>다시 연결</b>을 눌러요.', 'Wait 1–2 minutes, then click <b>Reconnect</b> here.')] },
+  scope: { t: enb('구글 로그인 때 <b>드라이브 권한</b>에 체크가 안 됐어요.', 'The <b>Drive permission</b> wasn’t checked during Google sign-in.'), s: [enb('아래 <b>다시 연결</b>을 눌러요.', 'Click <b>Reconnect</b> below.'), enb('구글 창에서 <b>“이 앱에서 사용하는 Google Drive 파일만 보기, 수정, 생성, 삭제”</b> 항목의 <b>체크 상자를 꼭 켜고</b> 계속을 눌러요.', 'In the Google window, <b>make sure to tick</b> <b>“See, edit, create, and delete only the specific Google Drive files you use with this app”</b>, then click Continue.'), enb('체크 상자가 안 보이면 <b>모두 선택</b>을 눌러요.', 'If you don’t see the checkbox, click <b>Select all</b>.')] },
+  tester: { t: enb('이 구글 계정이 앱의 <b>테스트 사용자</b>로 등록돼 있지 않아요.', 'This Google account isn’t registered as a <b>Test user</b> of the app.'), s: [enb('구글 클라우드 → <b>API 및 서비스 → OAuth 동의 화면</b>(또는 <b>대상</b>)으로 가요.', 'In Google Cloud, go to <b>APIs &amp; Services → OAuth consent screen</b> (or <b>Audience</b>).'), enb('<b>테스트 사용자 → 사용자 추가</b>에 지금 로그인하는 Gmail 주소를 넣고 저장해요.', 'Under <b>Test users → Add users</b>, enter the Gmail address you sign in with and save.'), enb('여기서 <b>다시 연결</b>을 눌러요.', 'Click <b>Reconnect</b> here.')] },
+  origin: { t: enb('이 사이트 주소가 클라이언트 ID에 <b>승인된 자바스크립트 원본</b>으로 등록돼 있지 않아요.', 'This site’s address isn’t registered as an <b>Authorized JavaScript origin</b> for your Client ID.'), s: [enb('구글 클라우드 → <b>API 및 서비스 → 사용자 인증 정보</b> → 만든 OAuth 클라이언트 ID를 눌러요.', 'In Google Cloud, go to <b>APIs &amp; Services → Credentials</b> and click your OAuth client ID.'), enb('<b>승인된 자바스크립트 원본</b>에 <code>' + location.origin + '</code> 를 추가하고 저장해요 (끝에 / 없이).', 'Add <code>' + location.origin + '</code> to <b>Authorized JavaScript origins</b> and save (no trailing /).'), enb('5분쯤 뒤 <b>다시 연결</b>을 눌러요.', 'Wait about 5 minutes, then click <b>Reconnect</b>.')] },
 };
 function drvKind(m) {
   if (/accessNotConfigured|SERVICE_DISABLED|has not been used|is disabled/i.test(m)) return 'api';
@@ -7041,7 +8168,7 @@ async function drvList() {
     const f = await drvFolder(); const q = encodeURIComponent(`'${f}' in parents and trashed=false`);
     const r = await (await drvFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=modifiedTime desc&pageSize=50&fields=files(id,name,modifiedTime,thumbnailLink)`)).json();
     const files = r.files || [];
-    $('#drvList').innerHTML = files.length ? files.map(x => `<div class="proj">${x.thumbnailLink ? `<img src="${esc(x.thumbnailLink)}" alt="" referrerpolicy="no-referrer">` : '<img alt="">'}<div style="min-width:0"><div class="nm">${esc(x.name.replace(/\.json$/, ''))}${x.id === DRV.fileId ? ' <span class="chip">지금 작업</span>' : ''}</div><div class="dt">${new Date(x.modifiedTime).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div><div class="row" style="margin-top:6px"><button class="btn sm" data-dopen="${x.id}" data-dname="${esc(x.name)}">열기</button></div></div></div>`).join('') : '<div class="empty" style="margin:0">아직 드라이브에 저장한 작업이 없어요.</div>';
+    $('#drvList').innerHTML = files.length ? files.map(x => `<div class="proj">${x.thumbnailLink ? `<img src="${esc(x.thumbnailLink)}" alt="" referrerpolicy="no-referrer">` : '<img alt="">'}<div style="min-width:0"><div class="nm">${esc(x.name.replace(/\.json$/, ''))}${x.id === DRV.fileId ? ' <span class="chip">지금 작업</span>' : ''}</div><div class="dt">${new Date(x.modifiedTime).toLocaleString(isEN() ? 'en-US' : 'ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div><div class="row" style="margin-top:6px"><button class="btn sm" data-dopen="${x.id}" data-dname="${esc(x.name)}">열기</button></div></div></div>`).join('') : '<div class="empty" style="margin:0">아직 드라이브에 저장한 작업이 없어요.</div>';
   } catch (e) { $('#drvList').innerHTML = ''; drvErr(e); }
 }
 function openDrive() {
@@ -7130,7 +8257,7 @@ async function bxOne(f, i) {
     blob = best || await bxBlob(c, type, 0.3);
   }
   const base = f.name.replace(/\.[^.]+$/, ''), ext = fmt === 'jpeg' ? 'jpg' : fmt;
-  const name = ($('#bxName').value.trim() || '{이름}').replace(/\{이름\}/g, base).replace(/\{번호\}/g, String(i + 1).padStart(String(BX.files.length).length < 2 ? 2 : String(BX.files.length).length, '0')).replace(/\{가로\}/g, W).replace(/\{세로\}/g, H).replace(/[\\/:*?"<>|]+/g, '_') + '.' + ext;
+  const name = ($('#bxName').value.trim() || '{name}').replace(/\{(이름|name)\}/g, base).replace(/\{(번호|n)\}/g, String(i + 1).padStart(String(BX.files.length).length < 2 ? 2 : String(BX.files.length).length, '0')).replace(/\{(가로|w)\}/g, W).replace(/\{(세로|h)\}/g, H).replace(/[\\/:*?"<>|]+/g, '_') + '.' + ext;
   if (img.close) img.close();
   return { blob, name, w: W, h: H };
 }
@@ -7392,7 +8519,7 @@ $('#impGo').onclick = async () => {
 };
 
 // ---- export: layered PSD, SVG, multi-page PDF ----
-function fileBaseName() { return ($('#expName').value.trim() || proj.title || '썸네일').replace(/[\\/:*?"<>|]+/g, '_'); }
+function fileBaseName() { return ($('#expName').value.trim() || proj.title || (isEN() ? 'design' : '썸네일')).replace(/[\\/:*?"<>|]+/g, '_'); }
 function psName(o) { const w = String(o.fontWeight || 'normal'), wn = w === 'bold' ? 700 : w === 'normal' ? 400 : +w || 400; const sfx = (PS_WEIGHTS.find(([, n]) => n === wn) || ['regular'])[0]; return String(o.fontFamily || 'Pretendard').replace(/\s+/g, '') + '-' + sfx.charAt(0).toUpperCase() + sfx.slice(1); }
 // run fn on artboard i: the live canvas for the current one, a throw-away canvas for the rest
 async function withArtboard(i, fn) {
@@ -7521,7 +8648,7 @@ async function msList() {
     const q = encodeURIComponent(`'${f}' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'`);
     const r = await (await drvFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=modifiedTime desc&pageSize=100&fields=files(id,name,modifiedTime,thumbnailLink,mimeType)`)).json();
     const files = r.files || [];
-    if (!files.length) { box.innerHTML = `<div class="empty" style="grid-column:1/-1">${msT === 'work' ? '드라이브에 저장한 작업이 아직 없어요. 위의 <b>지금 작업 저장</b>을 눌러 보세요.' : '올린 사진이 아직 없어요.'}</div>`; return; }
+    if (!files.length) { box.innerHTML = `<div class="empty" style="grid-column:1/-1">${msT === 'work' ? enb('드라이브에 저장한 작업이 아직 없어요. 위의 <b>지금 작업 저장</b>을 눌러 보세요.', 'No projects saved to Drive yet. Click <b>Save Current Project</b> above.') : '올린 사진이 아직 없어요.'}</div>`; return; }
     const th = x => x.thumbnailLink ? `<img src="${esc(x.thumbnailLink.replace(/=s\d+$/, '=s400'))}" alt="" referrerpolicy="no-referrer" loading="lazy">` : '<img alt="">';
     box.innerHTML = files.map(x => msT === 'work'
       ? `<div class="ms-card${x.id === DRV.fileId ? ' on' : ''}" data-fid="${x.id}"><button class="ms-th" data-wopen="${x.id}" data-dname="${esc(x.name)}" title="열기">${th(x)}</button><div class="ms-nm"><span class="nm" title="${esc(x.name.replace(/\.json$/, ''))}">${esc(x.name.replace(/\.json$/, ''))}</span><small>${x.id === DRV.fileId ? '지금 작업 · ' : ''}${fmtWhen(x.modifiedTime)}</small></div><div class="ms-acts"><button data-wren="${x.id}" title="이름 바꾸기" aria-label="이름 바꾸기"><svg class="i"><use href="#i-text"/></svg></button><button data-wdel="${x.id}" class="${delArmD.has(x.id) ? 'arm' : ''}" title="${delArmD.has(x.id) ? '한 번 더 누르면 휴지통으로' : '휴지통으로'}" aria-label="휴지통으로"><svg class="i"><use href="#i-trash"/></svg></button></div></div>`
@@ -7669,6 +8796,7 @@ async function boot() {
   }
 }
 boot();
+UILANG.init(); window.UILANG = UILANG;
 })();
 </script>
 </body>
