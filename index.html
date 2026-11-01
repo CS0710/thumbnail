@@ -1368,7 +1368,8 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
       <p class="hint" id="expFmtHint" style="margin:6px 0 0"></p>
       <label class="tog" id="expClearW" style="margin-top:8px"><input type="checkbox" id="expClear"><span id="expClearL">배경 투명하게</span></label>
       <div class="seg" id="expClearMode" hidden style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr"><button data-cm="color">배경색만 빼기</button><button data-cm="all">배경 사진까지 빼기</button></div>
-      <label class="tog" id="expPdfW" style="margin-top:8px" hidden><input type="checkbox" id="expPdfAll" checked>아트보드 전부 담기 (끄면 지금 아트보드만)</label></div>
+</div>
+    <div class="field" id="expScopeF"><span class="lbl">범위</span><div class="seg" id="expScope" style="display:grid;grid-template-columns:1fr 1fr"><button data-sc="cur">지금 아트보드만</button><button data-sc="all" id="expScopeAll">아트보드 전부</button></div><p class="hint" id="expScopeH" style="margin:6px 0 0"></p></div>
     <div class="field" id="expScaleF"><span class="lbl">해상도 <output id="expScaleO"></output></span><div class="seg" id="expScale"><button data-s="1">1배</button><button data-s="2">2배</button><button data-s="3">3배</button><button data-s="4">4배</button></div></div>
     <div class="field" id="expQF"><span class="lbl">JPG 품질 <output id="expQO">92</output></span><input type="range" id="expQ" min="50" max="100" value="92"></div>
     <div class="field"><label for="expName">파일 이름</label><input class="txt" id="expName"></div>
@@ -5948,6 +5949,7 @@ function syncTitle() { const t = $('#vTitle').value || '영상 제목'; $$('[dat
 $('#vTitle').oninput = syncTitle;
 
 /* ---------------- export ---------------- */
+let expScope = 'cur';
 let expFmt = lsGet('tg.fmt') || 'jpeg', expBlob = null, expClear = lsGet('tg.clear') === '1', expClearMode = lsGet('tg.clearm') || 'color', expView = 'chk';
 const EXP_RASTER = ['jpeg', 'png'];
 const rasterFmt = () => expFmt === 'png' ? 'png' : 'jpeg';
@@ -5963,7 +5965,10 @@ function syncExpUI() {
   $('#expFmtHint').textContent = FMT_HINT[expFmt] || '';
   $('#expQF').hidden = !(expFmt === 'jpeg' || expFmt === 'pdf'); $('#expScaleF').hidden = !(raster || expFmt === 'pdf');
   $('#expClearW').hidden = expFmt === 'pdf'; $('#expClear').checked = expClear; $('#expClearL').textContent = expFmt === 'jpeg' ? '배경 투명하게 (JPG는 투명이 안 돼서 PNG로 바꿔요)' : '배경 투명하게';
-  $('#expPdfW').hidden = expFmt !== 'pdf'; $('#expCopy').hidden = !raster;
+  const n = proj.vars.length, all = n > 1 && expScope === 'all'; $('#expScopeF').hidden = n < 2;
+  $$('#expScope button').forEach(b => b.setAttribute('aria-pressed', b.dataset.sc === (all ? 'all' : 'cur'))); $('#expScopeAll').textContent = `아트보드 전부 (${n}개)`;
+  $('#expScopeH').textContent = !all ? '' : expFmt === 'pdf' ? `PDF 한 파일에 ${n}쪽으로 담겨요.` : `아트보드마다 한 파일씩 ${n}개를 ZIP 하나로 받아요. 파일 이름은 01-작업이름-아트보드이름 순서예요.`;
+  $('#expCopy').hidden = !raster || all; $('#expGo').lastChild.textContent = all && expFmt !== 'pdf' ? 'ZIP으로 내려받기' : '내려받기';
   const hasPhoto = !!cv.backgroundImage; $('#expClearMode').hidden = !clearOn() || !hasPhoto; $$('#expClearMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.cm === expClearMode));
   $('#expViewW').hidden = !clearOn(); $$('#expView button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === expView));
   const pv = $('#expPrev'); pv.classList.toggle('clear', clearOn() && expView === 'chk'); pv.style.background = clearOn() && expView !== 'chk' ? (expView === 'black' ? '#000' : '#fff') : '';
@@ -5971,7 +5976,8 @@ function syncExpUI() {
 $('#expClearMode').onclick = e => { const b = e.target.closest('[data-cm]'); if (!b) return; expClearMode = b.dataset.cm; lsSet('tg.clearm', expClearMode); syncExpUI(); buildExport(); };
 $('#expView').onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; expView = b.dataset.v; syncExpUI(); };
 $('#expClear').onchange = e => { expClear = e.target.checked; lsSet('tg.clear', expClear ? '1' : '0'); if (expClear && expFmt === 'jpeg') { expFmt = 'png'; lsSet('tg.fmt', expFmt); toast('투명 배경은 PNG로 저장돼요.'); } syncExpUI(); buildExport(); };
-$('#expPdfAll').onchange = () => buildExport();
+$('#expScope').onclick = e => { const b = e.target.closest('[data-sc]'); if (!b) return; expScope = b.dataset.sc; syncExpUI(); buildExport(); };
+const scopeAll = () => proj.vars.length > 1 && expScope === 'all';
 function stamp() { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; }
 function fmtBytes(n) { return n > 1048576 ? (n / 1048576).toFixed(2) + ' MB' : Math.round(n / 1024) + ' KB'; }
 let expScale = +(lsGet('tg.scale') || 1);
@@ -5990,10 +5996,11 @@ const buildExport = debounce(async () => {
   const m = $('#expSize');
   if (!EXP_RASTER.includes(expFmt)) {
     expBlob = null; m.className = 'meter';
-    m.textContent = expFmt === 'pdf' ? `${$('#expPdfAll').checked ? proj.vars.length : 1}쪽 · 쪽마다 ${c.width}×${c.height}` : expFmt === 'psd' ? `${doc.w}×${doc.h} · 레이어 ${cv.getObjects().length + (clearOn() ? 0 : 1)}개` : `${doc.w}×${doc.h} · 벡터`;
+    m.textContent = expFmt === 'pdf' ? `${scopeAll() ? proj.vars.length : 1}쪽 · 쪽마다 ${c.width}×${c.height}` : expFmt === 'psd' ? `${doc.w}×${doc.h} · 레이어 ${cv.getObjects().length + (clearOn() ? 0 : 1)}개` : `${doc.w}×${doc.h} · 벡터`;
     return;
   }
   expBlob = await new Promise(r => c.toBlob(r, 'image/' + expFmt, q));
+  if (scopeAll()) { m.className = 'meter'; m.textContent = `${proj.vars.length}개 · ZIP (이 아트보드 ${fmtBytes(expBlob.size)})`; return; }
   const big = doc.size === 'yt' && expBlob.size > 2 * 1048576;
   m.textContent = `${fmtBytes(expBlob.size)} · ${c.width}×${c.height}` + (doc.size === 'yt' ? (big ? ' — 2MB를 넘어요. JPG로 바꾸거나 품질을 낮춰 주세요.' : ' — 유튜브에 올릴 수 있어요') : '');
   m.className = 'meter ' + (big ? 'bad' : 'good');
@@ -6009,18 +6016,19 @@ function openExport() {
   $('#credList').innerHTML = cr.map((c, i) => `<li><span>${c.needAttr ? '<b style="color:var(--hot)">필수</b> · ' : ''}${esc(c.credit)}</span><button class="btn sm ghost icon" data-rm="${i}" aria-label="목록에서 빼기" title="목록에서 빼기"><svg class="i" style="width:14px;height:14px"><use href="#i-x"/></svg></button></li>`).join('');
   $('#expModal').hidden = false; buildExport();
 }
-$('#exportBtn').onclick = openExport;
+$('#exportBtn').onclick = () => { expScope = 'cur'; openExport(); };
 $('#expClose').onclick = () => $('#expModal').hidden = true;
 $('#expFmt').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; expFmt = b.dataset.f; lsSet('tg.fmt', expFmt); syncExpUI(); buildExport(); };
 $('#expQ').oninput = e => { $('#expQO').textContent = e.target.value; buildExport(); };
 function downloadBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
 $('#expGo').onclick = async () => {
+  if (scopeAll() && expFmt !== 'pdf') { const b = $('#expGo'); b.disabled = true; try { await exportAll(expFmt); $('#expName').value = ''; } catch (er) { console.error(er); toast(/script/.test(String(er && er.message)) ? '내보내기 도구를 받지 못했어요. 인터넷 연결을 확인해 주세요.' : '내보내지 못했어요. 다시 해 주세요.'); } b.disabled = false; return; }
   if (!EXP_RASTER.includes(expFmt)) {
     const b = $('#expGo'); b.disabled = true;
     try {
-      if (expFmt === 'pdf') { toast('PDF를 만드는 중…'); const n = await exportPDF($('#expPdfAll').checked); toast(`PDF를 내려받았어요 (${n}쪽).`); }
+      if (expFmt === 'pdf') { toast('PDF를 만드는 중…'); const n = await exportPDF(scopeAll()); toast(`PDF를 내려받았어요 (${n}쪽).`); }
       else if (expFmt === 'psd') { toast('PSD를 만드는 중… 레이어가 많으면 몇 초 걸려요.'); const n = await exportPSD(); toast(`PSD를 내려받았어요 (레이어 ${n}개).`); }
-      else { exportSVG(); toast('SVG를 내려받았어요. 글꼴은 설치된 글꼴로 보여요.', 4200); }
+      else { await exportSVG(); toast('SVG를 내려받았어요. 글꼴은 설치된 글꼴로 보여요.', 4200); }
       $('#expName').value = '';
     } catch (er) { console.error(er); toast(/script/.test(String(er && er.message)) ? '내보내기 도구를 받지 못했어요. 인터넷 연결을 확인해 주세요.' : '내보내지 못했어요. 다시 해 주세요.'); }
     b.disabled = false; return;
@@ -6224,6 +6232,7 @@ function renderVbar() {
     + `<span class="pg-sep"></span>`
     + (proj.vars.length < MAX_ART ? `<button class="vadd" id="vAdd" title="지금 아트보드를 복제"><svg class="i"><use href="#i-copy"/></svg>복제</button>` : '')
     + `<button class="vadd" id="vSave" title="지금 아트보드를 이미지로 저장"><svg class="i"><use href="#i-down"/></svg>저장</button>`
+    + (many ? `<button class="vadd" id="vSaveAll" title="아트보드 전부를 한 번에 내보내기"><svg class="i"><use href="#i-down"/></svg>전체 저장</button>` : '')
     + (many ? `<button class="vadd" id="vBoard" title="아트보드를 나란히 보기"><svg class="i"><use href="#i-stack"/></svg>나란히 보기</button>` : '')
     + `</div>`;
   $('#vbar').innerHTML = `<div class="pg-cards" role="tablist">${cards}</div>` + tools;
@@ -6261,6 +6270,7 @@ $('#vbar').onclick = async e => {
   if (e.target.closest('#vAdd')) return addVariant();
   if (e.target.closest('#vNewArt')) return openSize(true);
   if (e.target.closest('#vSave')) return saveArtboard(proj.cur);
+  if (e.target.closest('#vSaveAll')) { expScope = 'all'; return openExport(); }
   if (e.target.closest('#vBoard')) return openBoard();
   const t = e.target.closest('[data-v]'); if (t) switchVariant(+t.dataset.v);
 };
@@ -7384,25 +7394,32 @@ $('#impGo').onclick = async () => {
 // ---- export: layered PSD, SVG, multi-page PDF ----
 function fileBaseName() { return ($('#expName').value.trim() || proj.title || '썸네일').replace(/[\\/:*?"<>|]+/g, '_'); }
 function psName(o) { const w = String(o.fontWeight || 'normal'), wn = w === 'bold' ? 700 : w === 'normal' ? 400 : +w || 400; const sfx = (PS_WEIGHTS.find(([, n]) => n === wn) || ['regular'])[0]; return String(o.fontFamily || 'Pretendard').replace(/\s+/g, '') + '-' + sfx.charAt(0).toUpperCase() + sfx.slice(1); }
-async function exportPSD() {
-  await loadScript(LIB.psd);
-  cv.discardActiveObject();
-  const W = doc.w, H = doc.h, objs = cv.getObjects(), saved = objs.map(o => ({ v: o.visible, op: o.opacity, g: o.globalCompositeOperation }));
-  const bgC = cv.backgroundColor, bgI = cv.backgroundImage, layers = [];
+// run fn on artboard i: the live canvas for the current one, a throw-away canvas for the rest
+async function withArtboard(i, fn) {
+  if (i === proj.cur) { cv.discardActiveObject(); const vpt = cv.viewportTransform.slice(); try { return await fn({ c: cv, d: doc, out: () => renderOut(doc.w), main: true, vpt }); } finally { cv.renderAll(); } }
+  const st = stateOf(i), d = st.doc, json = JSON.parse(JSON.stringify(st.canvas)); hydrate(json);
+  await regDocFonts(d); await loadFontsFor(json);
+  const sc = new fabric.StaticCanvas(document.createElement('canvas'), { width: d.w, height: d.h, enableRetinaScaling: false, renderOnAddRemove: false });
+  await new Promise(r => sc.loadFromJSON(json, r)); sc.getObjects().forEach(prepObj); applyBgTo(sc, Object.assign({ bgfx: {} }, d)); sc.renderAll();
+  try { return await fn({ c: sc, d, out: () => sc.toCanvasElement(1), main: false }); } finally { sc.dispose(); }
+}
+const clearKindOf = c => clearOn() ? (c.backgroundImage && expClearMode === 'color' ? 'color' : 'all') : '';
+function psdOf({ c, d, out }) {
+  const W = d.w, H = d.h, objs = c.getObjects(), saved = objs.map(o => ({ v: o.visible, op: o.opacity, g: o.globalCompositeOperation }));
+  const bgC = c.backgroundColor, bgI = c.backgroundImage, layers = [];
   try {
-    objs.forEach(o => o.visible = false); cv.renderAll();
-    const ck = clearKind(); if (ck === 'color') cv.backgroundColor = null; cv.renderAll();
-    layers.push({ name: ck === 'color' ? '배경 사진' : '배경', canvas: renderOut(W), hidden: ck === 'all' });
-    cv.backgroundColor = bgC;
-    cv.backgroundColor = null; cv.backgroundImage = null;
+    objs.forEach(o => o.visible = false);
+    const ck = clearKindOf(c); if (ck === 'color') c.backgroundColor = null; c.renderAll();
+    layers.push({ name: ck === 'color' ? '배경 사진' : '배경', canvas: out(), hidden: ck === 'all' });
+    c.backgroundColor = null; c.backgroundImage = null;
     objs.forEach((o, i) => {
-      o.visible = true; o.opacity = 1; o.globalCompositeOperation = 'source-over'; cv.renderAll();
-      const full = renderOut(W), br = o.getBoundingRect(true, true), pad = 60;
+      o.visible = true; o.opacity = 1; o.globalCompositeOperation = 'source-over'; c.renderAll();
+      const full = out(), br = o.getBoundingRect(true, true), pad = 60;
       const x0 = Math.max(0, Math.floor(br.left - pad)), y0 = Math.max(0, Math.floor(br.top - pad)), x1 = Math.min(W, Math.ceil(br.left + br.width + pad)), y1 = Math.min(H, Math.ceil(br.top + br.height + pad));
       o.visible = false; o.opacity = saved[i].op; o.globalCompositeOperation = saved[i].g;
       if (x1 - x0 < 1 || y1 - y0 < 1) return;
-      const c = document.createElement('canvas'); c.width = x1 - x0; c.height = y1 - y0; c.getContext('2d').drawImage(full, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
-      const L = { name: (o.name || layerName(o) || '레이어').slice(0, 60), left: x0, top: y0, canvas: c, opacity: saved[i].op ?? 1, hidden: !saved[i].v, blendMode: BLEND_OUT(saved[i].g) };
+      const k = document.createElement('canvas'); k.width = x1 - x0; k.height = y1 - y0; k.getContext('2d').drawImage(full, x0, y0, k.width, k.height, 0, 0, k.width, k.height);
+      const L = { name: (o.name || layerName(o) || '레이어').slice(0, 60), left: x0, top: y0, canvas: k, opacity: saved[i].op ?? 1, hidden: !saved[i].v, blendMode: BLEND_OUT(saved[i].g) };
       if (isTxt(o) && typeof o.fill === 'string') {
         const col = new fabric.Color(o.fill).getSource();
         L.text = { text: o.text, transform: [o.scaleX || 1, 0, 0, o.scaleY || 1, Math.round(br.left), Math.round(br.top + o.fontSize * (o.scaleY || 1) * 0.85)], antiAlias: 'smooth',
@@ -7413,20 +7430,35 @@ async function exportPSD() {
     });
   } finally {
     objs.forEach((o, i) => { o.visible = saved[i].v; o.opacity = saved[i].op; o.globalCompositeOperation = saved[i].g; });
-    cv.backgroundColor = bgC; cv.backgroundImage = bgI; cv.renderAll();
+    c.backgroundColor = bgC; c.backgroundImage = bgI; c.renderAll();
   }
-  const buf = agPsd.writePsd({ width: W, height: H, children: layers }, { generateThumbnail: true });
-  downloadBlob(new Blob([buf], { type: 'image/vnd.adobe.photoshop' }), fileBaseName() + '.psd');
-  return layers.length;
+  return { buf: agPsd.writePsd({ width: W, height: H, children: layers }, { generateThumbnail: true }), n: layers.length };
 }
-function exportSVG() {
-  cv.discardActiveObject();
-  const vpt = cv.viewportTransform.slice(); cv.setViewportTransform([1, 0, 0, 1, 0, 0]);
-  const bgC = cv.backgroundColor, bgI = cv.backgroundImage; if (clearOn()) { cv.backgroundColor = null; if (clearKind() !== 'color') cv.backgroundImage = null; }
-  let svg; try { svg = cv.toSVG({ width: doc.w, height: doc.h, viewBox: { x: 0, y: 0, width: doc.w, height: doc.h } }); } finally { cv.setViewportTransform(vpt); cv.backgroundColor = bgC; cv.backgroundImage = bgI; cv.requestRenderAll(); }
+function svgOf({ c, d, main }) {
+  const vpt = c.viewportTransform.slice(); if (main) c.setViewportTransform([1, 0, 0, 1, 0, 0]);
+  const bgC = c.backgroundColor, bgI = c.backgroundImage; if (clearOn()) { c.backgroundColor = null; if (clearKindOf(c) !== 'color') c.backgroundImage = null; }
+  let svg; try { svg = c.toSVG({ width: d.w, height: d.h, viewBox: { x: 0, y: 0, width: d.w, height: d.h } }); } finally { if (main) c.setViewportTransform(vpt); c.backgroundColor = bgC; c.backgroundImage = bgI; c.requestRenderAll && c.requestRenderAll(); }
   const css = [...document.querySelectorAll('link[href*="fonts.googleapis.com/css"]')].map(l => `@import url('${l.href}');`).join('\n');
-  if (css) svg = svg.replace(/<defs>/, `<defs><style type="text/css"><![CDATA[\n${css}\n]]></style>`);
-  downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), fileBaseName() + '.svg');
+  return css ? svg.replace(/<defs>/, `<defs><style type="text/css"><![CDATA[\n${css}\n]]></style>`) : svg;
+}
+async function exportPSD() { await loadScript(LIB.psd); const r = await withArtboard(proj.cur, x => psdOf(x)); downloadBlob(new Blob([r.buf], { type: 'image/vnd.adobe.photoshop' }), fileBaseName() + '.psd'); return r.n; }
+async function exportSVG() { const svg = await withArtboard(proj.cur, x => svgOf(x)); downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), fileBaseName() + '.svg'); }
+// every artboard → one file each → one ZIP (like Photoshop's "export artboards to files")
+async function exportAll(fmt) {
+  if (fmt === 'psd') await loadScript(LIB.psd);
+  const zip = await getZip(), n = proj.vars.length, q = +$('#expQ').value / 100, ext = fmt === 'jpeg' ? 'jpg' : fmt;
+  cv.discardActiveObject(); cv.renderAll();
+  for (let i = 0; i < n; i++) {
+    toast(`아트보드 ${i + 1} / ${n} 만드는 중… (${artName(i)})`, 60000);
+    const name = `${String(i + 1).padStart(2, '0')}-${fileBase(i)}.${ext}`;
+    if (fmt === 'psd') zip.file(name, (await withArtboard(i, x => psdOf(x))).buf);
+    else if (fmt === 'svg') zip.file(name, await withArtboard(i, x => svgOf(x)));
+    else { const st = stateOf(i), c = i === proj.cur ? renderExport(outW(doc)) : await renderState(st, outW(st.doc), null, clearOn() ? (st.doc && expClearMode === 'color' && st.canvas && st.canvas.backgroundImage ? 'color' : 'all') : ''); zip.file(name, await canvasBlob(c, fmt, q)); }
+    await new Promise(r => setTimeout(r, 0));
+  }
+  toast('ZIP으로 묶는 중…');
+  downloadBlob(await zip.generateAsync({ type: 'blob' }), `${fileBaseName()}-아트보드 ${n}개.zip`);
+  toast(`아트보드 ${n}개를 ${fmt === 'jpeg' ? 'JPG' : fmt.toUpperCase()}로 ZIP에 담아 내려받았어요.`, 4200);
 }
 async function exportPDF(all = true) {
   await loadScript(LIB.jspdf); const { jsPDF } = window.jspdf; let pdf = null, pages = 0;
