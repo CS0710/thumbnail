@@ -416,21 +416,7 @@ input[type=number].num.wide{width:96px}
 /* narrow screens */
 @media (max-width:1440px){ .top .lbl-hide{display:none} }
 @media (max-width:1180px){ .work{grid-template-columns:68px 280px minmax(0,1fr) 260px} }
-@media (max-width:980px){
-  body{overflow:auto}
-  .app{height:auto;min-height:100%}
-  .top{flex-wrap:wrap}
-  .work{grid-template-columns:minmax(0,1fr);grid-template-areas:"stage" "rail" "drawer" "insp"}
-  .stage{grid-area:stage;height:52vh;min-height:300px;position:sticky;top:0;z-index:5}
-  .rail{grid-area:rail;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px))}
-  .rail button{min-width:58px}
-  .drawer{grid-area:drawer;border-right:0;border-bottom:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-  .insp{grid-area:insp;border-left:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-  .previews{display:none}
-  .fit{padding:30px 12px 12px}
-  .top .hide-sm{display:none}
-  .top .grow{display:none}
-  .stage{height:min(52vh,calc(56.25vw + 90px))}
+@media (max-width:980px){ .previews{display:none} }
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 
@@ -636,7 +622,7 @@ input[type=range]{accent-color:var(--primary)}
 .top>.doc-title{flex-shrink:1;min-width:0}
 .doc-title .ttl{min-width:120px}
 /* tool labels give way to the title on narrower screens (icons keep their tooltips) */
-@media (max-width:1760px){ .top .btn .lbl-hide{display:none} .top .btn.ghost{padding:0 10px} }
+@media (max-width:1280px){ .top .btn.ghost{padding:0 8px} .modes button{padding:0 10px} .doc-title .ttl{min-width:60px} }
 /* page strip at the bottom */
 .vbar.pages{flex:none;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:10px 16px 12px;background:var(--panel);border-top:1px solid var(--line);overflow:visible}
 .pg-cards{display:flex;gap:10px;align-items:flex-start;overflow-x:auto;padding:3px 3px 2px}
@@ -783,6 +769,124 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 .tl-row .txt{height:34px;text-align:center;font-variant-numeric:tabular-nums}
 .tl-row .when{color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
 .av-sum{margin-top:8px;font-size:13px;color:var(--ink)}
+
+/* ===== top menu + tidy layout ===== */
+.modes{display:flex;align-self:stretch;gap:2px;margin:-10px 8px -10px 0}
+.modes button{padding:0 14px;color:var(--text);font-size:14.5px;border-bottom:3px solid transparent;border-top:3px solid transparent;white-space:nowrap}
+.modes button:hover{color:var(--ink)}
+.modes button[aria-current="true"]{color:var(--ink);font-weight:700;border-bottom-color:var(--emph)}
+.mode-dd,.more-btn{display:none}
+.top-extra{display:contents}
+.top .menu{top:44px}
+.menu button[aria-pressed="true"]::after{content:"";margin-left:auto;width:14px;height:8px;border-left:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(-45deg) translateY(-2px);flex:none}
+.menu button[role="menuitemcheckbox"]{padding-right:14px;gap:10px}
+.menu button:disabled{opacity:.4;cursor:default}
+.menu button[aria-current="true"]{font-weight:700;color:var(--ink)}
+.app[data-mode="photo"] .only-design{display:none!important}
+.rail .sheet-btn,.sheet-x{display:none}
+.vbar.pages{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:8px 16px}
+.vbar.pages .pg-cards{flex:1 1 220px;min-width:0}
+.vbar.pages .pg-tools{order:0;flex:0 1 auto}
+.pg-th,.pg-th img{height:48px}
+.pg.add{width:48px;height:48px}
+.pg-f input.txt{height:32px;width:130px}
+.drawer [data-panel]>h2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.help-q{width:30px;height:30px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line);font:700 14px var(--body);color:var(--text);flex:none}
+.help-q:hover{box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink)}
+body.show-help .help-q{background:var(--primary);color:var(--on-primary);box-shadow:none}
+body:not(.show-help) .drawer p.hint:not([id]),body:not(.show-help) #pDoc>p.hint:not([id]){display:none}
+.modal.as-page{top:var(--top-h,56px);z-index:40;background:var(--mat);place-items:start center;overflow:auto;padding:24px 16px}
+.modal.as-page .dlg{box-shadow:0 0 0 1px var(--line);max-height:none;width:min(960px,100%)!important}
+@media (max-width:980px){ .hide-phone{display:none!important} }
+.modal.as-page #bxX,.modal.as-page #bxCancel{display:none}
+@media (max-width:980px){
+  body{overflow:hidden}
+  .app{height:100dvh;min-height:0}
+  .top{flex-wrap:nowrap;gap:2px}
+  .logo,.modes{display:none}
+  .mode-dd{display:block}
+  .mode-dd .menu{left:0;right:auto}
+  .more-btn{display:inline-flex}
+  #undoBtn{margin-left:auto}
+  .app[data-mode="photo"] .more-btn{margin-left:auto}
+  .top-extra{display:none;position:absolute;left:0;right:0;top:100%;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:var(--float-shadow);padding:10px 12px;flex-wrap:wrap;gap:6px;align-items:center;z-index:55}
+  .top-extra.open{display:flex}
+  .top-extra .grow{display:none}
+  .top-extra .doc-title{flex:1 1 100%;overflow:visible;flex-wrap:wrap}
+  .top-extra .menu{left:0;right:auto;max-width:calc(100vw - 24px)}
+  .top .btn.emph{padding:0 14px}
+  .top .btn.emph .i{display:none}
+  .work{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto;grid-template-areas:"stage" "sheet" "rail"}
+  .stage{grid-area:stage;height:auto;min-height:0;position:relative;top:auto}
+  .drawer,.insp{grid-area:sheet;display:none;max-height:46dvh;border:0;border-top:1px solid var(--line);padding-top:0;box-shadow:0 -6px 18px rgba(0,0,0,.08)}
+  .work[data-sheet="drawer"] .drawer,.work[data-sheet="insp"] .insp{display:block}
+  .sheet-x{display:flex;align-items:center;justify-content:center;gap:6px;position:sticky;top:0;z-index:3;width:100%;height:36px;background:var(--panel);color:var(--text);font-size:12.5px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+  .rail{grid-area:rail;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:0;border-top:1px solid var(--line);padding:2px 0 max(2px,env(safe-area-inset-bottom,0px)) 4px}
+  .rail button{min-width:60px;padding:6px 2px}
+  .rail .sheet-btn{display:flex;position:sticky;right:0;margin-left:auto;background:var(--panel);box-shadow:-1px 0 0 var(--line);z-index:2}
+  .rail .sheet-btn.has span.ic{background:var(--emph);color:var(--on-emph)}
+  .rail .sheet-btn[aria-pressed="true"] span.ic{background:var(--primary);color:var(--on-primary)}
+  .rail .sheet-btn[aria-pressed="true"]{color:var(--ink);font-weight:700}
+  .vbar.pages{flex-wrap:nowrap;overflow-x:auto;padding:6px 10px;gap:10px}
+  .vbar.pages .pg-cards{flex:none;overflow:visible}
+  .vbar.pages .pg-tools{flex:none;flex-wrap:nowrap}
+  .pg-th,.pg-th img{height:38px}
+  .pg.add{width:38px;height:38px}
+  .pg-cap{display:none}
+  .fit{padding:28px 10px 10px}
+  .modal.as-page{padding:12px 8px}
+}
+/*PM_CSS_BEGIN*/
+/* ===== photo fix ===== */
+.pm{min-height:0;display:flex;flex-direction:column;background:var(--mat);overflow:hidden}
+.pm-empty{margin:auto;width:min(560px,calc(100% - 32px));text-align:center}
+.pm-empty .dz{padding:40px 20px;background:var(--panel)}
+.pm h2{font:700 18px var(--display);color:var(--ink);margin:0}
+.pm h3{font:700 14px var(--body);color:var(--ink);margin:0 0 8px;letter-spacing:0;text-transform:none}
+.pm-main{flex:1;min-height:0;display:grid;grid-template-columns:300px minmax(0,1fr) 320px}
+.pm-list,.pm-side{background:var(--panel);overflow:auto;padding:16px 16px 40px;min-width:0}
+.pm-list{border-right:1px solid var(--line)}
+.pm-side{border-left:1px solid var(--line)}
+.pm-sec{border-top:1px solid var(--line);margin-top:16px;padding-top:16px}
+.pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin-top:12px}
+.pm-card{display:flex;flex-direction:column;gap:3px;text-align:left;min-width:0}
+.pm-card .th{position:relative;aspect-ratio:3/2;border-radius:6px;overflow:hidden;background:var(--sec);box-shadow:inset 0 0 0 1px var(--line);display:grid;place-items:center;font-size:13px;color:var(--muted)}
+.pm-card canvas{width:100%;height:100%;object-fit:cover;display:block}
+.pm-card:hover .th{box-shadow:0 0 0 1px var(--text)}
+.pm-card.on .th{box-shadow:0 0 0 2px var(--ink)}
+.pm-card.out canvas{opacity:.35}
+.pm-card .st{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-card .st.ok{color:var(--ok)}
+.pm-card .st.warn{color:var(--hot)}
+.pm-card .st.off{color:var(--muted)}
+.pm-card .nm{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pmFilter{display:grid;grid-template-columns:1fr 1fr;border-radius:20px}
+.pm-view{display:flex;flex-direction:column;min-width:0;min-height:0}
+.pm-bar{display:flex;align-items:center;gap:8px;padding:8px 16px;flex-wrap:wrap;background:var(--panel);border-bottom:1px solid var(--line);min-height:52px}
+.pm-bar .nm{font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:40%}
+.pm-flag{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:4px;font-size:12px;font-weight:700;box-shadow:inset 0 0 0 1px currentColor;color:var(--hot);background:var(--panel)}
+.pm-flag.ok{color:var(--ok)}
+.pm-stage{flex:1;min-height:0;position:relative;display:grid;place-items:center;padding:16px;overflow:hidden}
+.pm-stage canvas{max-width:100%;max-height:100%;min-height:0;box-shadow:0 1px 2px rgba(0,0,0,.14),0 12px 32px rgba(0,0,0,.18);touch-action:none;cursor:ew-resize}
+.pm-note{margin:0;padding:10px 16px;background:var(--panel);border-top:1px solid var(--line);font-size:13px;color:var(--ink)}
+.pm-size{display:flex;width:100%;gap:8px;min-height:32px;align-items:center;color:var(--ink)}
+.pm-size small{color:var(--muted);font-size:12px}
+.pm-size .num{width:84px;height:30px;margin-left:auto}
+.pm .field>label{color:var(--ink)}
+@media (max-width:1180px){ .pm-main{grid-template-columns:240px minmax(0,1fr) 290px} .pm-grid{grid-template-columns:1fr 1fr} }
+@media (max-width:980px){
+  .pm{overflow:auto}
+  .pm-main{display:flex;flex-direction:column;flex:none}
+  .pm-view{order:-1;position:sticky;top:0;z-index:4;background:var(--mat);border-bottom:1px solid var(--line)}
+  .pm-stage{height:38dvh;flex:none;padding:8px}
+  .pm-bar{padding:6px 10px;min-height:0}
+  .pm-list,.pm-side{overflow:visible;border:0;padding:14px 12px}
+  .pm-list{border-bottom:1px solid var(--line)}
+  .pm-grid{display:flex;overflow-x:auto;gap:8px;padding-bottom:4px}
+  .pm-card{flex:none;width:112px}
+  .pm-side{padding-bottom:max(40px,env(safe-area-inset-bottom,0px))}
+}
+/*PM_CSS_END*/
 </style>
 </head>
 <body>
@@ -847,33 +951,48 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 <div class="app">
   <header class="top">
     <div class="logo">Design by FC</div>
-    <span class="sep hide-sm"></span>
-    <button class="btn icon ghost" id="undoBtn" title="되돌리기 (Ctrl+Z)" aria-label="되돌리기"><svg class="i"><use href="#i-undo"/></svg></button>
-    <button class="btn icon ghost" id="redoBtn" title="다시 실행 (Ctrl+Shift+Z)" aria-label="다시 실행"><svg class="i"><use href="#i-redo"/></svg></button>
-    <span class="sep hide-sm"></span>
-    <button class="btn ghost hide-sm" id="badgeBtn" aria-pressed="false" title="유튜브 재생시간 표시가 가리는 자리"><svg class="i"><use href="#i-clock"/></svg><span class="lbl-hide">재생시간</span></button>
-    <button class="btn ghost hide-sm" id="guideBtn" aria-pressed="false" title="삼등분선과 안전 여백 보기 (켜면 삼등분선에도 붙어요)"><svg class="i"><use href="#i-grid"/></svg><span class="lbl-hide">안내선</span></button>
-    <button class="btn ghost hide-sm" id="pvBtn" aria-pressed="true" title="유튜브에서 보이는 크기로 확인"><svg class="i"><use href="#i-monitor"/></svg><span class="lbl-hide">작게 보기</span></button>
+    <nav class="modes" id="modes" aria-label="메뉴"><button data-mode="design" aria-current="true">디자인</button><button data-mode="photo">사진 보정</button><button data-mode="convert">일괄 변환</button><button data-mode="mine">마이스페이스</button></nav>
+    <div class="menu-wrap mode-dd">
+      <button class="btn" id="modeBtn" aria-haspopup="true" aria-expanded="false"><span id="modeLbl">디자인</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
+      <div class="menu" id="modeMenu" hidden role="menu"><button data-mode="design" aria-current="true">디자인</button><button data-mode="photo">사진 보정</button><button data-mode="convert">일괄 변환</button><button data-mode="mine">마이스페이스</button></div>
+    </div>
+    <button class="btn icon ghost only-design" id="undoBtn" title="되돌리기 (Ctrl+Z)" aria-label="되돌리기"><svg class="i"><use href="#i-undo"/></svg></button>
+    <button class="btn icon ghost only-design" id="redoBtn" title="다시 실행 (Ctrl+Shift+Z)" aria-label="다시 실행"><svg class="i"><use href="#i-redo"/></svg></button>
+    <div class="top-extra" id="topExtra">
     <div class="grow"></div>
-    <div class="doc-title">
+    <div class="doc-title only-design">
       <svg class="i" aria-hidden="true"><use href="#i-folder"/></svg>
       <input id="projTitle" class="ttl" placeholder="제목 없는 디자인" aria-label="작업 이름" spellcheck="false" autocomplete="off" maxlength="80">
       <button class="btn sizebtn" id="sizeBtn" title="캔버스 크기 바꾸기"><span id="sizeLbl">유튜브 섬네일 · 1280×720</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
       <button class="btn icon ghost save-state" id="saveState" title="이 브라우저에 자동 저장돼요" aria-label="저장 상태"><svg class="i"><use href="#i-cloud"/></svg></button>
     </div>
     <div class="grow"></div>
-    <button class="btn ghost" id="checkBtn" title="휴대폰에서도 읽히는지 검사"><svg class="i"><use href="#i-check"/></svg><span class="lbl-hide">가독성 검사</span></button>
-    <button class="btn ghost" id="feedBtn" title="다른 영상들 사이에 놓고 보기"><svg class="i"><use href="#i-feed"/></svg><span class="lbl-hide">피드 비교</span></button>
-    <button class="btn ghost" id="batchBtn" title="글자만 바꿔 여러 장 만들기"><svg class="i"><use href="#i-stack"/></svg><span class="lbl-hide">여러 장</span></button>
-    <button class="btn ghost" id="i18nBtn" title="같은 디자인을 여러 언어로"><svg class="i"><use href="#i-globe"/></svg><span class="lbl-hide">언어별</span></button>
-    <button class="btn ghost" id="vidMakeBtn" title="음성 파일과 합쳐 영상(MP4) 만들기"><svg class="i"><use href="#i-film"/></svg><span class="lbl-hide">영상 만들기</span></button>
+    <div class="menu-wrap only-design">
+      <button class="btn ghost" id="viewBtn" aria-haspopup="true" aria-expanded="false"><span>보기</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
+      <div class="menu" id="viewMenu" hidden role="menu">
+        <button role="menuitemcheckbox" id="pvBtn" aria-pressed="false" title="유튜브에서 보이는 크기로 확인"><svg class="i"><use href="#i-monitor"/></svg>유튜브 미리보기</button>
+        <button role="menuitemcheckbox" id="guideBtn" aria-pressed="false" title="삼등분선과 안전 여백 보기 (켜면 삼등분선에도 붙어요)"><svg class="i"><use href="#i-grid"/></svg>안내선</button>
+        <button role="menuitemcheckbox" id="badgeBtn" aria-pressed="false" title="유튜브 재생시간 표시가 가리는 자리"><svg class="i"><use href="#i-clock"/></svg>재생시간 표시</button>
+        <div class="menu-sep"></div>
+        <button role="menuitemcheckbox" id="helpBtn" aria-pressed="false" title="패널마다 있는 설명 글을 보이거나 숨겨요"><svg class="i"><use href="#i-eye"/></svg>설명 글 보기</button>
+      </div>
+    </div>
+    <div class="menu-wrap only-design">
+      <button class="btn ghost" id="toolBtn" aria-haspopup="true" aria-expanded="false"><span>도구</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
+      <div class="menu" id="toolMenu" hidden role="menu">
+        <button role="menuitem" id="checkBtn" title="휴대폰에서도 읽히는지 검사"><svg class="i"><use href="#i-check"/></svg>가독성 검사</button>
+        <button role="menuitem" id="feedBtn" title="다른 영상들 사이에 놓고 보기"><svg class="i"><use href="#i-feed"/></svg>피드 비교</button>
+        <button role="menuitem" id="batchBtn" title="글자만 바꿔 여러 장 만들기"><svg class="i"><use href="#i-stack"/></svg>여러 장 만들기</button>
+        <button role="menuitem" id="i18nBtn" title="같은 디자인을 여러 언어로"><svg class="i"><use href="#i-globe"/></svg>언어별 버전</button>
+        <button role="menuitem" id="vidMakeBtn" title="음성 파일과 합쳐 영상(MP4) 만들기"><svg class="i"><use href="#i-film"/></svg>영상 만들기</button>
+      </div>
+    </div>
     <button class="btn ghost langbtn" id="langBtn" data-noi18n aria-label="Language 한국어 / English" title="Switch to English"><span data-lg="ko">한</span><span data-lg="en">EN</span></button>
-    <div class="menu-wrap">
-      <button class="btn ghost" id="fileBtn" aria-haspopup="true" aria-expanded="false"><svg class="i"><use href="#i-folder"/></svg><span class="lbl-hide">파일</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
+    <div class="menu-wrap only-design">
+      <button class="btn ghost" id="fileBtn" aria-haspopup="true" aria-expanded="false"><svg class="i"><use href="#i-folder"/></svg><span>파일</span><svg class="i" style="width:14px;height:14px"><use href="#i-chev"/></svg></button>
       <div class="menu" id="fileMenu" hidden role="menu">
         <button role="menuitem" id="newBtn"><svg class="i"><use href="#i-new"/></svg>새로 만들기</button>
         <button role="menuitem" id="openFileBtn"><svg class="i"><use href="#i-file"/></svg>작업 파일 열기 (.json)</button>
-        <button role="menuitem" id="bxMenu"><svg class="i"><use href="#i-stack"/></svg>사진 일괄 변환 (크기·형식·용량)</button>
         <button role="menuitem" id="impMenu"><svg class="i"><use href="#i-upload"/></svg>PSD · AI · PDF · SVG 가져오기</button>
         <button role="menuitem" id="saveFileBtn"><svg class="i"><use href="#i-save"/></svg>작업 파일로 저장 (.json)</button>
         <button role="menuitem" id="tplSaveMenu"><svg class="i"><use href="#i-tpl"/></svg>내 템플릿으로 저장</button>
@@ -884,12 +1003,15 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <button role="menuitem" id="settingsBtn"><svg class="i"><use href="#i-key"/></svg>설정 (사진 키 · 내 색 · 드라이브)</button>
       </div>
     </div>
-    <button class="btn emph" id="exportBtn"><svg class="i"><use href="#i-down"/></svg>내보내기</button>
+    </div>
+    <button class="btn icon ghost more-btn" id="moreBtn" aria-label="더보기 메뉴" aria-expanded="false" title="더보기 메뉴"><svg class="i" style="fill:currentColor;stroke:none"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg></button>
+    <button class="btn emph only-design" id="exportBtn"><svg class="i"><use href="#i-down"/></svg>내보내기</button>
     <input type="file" id="projFile" accept=".json,application/json" hidden>
     <input type="file" id="impFile" accept=".psd,.ai,.pdf,.svg,.zip,image/svg+xml,application/pdf,application/zip" hidden>
   </header>
 
-  <div class="work">
+  <section class="pm" id="photoMode" hidden></section>
+  <div class="work" data-sheet="">
     <nav class="rail" role="tablist" aria-label="도구">
       <button role="tab" data-tab="tpl" aria-selected="true"><span class="ic"><svg class="i"><use href="#i-tpl"/></svg></span>템플릿</button>
       <button role="tab" data-tab="text"><span class="ic"><svg class="i"><use href="#i-text"/></svg></span>텍스트</button>
@@ -899,7 +1021,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
       <button role="tab" data-tab="shape"><span class="ic"><svg class="i"><use href="#i-shapes"/></svg></span>도형</button>
       <button role="tab" data-tab="upload"><span class="ic"><svg class="i"><use href="#i-upload"/></svg></span>업로드</button>
       <button role="tab" data-tab="bg"><span class="ic"><svg class="i"><use href="#i-bg"/></svg></span>배경</button>
-      <button role="tab" data-tab="mine"><span class="ic"><svg class="i"><use href="#i-cloud"/></svg></span>마이스페이스</button>
+      <button class="sheet-btn" id="inspBtn" type="button" aria-pressed="false"><span class="ic"><svg class="i"><use href="#i-pen"/></svg></span>속성</button>
     </nav>
 
     <section class="drawer" id="drawer">
@@ -1416,6 +1538,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
         <div class="field" style="margin-top:0"><span class="lbl">크기</span>
           <div class="seg" id="bxMode" style="display:grid;grid-template-columns:repeat(5,1fr)"><button data-m="keep">그대로</button><button data-m="long">긴 쪽</button><button data-m="w">가로</button><button data-m="h">세로</button><button data-m="pct">%</button></div>
           <div class="row" style="margin-top:8px" id="bxValRow"><input type="number" class="num wide" id="bxVal" min="1" max="10000" value="1080"><span class="lbl" id="bxUnit">px</span></div>
+          <div class="chips" id="bxPre" style="margin-top:8px"><button data-v="1920">홈페이지 1920</button><button data-v="2048">카톡 2048</button><button data-v="1080">인스타 1080</button><button data-v="1200">주보 1200</button></div>
           <label class="tog" style="margin-top:8px"><input type="checkbox" id="bxNoUp" checked>원래보다 작은 사진은 키우지 않기</label></div>
         <div class="field"><span class="lbl">형식</span><div class="seg" id="bxFmt" style="display:grid;grid-template-columns:repeat(4,1fr)"><button data-f="same">원래대로</button><button data-f="jpeg">JPG</button><button data-f="png">PNG</button><button data-f="webp">WEBP</button></div></div>
         <div class="field" id="bxQF"><span class="lbl">품질 <output id="bxQO">85</output></span><input type="range" id="bxQ" min="40" max="100" value="85"></div>
@@ -1522,6 +1645,94 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 </div>
 <div class="cut-brush" id="cutBrush" hidden></div>
 <script type="text/plain" id="i18nEN">
+디자인 ⇒ Design
+올린 사진 ⇒ Photos
+더 올리기 ⇒ Add more
+사진을 끌어다 놓거나 ⇒ Drop photos here, or
+사진 고르기 (여러 장) ⇒ Choose photos
+카메라 RAW(CR2 · CR3 · DNG · NEF · ARW 등)와 JPG · PNG · HEIC ⇒ Camera RAW (CR2 · CR3 · DNG · NEF · ARW…) and JPG · PNG · HEIC
+올리면 밝기와 색을 자동으로 맞추고, 흔들림 · 어두움 · 중복 · 눈 감은 사진을 표시해요. 사진은 이 기기 안에서만 처리되고 어디로도 보내지 않아요. ⇒ Brightness and colour are corrected automatically, and blurred, dark, duplicate and eyes-closed shots are marked. Photos stay on this device.
+전체 {#} ⇒ All {#}
+좋음 {#} ⇒ Good {#}
+확인 필요 {#} ⇒ Check {#}
+뺀 사진 {#} ⇒ Removed {#}
+좋음 ⇒ Good
+뺀 사진 ⇒ Removed
+여는 중… ⇒ Opening…
+열지 못했어요 ⇒ Couldn’t open
+확인 필요 사진 모두 빼기 ⇒ Remove all photos marked “check”
+표시는 참고용이에요. 뺄지 말지는 직접 정해요. ⇒ Marks are only hints. You decide what to remove.
+전후 비교 ⇒ Before / after
+가운데 선을 끌어서 보정 전과 후를 비교해요 ⇒ Drag the line to compare before and after
+이 사진 빼기 ⇒ Remove this photo
+다시 살리기 ⇒ Put back
+자동 보정 ⇒ Auto correct
+행사 ⇒ Event
+풍경 ⇒ Landscape
+사람 얼굴이 자연스럽고 밝게 ⇒ Natural, bright faces
+하늘과 초록이 선명하게 ⇒ Vivid skies and greens
+이 사진 자동 ⇒ Auto this photo
+전체 자동 보정 ⇒ Auto all
+직접 조절 ⇒ Adjust
+보정 없애기 ⇒ Clear edits
+밝기 ⇒ Brightness
+밝은 곳 ⇒ Highlights
+어두운 곳 ⇒ Shadows
+색온도 ⇒ Temperature
+이 설정을 다른 사진에도 적용 ⇒ Apply these settings to the other photos
+방금 한 일 되돌리기 ⇒ Undo last step
+골라내기 기준 ⇒ How picky
+느슨하게 ⇒ Loose
+엄격하게 ⇒ Strict
+눈 감은 사람 찾기 ⇒ Find closed eyes
+얼굴이 작거나 옆모습이면 놓칠 수 있어요. ⇒ Small or side-on faces may be missed.
+저장 크기 (여러 개 선택) ⇒ Sizes to save (pick several)
+홈페이지용 ⇒ Website
+카톡·단톡방용 ⇒ KakaoTalk
+인스타 세로 ⇒ Instagram portrait
+인스타 정사각형 ⇒ Instagram square
+주보용 ⇒ Bulletin
+원본 크기 ⇒ Original size
+직접 입력 ⇒ Custom
+긴 쪽 ⇒ Long edge
+긴 쪽 1920px ⇒ Long edge 1920px
+긴 쪽 2048px ⇒ Long edge 2048px
+긴 쪽 1200px ⇒ Long edge 1200px
+1080×1350 · 잘림 ⇒ 1080×1350 · cropped
+1080×1080 · 잘림 ⇒ 1080×1080 · cropped
+인쇄·보관용 ⇒ For print and archive
+잘리는 부분 미리 보기 ⇒ Preview the crop
+끄기 ⇒ Off
+세로 4:5 ⇒ Portrait 4:5
+정사각형 ⇒ Square
+켠 상태에서 사진을 끌면 남길 자리를 옮길 수 있어요. ⇒ While on, drag the photo to choose what stays.
+JPG로 저장 ⇒ Save as JPG
+이 사진을 디자인으로 보내기 ⇒ Send this photo to Design
+흔들림 ⇒ Blurred
+어두움 ⇒ Dark
+너무 밝음 ⇒ Too bright
+중복 ⇒ Duplicate
+눈 감음 ⇒ Eyes closed
+사진 여는 중 {#}/{#}장 ⇒ Opening {#}/{#}
+저장하는 중 {#}/{#} ⇒ Saving {#}/{#}
+눈 감은 사람 찾는 중 {#}/{#}장 ⇒ Checking eyes {#}/{#}
+홈페이지 1920 ⇒ Website 1920
+카톡 2048 ⇒ KakaoTalk 2048
+인스타 1080 ⇒ Instagram 1080
+주보 1200 ⇒ Bulletin 1200
+보기 ⇒ View
+도구 ⇒ Tools
+사진 보정 ⇒ Photo fix
+일괄 변환 ⇒ Batch convert
+유튜브 미리보기 ⇒ YouTube preview
+재생시간 표시 ⇒ Duration badge
+설명 글 보기 ⇒ Show help text
+패널마다 있는 설명 글을 보이거나 숨겨요 ⇒ Show or hide the explanations in each panel
+여러 장 만들기 ⇒ Make many
+언어별 버전 ⇒ Language versions
+더보기 메뉴 ⇒ More
+속성 ⇒ Properties
+닫기 ⇒ Close
 되돌리기 (Ctrl+Z) ⇒ Undo (Ctrl+Z)
 되돌리기 ⇒ Undo
 다시 실행 (Ctrl+Shift+Z) ⇒ Redo (Ctrl+Shift+Z)
@@ -7090,13 +7301,14 @@ document.fonts && document.fonts.addEventListener && document.fonts.addEventList
 /* keyboard & clipboard */
 let clip = null;
 document.addEventListener('keydown', e => {
+  if (curMode() === 'photo' && e.key !== 'Escape') return;   // design shortcuts must not touch the canvas from the photo page
   const o = act(), mod = e.ctrlKey || e.metaKey;
   if (!$('#cutModal').hidden) {
     if (e.key === 'Escape') closeCut();
     else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); cutUndo(); }
     return;
   }
-  if (e.key === 'Escape') { $$('.modal').forEach(m => m.hidden = true); $('#fontPop').hidden = true; $('#fileMenu').hidden = true; if (cv.isDrawingMode) setPen('off'); if (pickResolve) { $('#stage').classList.remove('picking'); pickResolve(null); pickResolve = null; } }
+  if (e.key === 'Escape') { $$('.modal').forEach(m => m.hidden = true); $('#fontPop').hidden = true; closeMenus(); if (cv.isDrawingMode) setPen('off'); if (pickResolve) { $('#stage').classList.remove('picking'); pickResolve(null); pickResolve = null; } }
   if (isTyping(e.target) || (o && o.isEditing)) return;
   if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); return; }
@@ -7113,7 +7325,7 @@ document.addEventListener('keydown', e => {
 });
 const nudgeCommit = debounce(() => commit(), 400);
 document.addEventListener('paste', e => {
-  if (isTyping(e.target)) return; const o = act(); if (o && o.isEditing) return;
+  if (isTyping(e.target) || curMode() === 'photo') return; const o = act(); if (o && o.isEditing) return;
   const items = [...(e.clipboardData?.items || [])];
   const img = items.find(i => i.kind === 'file' && /^image\//.test(i.type));
   if (img) { e.preventDefault(); handleImageFile(img.getAsFile()); return; }
@@ -7126,7 +7338,7 @@ document.addEventListener('paste', e => {
 function showTab(k) {
   $$('.rail button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === (k === 'emoji' ? 'icon' : k)));
   $$('[data-panel]').forEach(p => p.hidden = p.dataset.panel !== k);
-  lsSet('tg.tab', k);
+  lsSet('tg.tab', k); modeFromTab(k);
   if (k === 'emoji' && !$('#emojiGrid').children.length) renderEmoji();
   if (k === 'upload') renderLib();
   if (k === 'mine') msSet(msMode);
@@ -7135,7 +7347,11 @@ function showTab(k) {
   if (k === 'tpl') renderMyTemplates();
   if (k !== 'shape' && cv.isDrawingMode) setPen('off');
 }
-$('.rail').onclick = e => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); };
+$('.rail').onclick = e => {
+  const b = e.target.closest('[data-tab]'), w = $('.work');
+  if (b) { const same = b.getAttribute('aria-selected') === 'true' && w.dataset.sheet === 'drawer'; showTab(b.dataset.tab); setSheet(same ? '' : 'drawer'); return; }
+  if (e.target.closest('#inspBtn')) setSheet(w.dataset.sheet === 'insp' ? '' : 'insp');
+};
 
 /* ---------------- size ---------------- */
 // ---- artboard size dialog ----
@@ -7228,8 +7444,8 @@ function drawSafe() {
 }
 
 /* ---------------- previews & badge ---------------- */
-let pvOn = lsGet('tg.pv') !== '0';
-function setPv(on) { pvOn = on; $('#pvBtn').setAttribute('aria-pressed', on); $('#previews').hidden = !on; lsSet('tg.pv', on ? '1' : '0'); if (on) schedulePreview(); requestAnimationFrame(fit); }
+let pvOn = lsGet('tg.pv2') === '1';
+function setPv(on) { pvOn = on; $('#pvBtn').setAttribute('aria-pressed', on); $('#previews').hidden = !on; lsSet('tg.pv2', on ? '1' : '0'); if (on) schedulePreview(); requestAnimationFrame(fit); }
 $('#pvBtn').onclick = () => setPv(!pvOn);
 $('#badgeBtn').onclick = () => { const on = $('#badgeBtn').getAttribute('aria-pressed') !== 'true'; $('#badgeBtn').setAttribute('aria-pressed', on); $('#tbadge').hidden = !on; };
 function renderOut(targetW) { return cv.toCanvasElement(targetW / cv.getWidth()); }
@@ -7464,9 +7680,11 @@ $('#fiOff').onclick = () => { const t = act(); if (!t || !isTxt(t)) return; t.se
 });
 
 /* ---------------- top menu ---------------- */
-$('#fileBtn').onclick = e => { e.stopPropagation(); const m = $('#fileMenu'); m.hidden = !m.hidden; $('#fileBtn').setAttribute('aria-expanded', !m.hidden); };
-$('#fileMenu').addEventListener('click', () => { $('#fileMenu').hidden = true; });
-document.addEventListener('pointerdown', e => { if (!e.target.closest('.menu-wrap')) $('#fileMenu').hidden = true; });
+function closeMenus(except) { $$('.top .menu').forEach(m => { if (m !== except) { m.hidden = true; const b = m.previousElementSibling; if (b) b.setAttribute('aria-expanded', 'false'); } }); }
+$$('.top .menu-wrap > button[aria-haspopup]').forEach(b => { b.onclick = e => { e.stopPropagation(); const m = b.nextElementSibling; closeMenus(m); m.hidden = !m.hidden; b.setAttribute('aria-expanded', !m.hidden); }; });
+$$('.top .menu').forEach(m => m.addEventListener('click', e => { if (e.target.closest('button')) { closeMenus(); $('#topExtra').classList.remove('open'); $('#moreBtn').setAttribute('aria-expanded', 'false'); } }));
+document.addEventListener('pointerdown', e => { if (!e.target.closest('.menu-wrap')) closeMenus(); if (!e.target.closest('#topExtra,#moreBtn,.modal,.fpop')) { $('#topExtra').classList.remove('open'); $('#moreBtn').setAttribute('aria-expanded', 'false'); } });
+$('#moreBtn').onclick = () => { const on = $('#topExtra').classList.toggle('open'); $('#moreBtn').setAttribute('aria-expanded', on); };
 $('#tplSaveMenu').onclick = () => { showTab('tpl'); setTimeout(() => $('#myTplName').focus(), 50); };
 $$('[data-close]').forEach(b => b.addEventListener('click', () => b.closest('.modal').hidden = true));
 
@@ -7526,6 +7744,7 @@ function renderVbar() {
     + `<button class="vadd" id="vSave" title="지금 아트보드를 이미지로 저장"><svg class="i"><use href="#i-down"/></svg>저장</button>`
     + (many ? `<button class="vadd" id="vSaveAll" title="아트보드 전부를 한 번에 내보내기"><svg class="i"><use href="#i-down"/></svg>전체 저장</button>` : '')
     + (many ? `<button class="vadd" id="vBoard" title="아트보드를 나란히 보기"><svg class="i"><use href="#i-stack"/></svg>나란히 보기</button>` : '')
+    + (isYT(doc) ? `<button class="vadd hide-phone" id="vPv" title="유튜브에서 보이는 크기로 확인"><svg class="i"><use href="#i-monitor"/></svg>유튜브 미리보기</button>` : '')
     + `</div>`;
   $('#vbar').innerHTML = `<div class="pg-cards" role="tablist">${cards}</div>` + tools;
   refreshThumbs();
@@ -8383,7 +8602,7 @@ function bxRenderList() {
   bxUI();
 }
 function bxAdd(list) { const imgs = [...list].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|webp|gif|bmp|avif|heic|heif)$/i.test(f.name)); BX.files.push(...imgs); BX.out = []; bxRenderList(); if (list.length && !imgs.length) toast('사진 파일만 넣을 수 있어요.'); }
-$('#bxOpen').onclick = bxOpen; $('#bxMenu').onclick = () => { $('#fileMenu').hidden = true; $('#fileBtn').setAttribute('aria-expanded', 'false'); bxOpen(); };
+$('#bxOpen').onclick = bxOpen;
 $('#bxX').onclick = $('#bxCancel').onclick = () => { if (BX.busy) { BX.cancel = true; return; } $('#bxModal').hidden = true; };
 $('#bxPick').onclick = () => $('#bxFile').click();
 $('#bxFile').onchange = e => { bxAdd(e.target.files); e.target.value = ''; };
@@ -8396,6 +8615,7 @@ $('#bxMode').onclick = e => { const b = e.target.closest('[data-m]'); if (!b) re
 $('#bxFmt').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; bxSeg('bxFmt', b.dataset.f); lsSet('tg.bxf', b.dataset.f); BX.out = []; bxRenderList(); };
 $('#bxQ').oninput = e => $('#bxQO').textContent = e.target.value;
 $('#bxVal').onchange = e => lsSet('tg.bxv', e.target.value);
+$('#bxPre').onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; $('#bxMode [data-m="long"]').click(); $('#bxVal').value = b.dataset.v; lsSet('tg.bxv', b.dataset.v); bxUI(); };
 async function bxDecode(f) {
   if (isHeic(f)) f = await heicFix(f, 0.96); try { return await createImageBitmap(f, { imageOrientation: 'from-image' }); } catch (e) { const u = URL.createObjectURL(f); try { return await loadImgEl(u); } finally { setTimeout(() => URL.revokeObjectURL(u), 1000); } } }
 // halve step by step when shrinking a lot, so small results stay crisp
@@ -8533,7 +8753,7 @@ async function openImport(file, credit = null) {
 async function impPdfPreview(n) { const pg = await IMP.pdf.getPage(n), vp0 = pg.getViewport({ scale: 1 }), vp = pg.getViewport({ scale: 520 / vp0.width }); const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height; await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise; $('#impPrev').src = c.toDataURL('image/jpeg', 0.85); IMP.W = vp0.width; IMP.H = vp0.height; }
 $('#impPage').onchange = e => impPdfPreview(+e.target.value);
 $('#impWhere').onclick = e => { const b = e.target.closest('[data-w]'); if (b && !b.disabled) $$('#impWhere button').forEach(x => x.setAttribute('aria-pressed', x === b)); };
-$('#impMenu').onclick = () => { $('#fileMenu').hidden = true; $('#fileBtn').setAttribute('aria-expanded', 'false'); $('#impFile').click(); };
+$('#impMenu').onclick = () => { $('#impFile').click(); };
 const FP_CHIPS = [['유튜브 섬네일', 'youtube thumbnail'], ['인스타 게시물', 'instagram post'], ['포스터', 'poster'], ['전단', 'flyer'], ['명함', 'business card'], ['배너', 'banner'], ['초대장', 'invitation'], ['메뉴판', 'menu']];
 $('#fpChips').innerHTML = FP_CHIPS.map(([k, q]) => `<button type="button" data-q="${q}">${k}</button>`).join('');
 function fpSearch(q) {
@@ -8999,6 +9219,548 @@ async function boot() {
     hist = [hist[hi]]; hi = 0; updateUndo();
   }
 }
+
+/* ---------------- top menu: modes, phone sheets, help text ---------------- */
+const MODE_NAMES = { design: '디자인', photo: '사진 보정', convert: '일괄 변환', mine: '마이스페이스' };
+function markMode(m) {
+  $$('[data-mode]').forEach(b => b.setAttribute('aria-current', b.dataset.mode === m));
+  $('#modeLbl').textContent = MODE_NAMES[m];
+}
+function curMode() { return $('.app').dataset.mode || 'design'; }
+function modeFromTab(k) { if (curMode() === 'photo' || !$('#bxModal').hidden) return; const m = k === 'mine' ? 'mine' : 'design'; $('.app').dataset.mode = m; markMode(m); }
+function setSheet(v) {
+  const w = $('.work'); w.dataset.sheet = v || '';
+  $('#inspBtn').setAttribute('aria-pressed', v === 'insp');
+  if (v !== 'drawer' && matchMedia('(max-width:980px)').matches) $$('.rail [data-tab]').forEach(b => b.setAttribute('aria-selected', 'false'));
+}
+function setMode(m) {
+  const app = $('.app');
+  if (m === 'convert') { bxOpen(); return; }
+  if (!$('#bxModal').hidden) $('#bxModal').hidden = true;
+  const photo = m === 'photo';
+  app.dataset.mode = m; markMode(m);
+  $('.work').hidden = photo; $('#photoMode').hidden = !photo;
+  $('#topExtra').classList.remove('open');
+  if (photo) { if (typeof pmEnter === 'function') pmEnter(); return; }
+  if (m === 'mine') { showTab('mine'); msSet(msMode); setSheet('drawer'); }
+  else if (lsGet('tg.tab') === 'mine') showTab('tpl');
+  requestAnimationFrame(fit);
+}
+$$('[data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+// the batch converter behaves like a page of its own under the top bar, however it was opened
+new MutationObserver(() => {
+  const open = !$('#bxModal').hidden;
+  $('#bxModal').classList.toggle('as-page', open);
+  if (open) markMode('convert'); else markMode(curMode());
+}).observe($('#bxModal'), { attributes: true, attributeFilter: ['hidden'] });
+const topH = () => document.documentElement.style.setProperty('--top-h', $('.top').offsetHeight + 'px');
+new ResizeObserver(topH).observe($('.top')); topH();
+// phone: drawer and inspector are bottom sheets
+[['#drawer', 'drawer'], ['#insp', 'insp']].forEach(([sel]) => { const x = document.createElement('button'); x.type = 'button'; x.className = 'sheet-x'; x.innerHTML = '<svg class="i" style="width:16px;height:16px"><use href="#i-chev"/></svg>닫기'; x.onclick = () => setSheet(''); $(sel).prepend(x); });
+cv.on('selection:created', () => $('#inspBtn').classList.add('has'));
+cv.on('selection:cleared', () => $('#inspBtn').classList.remove('has'));
+$('#vbar').addEventListener('click', e => { if (e.target.closest('#vPv')) setPv(!pvOn); });
+// explanations are folded away until asked for
+function setHelp(on) { document.body.classList.toggle('show-help', on); $('#helpBtn').setAttribute('aria-pressed', on); lsSet('tg.help', on ? '1' : '0'); }
+$$('.drawer [data-panel] > h2').forEach(h => { const q = document.createElement('button'); q.type = 'button'; q.className = 'help-q'; q.textContent = '?'; q.title = '설명 글 보기'; q.setAttribute('aria-label', '설명 글 보기'); q.setAttribute('data-noi18n', ''); q.onclick = () => setHelp(!document.body.classList.contains('show-help')); h.append(q); });
+$('#helpBtn').onclick = () => setHelp(!document.body.classList.contains('show-help'));
+setHelp(lsGet('tg.help') === '1');
+/*PM_JS*/
+/*PM_JS_BEGIN*/
+/* ---------------- photo fix: RAW · auto correct · picking out bad shots ---------------- */
+const PM = { items: [], cur: -1, filter: 'all', strict: lsGet('tg.pmStrict') || 'mid', style: lsGet('tg.pmStyle') || 'event', eyesOn: lsGet('tg.pmEyes') ? lsGet('tg.pmEyes') === '1' : !matchMedia('(max-width:980px)').matches,   // heavy on phones: off there until asked for
+ 
+  busy: false, built: false, split: 0.5, cmp: true, crop: '', undo: null, raw: null, fa: null, src: null, out: null, beforeCv: null, afterCv: null, raf: 0, seq: 0 };
+const PM_RAW = /\.(cr2|cr3|crw|nef|nrw|arw|srf|sr2|dng|raf|orf|rw2|pef|srw|x3f|3fr|erf|kdc|dcr|mos|mrw|rwl|iiq|raw)$/i;
+const PM_SIZES = [
+  { k: 'web', name: '홈페이지용', d: '긴 쪽 1920px', long: 1920 },
+  { k: 'kakao', name: '카톡·단톡방용', d: '긴 쪽 2048px', long: 2048 },
+  { k: 'insta45', name: '인스타 세로', d: '1080×1350 · 잘림', w: 1080, h: 1350 },
+  { k: 'insta11', name: '인스타 정사각형', d: '1080×1080 · 잘림', w: 1080, h: 1080 },
+  { k: 'jubo', name: '주보용', d: '긴 쪽 1200px', long: 1200 },
+  { k: 'orig', name: '원본 크기', d: '인쇄·보관용', orig: true },
+  { k: 'custom', name: '직접 입력', d: '긴 쪽', custom: true },
+];
+const PM_ADJ = [['exp', '밝기'], ['con', '대비'], ['hi', '밝은 곳'], ['sh', '어두운 곳'], ['temp', '색온도'], ['sat', '채도']];
+const PM_FLAG = { blur: '흔들림', dark: '어두움', bright: '너무 밝음', dup: '중복', eyes: '눈 감음' };
+// how picky the checks are. blur: fine detail ÷ coarse detail (crisp ≈ 0.35+, clearly blurred ≈ 0.12); ear: eye openness (open ≈ 0.25+, shut ≈ 0.1)
+const PM_T = { loose: { blur: 0.15, ear: 0.12 }, mid: { blur: 0.22, ear: 0.17 }, strict: { blur: 0.28, ear: 0.21 } };
+const pmS2L = v => v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+const pmL2S = v => v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
+// brightening pushes values past white; fold them back under a smooth shoulder instead of cutting them off
+function pmShoulder(l, top) { const t = 0.6; if (top <= 1 || l <= t) return l > 1 ? 1 : l; const u = Math.min(1, (l - t) / (top - t)), p = (top - t) / (1 - t); return t + (1 - t) * (1 - Math.pow(1 - u, p)); }
+function pmLuts(a) {
+  const k = Math.pow(2, a.exp * 2);
+  let r = Math.pow(2, a.temp * 0.35), b = Math.pow(2, -a.temp * 0.35), g = Math.pow(2, -(a.tint || 0) * 0.25);
+  const n = 0.2126 * r + 0.7152 * g + 0.0722 * b; r /= n; g /= n; b /= n;
+  const tone = x => {
+    x = x + a.sh * 1.3 * x * Math.pow(1 - x, 3);
+    x = x + a.hi * 1.3 * x * x * x * (1 - x);
+    const s = x - 0.5; x = 0.5 + s * (1 + a.con * 0.5 * (1 - 4 * s * s));
+    return x < 0 ? 0 : x > 1 ? 1 : x;
+  };
+  const mk = gain => { const L = new Uint8ClampedArray(256), kg = k * gain; for (let i = 0; i < 256; i++) L[i] = Math.round(tone(pmL2S(pmShoulder(pmS2L(i / 255) * kg, kg))) * 255); return L; };
+  return [mk(r), mk(g), mk(b)];
+}
+function pmApply(src, a, out) {
+  const [R, G, B] = pmLuts(a), s = src.data, o = out.data, sat = a.sat, n = s.length;
+  for (let i = 0; i < n; i += 4) {
+    let r = R[s[i]], g = G[s[i + 1]], b = B[s[i + 2]];
+    if (sat) {
+      const mx = r > g ? (r > b ? r : b) : (g > b ? g : b), mn = r < g ? (r < b ? r : b) : (g < b ? g : b);
+      const l = 0.299 * r + 0.587 * g + 0.114 * b, f = sat > 0 ? 1 + sat * (1 - 0.7 * (mx ? (mx - mn) / mx : 0)) : 1 + sat;
+      r = l + (r - l) * f; g = l + (g - l) * f; b = l + (b - l) * f;
+    }
+    o[i] = r; o[i + 1] = g; o[i + 2] = b; o[i + 3] = 255;
+  }
+  return out;
+}
+function pmStats(im) {
+  const d = im.data, H = new Uint32Array(256); let n = 0, clip = 0, gr = 0, gg = 0, gb = 0, gn = 0;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], g = d[i + 1], b = d[i + 2], l = (0.299 * r + 0.587 * g + 0.114 * b) | 0; H[l]++; n++; if (l >= 250) clip++;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+    if (l > 50 && l < 210 && mx - mn < 0.2 * mx + 8) { gr += r; gg += g; gb += b; gn++; }
+  }
+  const pct = p => { let c = 0; const t = n * p; for (let i = 0; i < 256; i++) { c += H[i]; if (c >= t) return i / 255; } return 1; };
+  return { p5: pct(0.05), p50: pct(0.5), p95: pct(0.95), p99: pct(0.99), clip: clip / n, gray: gn / n > 0.1 ? [gr / gn, gg / gn, gb / gn] : null };
+}
+const pmR2 = v => Math.round(v * 100) / 100, pmCl = (v, a, b) => Math.max(a, Math.min(b, v));
+function pmAuto(st, style) {
+  const ev = style !== 'scene', a = { exp: 0, con: 0, hi: 0, sh: 0, temp: 0, tint: 0, sat: 0 };
+  const m = Math.max(st.p50, 0.03);
+  let stops = Math.log2(pmS2L(ev ? 0.48 : 0.44) / pmS2L(m)) * 0.75;
+  stops = pmCl(Math.min(stops, Math.log2(1.6 / Math.max(pmS2L(st.p99), 0.05))), -1.2, 2);
+  const k = Math.pow(2, stops), f = v => pmL2S(Math.min(1, pmS2L(v) * k)), p5 = f(st.p5), p95 = f(st.p95), p99 = f(st.p99);
+  a.exp = pmR2(stops / 2);
+  a.hi = pmR2(-pmCl((p99 - 0.9) * 3 + st.clip * 2, 0, 0.7));
+  a.sh = pmR2(pmCl((0.14 - p5) * 4, 0, 0.6));
+  a.con = pmR2(pmCl((0.72 - (p95 - p5)) * 0.8, 0, 0.45) + (ev ? 0.05 : 0.14));
+  a.sat = ev ? 0.1 : 0.3;
+  if (st.gray) {   // only nudge the colour cast part-way: full correction kills warm room light and sunsets
+    const R = pmS2L(st.gray[0] / 255), G = pmS2L(st.gray[1] / 255), B = pmS2L(st.gray[2] / 255), w = ev ? 0.3 : 0.2;
+    a.temp = pmR2(pmCl(w * Math.log2(B / R) / 0.7, -0.2, 0.2));
+    a.tint = pmR2(pmCl(-4 * w * Math.log2(Math.sqrt(R * B) / G), -0.12, 0.12));
+  }
+  return a;
+}
+function pmGray(cv, long) {
+  const k = Math.min(1, long / Math.max(cv.width, cv.height)), c = bxScale(cv, Math.max(8, Math.round(cv.width * k)), Math.max(8, Math.round(cv.height * k)));
+  const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, g = new Float32Array(c.width * c.height);
+  const H = new Uint32Array(256);
+  for (let i = 0, j = 0; i < d.length; i += 4, j++) { g[j] = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; H[g[j] | 0]++; }
+  // stretch to a common contrast first, so a dark or flat photo isn't mistaken for a blurred one
+  const pct = p => { let a = 0; for (let i = 0; i < 256; i++) { a += H[i]; if (a >= g.length * p) return i; } return 255; }, lo = pct(0.05), k2 = 200 / Math.max(24, pct(0.95) - lo);
+  for (let j = 0; j < g.length; j++) g[j] = (g[j] - lo) * k2;
+  return { g, w: c.width, h: c.height };
+}
+// how much fine detail the crispest parts of the photo have (a blurred background alone doesn't count against it).
+// Measured at two sizes: blur wipes out the finest detail first, so fine ÷ coarse tells blur apart from a plain subject.
+function pmSharp({ g, w, h }) {
+  const T = 6, tw = Math.floor(w / T), th = Math.floor(h / T), v = [];
+  for (let ty = 0; ty < T; ty++) for (let tx = 0; tx < T; tx++) {
+    let s = 0, s2 = 0, n = 0;
+    for (let y = Math.max(1, ty * th); y < Math.min(h - 1, (ty + 1) * th); y++) for (let x = Math.max(1, tx * tw); x < Math.min(w - 1, (tx + 1) * tw); x++) {
+      const i = y * w + x, L = 4 * g[i] - g[i - 1] - g[i + 1] - g[i - w] - g[i + w]; s += L; s2 += L * L; n++;
+    }
+    if (n) v.push(s2 / n - (s / n) * (s / n));
+  }
+  v.sort((a, b) => b - a);
+  return (v[0] + v[1] + v[2] + v[3]) / 4;
+}
+function pmHash(cv) {
+  const c = document.createElement('canvas'); c.width = 9; c.height = 8; const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(cv, 0, 0, 9, 8);
+  const d = x.getImageData(0, 0, 9, 8).data, bits = [];
+  for (let y = 0; y < 8; y++) for (let i = 0; i < 8; i++) { const p = (y * 9 + i) * 4, q = p + 4; bits.push((d[p] + d[p + 1] + d[p + 2]) > (d[q] + d[q + 1] + d[q + 2]) ? 1 : 0); }
+  return bits;
+}
+const pmHam = (a, b) => { let n = 0; for (let i = 0; i < 64; i++) if (a[i] !== b[i]) n++; return n; };
+
+async function pmLibRaw() { if (!PM.raw) { const m = await import('./vendor/libraw/index.js'); PM.raw = new m.default(); } return PM.raw; }
+// RAW → 8-bit picture. The RAW's extra range is used here: dark shots are lifted before anything is thrown away.
+async function pmDecodeRaw(file, half, gain) {
+  const raw = await pmLibRaw();
+  await raw.open(new Uint8Array(await file.arrayBuffer()), { halfSize: half, useCameraWb: true, outputBps: 16, noAutoBright: true, outputColor: 1, gamm: [1 / 2.4, 12.92] });
+  const im = await raw.imageData();
+  if (!im || !im.width || !im.data || !im.data.length) throw new Error('raw-empty');
+  const d = im.data, w = im.width, h = im.height, ch = im.colors || 3, n = w * h, is16 = d instanceof Uint16Array, top = is16 ? 65535 : 255;
+  if (gain == null) {
+    const H = new Uint32Array(1024); let c = 0;
+    for (let i = 0; i < n; i += 5) { const p = i * ch; let v = d[p]; if (ch >= 3) { if (d[p + 1] > v) v = d[p + 1]; if (d[p + 2] > v) v = d[p + 2]; } H[(v * 1023 / top) | 0]++; c++; }
+    let acc = 0, p = 1023; for (let i = 1023; i >= 0; i--) { acc += H[i]; if (acc >= c * 0.003) { p = i; break; } }
+    gain = pmCl(0.93 / Math.max(pmS2L((p + 0.5) / 1023), 1e-4), 1, 6);
+  }
+  const N = is16 ? 65536 : 256, L = new Uint8Array(N);
+  for (let i = 0; i < N; i++) L[i] = Math.round(pmL2S(pmShoulder(pmS2L(i / (N - 1)) * gain, gain)) * 255);
+  const id = new ImageData(w, h), o = id.data;
+  if (ch >= 3) for (let i = 0, p = 0, q = 0; i < n; i++, p += ch, q += 4) { o[q] = L[d[p]]; o[q + 1] = L[d[p + 1]]; o[q + 2] = L[d[p + 2]]; o[q + 3] = 255; }
+  else for (let i = 0, q = 0; i < n; i++, q += 4) { o[q] = o[q + 1] = o[q + 2] = L[d[i]]; o[q + 3] = 255; }
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h; cv.getContext('2d').putImageData(id, 0, 0);
+  return { canvas: cv, gain };
+}
+// fallback for RAW flavours the decoder can't read: most RAW files carry a ready-made JPEG preview inside
+async function pmEmbedded(file) {
+  const u = new Uint8Array(await file.arrayBuffer()), at = [];
+  for (let i = 0; i < u.length - 3 && at.length < 16; i++) if (u[i] === 0xFF && u[i + 1] === 0xD8 && u[i + 2] === 0xFF) at.push(i);
+  let best = null;
+  for (const a of at) { try { const b = await createImageBitmap(new Blob([u.subarray(a)], { type: 'image/jpeg' })); if (!best || b.width * b.height > best.width * best.height) best = b; } catch (e) {} }
+  if (!best || best.width < 600) throw new Error('no-preview');
+  return best;
+}
+const pmToBlob = (cv, q = 0.92) => new Promise(r => cv.toBlob(r, 'image/jpeg', q));
+function pmFit(src, long) { const k = Math.min(1, long / Math.max(src.width, src.height)); return bxScale(src, Math.max(1, Math.round(src.width * k)), Math.max(1, Math.round(src.height * k))); }
+async function pmBaseCanvas(it) { const b = await createImageBitmap(it.base); const c = canvasFrom(b); b.close && b.close(); return c; }
+async function pmLoad(it) {
+  let cv;
+  if (it.isRaw) {
+    try { const r = await pmDecodeRaw(it.file, true); cv = r.canvas; it.gain = r.gain; it.fullLong = Math.max(cv.width, cv.height) * 2; }
+    catch (e) {
+      console.warn('RAW decode failed, trying the embedded preview', e);
+      if (PM.raw) { try { PM.raw.dispose(); } catch (x) {} PM.raw = null; }
+      const b = await pmEmbedded(it.file); cv = pmFit(b, 3000); it.noFull = true; it.note = '이 RAW는 직접 읽지 못해서, 파일 안에 든 미리보기 사진으로 열었어요. 화질이 원본보다 낮을 수 있어요.'; it.fullLong = Math.max(cv.width, cv.height);
+    }
+  } else {
+    const b = await bxDecode(it.file); it.fullLong = Math.max(b.width, b.height); cv = pmFit(b, 3000); b.close && b.close();
+  }
+  it.w = cv.width; it.h = cv.height;
+  it.base = await pmToBlob(cv, 0.95);
+  const sm = pmFit(cv, 260); it.small = sm.getContext('2d').getImageData(0, 0, sm.width, sm.height);
+  it.stats = pmStats(it.small); it.sharp = pmSharp(pmGray(cv, 1024)); it.sharpLo = pmSharp(pmGray(cv, 512)); it.crisp = it.sharp / Math.max(it.sharpLo, 1e-3); it.hash = pmHash(sm);
+  it.style = PM.style; it.adj = pmAuto(it.stats, it.style); it.fx = 0.5; it.fy = 0.5;
+  cv.width = cv.height = 0;
+  it.status = 'ready';
+}
+function pmDups() {
+  const ok = PM.items.filter(i => i.status === 'ready'); ok.forEach(i => { i.dupOf = null; i._g = i; });
+  const find = i => { while (i._g !== i) i = i._g; return i; };
+  for (let a = 0; a < ok.length; a++) for (let b = a + 1; b < ok.length; b++) {
+    if (Math.abs(ok[a].w / ok[a].h - ok[b].w / ok[b].h) > 0.02) continue;
+    if (pmHam(ok[a].hash, ok[b].hash) <= 8) { const x = find(ok[a]), y = find(ok[b]); if (x !== y) y._g = x; }
+  }
+  const groups = new Map(); ok.forEach(i => { const r = find(i); if (!groups.has(r)) groups.set(r, []); groups.get(r).push(i); });
+  groups.forEach(g => { if (g.length < 2) return; const keep = g.reduce((a, b) => b.sharp > a.sharp ? b : a); g.forEach(i => { if (i !== keep) i.dupOf = keep.name; }); });
+}
+function pmJudge() {
+  const T = PM_T[PM.strict] || PM_T.mid;
+  PM.items.forEach(it => {
+    const f = []; if (it.status !== 'ready') { it.flags = f; return; }
+    if (it.crisp < T.blur) f.push('blur');
+    if ((it.isRaw && it.gain >= 4.5) || it.stats.p50 < 0.08) f.push('dark');
+    if (it.stats.clip > 0.15) f.push('bright');
+    if (it.dupOf) f.push('dup');
+    if (PM.eyesOn && it.faces && it.faces.some(c => c.ear != null && c.ear < T.ear)) f.push('eyes');
+    it.flags = f;
+  });
+}
+const pmKind = it => it.status !== 'ready' ? it.status : it.excluded ? 'out' : it.flags.length ? 'warn' : 'ok';
+const pmCur = () => PM.items[PM.cur];
+
+/* ---- UI ---- */
+function pmBuild() {
+  if (PM.built) return; PM.built = true;
+  const sizesOn = (lsGet('tg.pmSizes') || 'web').split(',');
+  $('#photoMode').innerHTML = `
+  <input type="file" id="pmFile" accept="image/*,.heic,.heif,.cr2,.cr3,.crw,.nef,.nrw,.arw,.dng,.raf,.orf,.rw2,.pef,.srw" multiple hidden>
+  <div class="pm-empty" id="pmEmpty">
+    <div class="dz" id="pmDz"><h2>사진 보정</h2><div>사진을 끌어다 놓거나</div><button class="btn primary" id="pmPick">사진 고르기 (여러 장)</button>
+    <div style="font-size:12.5px">카메라 RAW(CR2 · CR3 · DNG · NEF · ARW 등)와 JPG · PNG · HEIC</div></div>
+    <p class="hint">올리면 밝기와 색을 자동으로 맞추고, 흔들림 · 어두움 · 중복 · 눈 감은 사진을 표시해요. 사진은 이 기기 안에서만 처리되고 어디로도 보내지 않아요.</p>
+  </div>
+  <div class="pm-main" id="pmMain" hidden>
+    <aside class="pm-list" aria-label="올린 사진">
+      <div class="row" style="justify-content:space-between"><h2>올린 사진</h2><button class="btn sm" id="pmMore"><svg class="i"><use href="#i-plus"/></svg>더 올리기</button></div>
+      <div id="pmProg" hidden><div class="bar"><i id="pmBarI"></i></div><p class="hint" id="pmProgT" style="margin:4px 0 0"></p></div>
+      <div class="seg" id="pmFilter" style="margin-top:12px"></div>
+      <div class="pm-grid" id="pmGrid"></div>
+      <button class="btn sm" id="pmOutAll" style="width:100%;margin-top:12px" hidden>확인 필요 사진 모두 빼기</button>
+      <p class="hint" id="pmListHint">표시는 참고용이에요. 뺄지 말지는 직접 정해요.</p>
+    </aside>
+    <div class="pm-view">
+      <div class="pm-bar"><span class="nm" id="pmName" data-noi18n></span><span id="pmFlags" class="row" style="gap:4px"></span><div class="grow" style="flex:1"></div>
+        <button class="btn sm" id="pmCmp" aria-pressed="true" title="가운데 선을 끌어서 보정 전과 후를 비교해요">전후 비교</button>
+        <button class="btn sm" id="pmOut">이 사진 빼기</button></div>
+      <div class="pm-stage" id="pmStage"><canvas id="pmCv" aria-label="사진 미리보기"></canvas><p class="hint" id="pmWait" hidden></p></div>
+      <p class="pm-note" id="pmNote" hidden></p>
+    </div>
+    <aside class="pm-side" aria-label="보정">
+      <h2>자동 보정</h2>
+      <div class="seg grid2" id="pmStyle" style="margin-top:12px"><button data-st="event" title="사람 얼굴이 자연스럽고 밝게">행사</button><button data-st="scene" title="하늘과 초록이 선명하게">풍경</button></div>
+      <div class="row" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr"><button class="btn sm" id="pmAutoOne">이 사진 자동</button><button class="btn sm primary" id="pmAutoAll">전체 자동 보정</button></div>
+      <div class="pm-sec"><div class="row" style="justify-content:space-between"><h3 style="margin:0">직접 조절</h3><button class="btn sm ghost" id="pmReset">보정 없애기</button></div>
+        ${PM_ADJ.map(([k, n]) => `<div class="field"><label for="pm_${k}">${n} <output id="pm_${k}O">0</output></label><input type="range" id="pm_${k}" data-adj="${k}" min="-100" max="100" value="0"></div>`).join('')}
+        <button class="btn sm" id="pmCopy" style="width:100%;margin-top:14px">이 설정을 다른 사진에도 적용</button>
+        <button class="btn sm ghost" id="pmUndo" style="width:100%;margin-top:6px" hidden>방금 한 일 되돌리기</button></div>
+      <div class="pm-sec"><h3>골라내기 기준</h3>
+        <div class="seg grid3" id="pmStrict"><button data-s="loose">느슨하게</button><button data-s="mid">보통</button><button data-s="strict">엄격하게</button></div>
+        <label class="tog" style="margin-top:10px"><input type="checkbox" id="pmEyes" ${PM.eyesOn ? 'checked' : ''}>눈 감은 사람 찾기</label>
+        <p class="hint" id="pmEyesT" style="margin:4px 0 0">얼굴이 작거나 옆모습이면 놓칠 수 있어요.</p></div>
+      <div class="pm-sec"><h3>저장 크기 (여러 개 선택)</h3>
+        ${PM_SIZES.map(s => `<label class="tog pm-size"><input type="checkbox" data-size="${s.k}" ${sizesOn.includes(s.k) ? 'checked' : ''}><span>${s.name}</span><small>${s.d}</small>${s.custom ? `<input type="number" class="num" id="pmCustom" min="100" max="12000" value="${+lsGet('tg.pmCustom') || 1600}" aria-label="긴 쪽 픽셀"><small>px</small>` : ''}</label>`).join('')}
+        <div class="field"><span class="lbl">잘리는 부분 미리 보기</span><div class="seg grid3" id="pmCrop"><button data-c="">끄기</button><button data-c="insta45">세로 4:5</button><button data-c="insta11">정사각형</button></div>
+        <p class="hint" style="margin:4px 0 0">켠 상태에서 사진을 끌면 남길 자리를 옮길 수 있어요.</p></div>
+        <div id="pmExpProg" hidden><div class="bar"><i id="pmExpBar"></i></div><p class="hint" id="pmExpT" style="margin:4px 0 0"></p></div>
+        <button class="btn emph" id="pmSave" style="width:100%;margin-top:14px"><svg class="i"><use href="#i-down"/></svg>JPG로 저장</button>
+        <button class="btn" id="pmToDesign" style="width:100%;margin-top:8px">이 사진을 디자인으로 보내기</button></div>
+    </aside>
+  </div>`;
+  const pick = () => $('#pmFile').click();
+  $('#pmPick').onclick = pick; $('#pmMore').onclick = pick;
+  $('#pmFile').onchange = e => { const f = [...e.target.files]; e.target.value = ''; pmAdd(f); };
+  const pm = $('#photoMode');
+  pm.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); $('#pmDz').classList.add('over'); });
+  pm.addEventListener('dragleave', () => $('#pmDz').classList.remove('over'));
+  pm.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); $('#pmDz').classList.remove('over'); pmAdd([...(e.dataTransfer.files || [])]); });
+  $('#pmFilter').onclick = e => { const b = e.target.closest('[data-f]'); if (b) { PM.filter = b.dataset.f; pmList(); } };
+  $('#pmGrid').onclick = e => { const c = e.target.closest('[data-i]'); if (c) pmSelect(+c.dataset.i); };
+  $('#pmOut').onclick = () => { const it = pmCur(); if (!it) return; it.excluded = !it.excluded; pmList(); pmHead(); };
+  $('#pmOutAll').onclick = () => { PM.undo = { kind: 'out', v: PM.items.map(i => i.excluded) }; let n = 0; PM.items.forEach(i => { if (pmKind(i) === 'warn') { i.excluded = true; n++; } }); pmList(); pmHead(); $('#pmUndo').hidden = false; toast(`확인 필요 사진 ${n}장을 뺐어요. ‘뺀 사진’에서 다시 살릴 수 있어요.`, 3600); };
+  $('#pmCmp').onclick = () => { PM.cmp = !PM.cmp; $('#pmCmp').setAttribute('aria-pressed', PM.cmp); pmPaint(); };
+  $('#pmStyle').onclick = e => { const b = e.target.closest('[data-st]'), it = pmCur(); if (!b) return; PM.style = b.dataset.st; lsSet('tg.pmStyle', PM.style); if (it && it.status === 'ready') { it.style = PM.style; it.adj = pmAuto(it.stats, it.style); } pmSide(); pmRefresh(); };
+  $('#pmAutoOne').onclick = () => { const it = pmCur(); if (!it || it.status !== 'ready') return; it.adj = pmAuto(it.stats, it.style); pmSide(); pmRefresh(); };
+  $('#pmAutoAll').onclick = () => { pmSnap(); let n = 0; PM.items.forEach(i => { if (i.status === 'ready' && !i.excluded) { i.adj = pmAuto(i.stats, i.style); n++; } }); pmSide(); pmRefresh(); pmThumbs(); toast(`${n}장을 사진마다 따로 계산해서 자동 보정했어요.`); };
+  $('#pmReset').onclick = () => { const it = pmCur(); if (!it || it.status !== 'ready') return; it.adj = { exp: 0, con: 0, hi: 0, sh: 0, temp: 0, tint: 0, sat: 0 }; pmSide(); pmRefresh(); };
+  $('#pmCopy').onclick = () => { const it = pmCur(); if (!it || it.status !== 'ready') return; pmSnap(); let n = 0; PM.items.forEach(i => { if (i !== it && i.status === 'ready' && !i.excluded) { i.adj = { ...it.adj }; i.style = it.style; n++; } }); pmThumbs(); toast(n ? `다른 사진 ${n}장에 같은 설정을 넣었어요. 조명이 다른 사진은 어색할 수 있어요.` : '적용할 다른 사진이 없어요.', 3600); };
+  $('#pmUndo').onclick = () => { const u = PM.undo; if (!u) return; PM.items.forEach((i, k) => { if (u.kind === 'out') { if (k < u.v.length) i.excluded = u.v[k]; } else if (u.v[k] && i.status === 'ready') { i.adj = u.v[k].adj; i.style = u.v[k].style; } }); PM.undo = null; $('#pmUndo').hidden = true; pmList(); pmHead(); pmSide(); pmRefresh(); pmThumbs(); toast('되돌렸어요.'); };
+  $$('#photoMode [data-adj]').forEach(inp => { inp.oninput = () => { const it = pmCur(); if (!it || it.status !== 'ready') return; it.adj[inp.dataset.adj] = +inp.value / 100; $('#' + inp.id + 'O').textContent = inp.value; pmRefresh(); }; inp.ondblclick = () => { inp.value = 0; inp.oninput(); }; });
+  $('#pmStrict').onclick = e => { const b = e.target.closest('[data-s]'); if (!b) return; PM.strict = b.dataset.s; lsSet('tg.pmStrict', PM.strict); pmJudge(); pmList(); pmHead(); pmSide(); };
+  $('#pmEyes').onchange = e => { PM.eyesOn = e.target.checked; lsSet('tg.pmEyes', PM.eyesOn ? '1' : '0'); if (PM.eyesOn) pmEyesRun(); else { pmJudgeEyesOff(); } };
+  $$('#photoMode [data-size]').forEach(c => c.onchange = () => lsSet('tg.pmSizes', $$('#photoMode [data-size]:checked').map(x => x.dataset.size).join(',')));
+  $('#pmCustom').onchange = e => lsSet('tg.pmCustom', e.target.value);
+  $('#pmCrop').onclick = e => { const b = e.target.closest('[data-c]'); if (!b) return; PM.crop = b.dataset.c; pmSide(); pmPaint(); };
+  $('#pmSave').onclick = pmExport; $('#pmToDesign').onclick = pmToDesign;
+  // drag on the picture: move the before/after line, or the crop frame when its preview is on
+  const st = $('#pmCv'); let drag = null;
+  const pos = e => { const r = st.getBoundingClientRect(); return [pmCl((e.clientX - r.left) / r.width, 0, 1), pmCl((e.clientY - r.top) / r.height, 0, 1)]; };
+  st.addEventListener('pointerdown', e => { const it = pmCur(); if (!it || it.status !== 'ready') return; st.setPointerCapture(e.pointerId); const [x, y] = pos(e); drag = { x, y, fx: it.fx, fy: it.fy }; if (!PM.crop && PM.cmp) { PM.split = x; pmPaint(); } });
+  st.addEventListener('pointermove', e => { if (!drag) return; const it = pmCur(), [x, y] = pos(e); if (PM.crop) { const r = pmCropRect(it, PM.crop); it.fx = r.sx ? pmCl(drag.fx + (x - drag.x) / r.sx, 0, 1) : 0.5; it.fy = r.sy ? pmCl(drag.fy + (y - drag.y) / r.sy, 0, 1) : 0.5; } else if (PM.cmp) PM.split = x; pmPaint(); });
+  const up = () => { drag = null; }; st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
+}
+function pmSnap() { PM.undo = { kind: 'adj', v: PM.items.map(i => i.status === 'ready' ? { adj: { ...i.adj }, style: i.style } : null) }; $('#pmUndo').hidden = false; }
+function pmEnter() { pmBuild(); pmList(); }
+function pmList() {
+  const has = PM.items.length > 0; $('#pmEmpty').hidden = has; $('#pmMain').hidden = !has; if (!has) return;
+  const cnt = { all: PM.items.length, ok: 0, warn: 0, out: 0 }; PM.items.forEach(i => { const k = pmKind(i); if (k in cnt) cnt[k]++; });
+  $('#pmFilter').innerHTML = [['all', '전체'], ['ok', '좋음'], ['warn', '확인 필요'], ['out', '뺀 사진']].map(([k, n]) => `<button data-f="${k}" aria-pressed="${PM.filter === k}">${n} ${cnt[k]}</button>`).join('');
+  $('#pmOutAll').hidden = !cnt.warn;
+  $('#pmGrid').innerHTML = PM.items.map((it, i) => {
+    const k = pmKind(it); if (PM.filter !== 'all' && k !== PM.filter && !(k === 'loading' || k === 'error')) return '';
+    const st = k === 'loading' ? ['off', '여는 중…'] : k === 'error' ? ['warn', '열지 못했어요'] : k === 'out' ? ['off', '뺀 사진'] : k === 'warn' ? ['warn', '확인 · ' + it.flags.map(f => PM_FLAG[f]).join(' · ')] : ['ok', '좋음'];
+    return `<button class="pm-card${i === PM.cur ? ' on' : ''}${k === 'out' ? ' out' : ''}" data-i="${i}" title="${esc(it.name)}"><span class="th">${it.small ? `<canvas data-th="${i}" width="${it.small.width}" height="${it.small.height}"></canvas>` : (k === 'error' ? '!' : '…')}</span><span class="st ${st[0]}">${st[1]}</span><span class="nm" data-noi18n>${esc(it.name)}</span></button>`;
+  }).join('') || '<p class="hint" style="grid-column:1/-1">여기에 해당하는 사진이 없어요.</p>';
+  pmThumbs();
+}
+function pmThumbs() { $$('#pmGrid canvas[data-th]').forEach(c => { const it = PM.items[+c.dataset.th]; if (!it || !it.small) return; const o = new ImageData(it.small.width, it.small.height); c.getContext('2d').putImageData(pmApply(it.small, it.adj, o), 0, 0); }); }
+function pmHead() {
+  const it = pmCur(); $('#pmName').textContent = it ? it.name : '';
+  const fl = !it || it.status !== 'ready' ? '' : it.flags.length ? it.flags.map(f => `<span class="pm-flag" title="${f === 'dup' ? esc('비슷한 사진: ' + it.dupOf) : ''}">${PM_FLAG[f]}</span>`).join('') : '<span class="pm-flag ok">좋음</span>';
+  $('#pmFlags').innerHTML = fl + (it && it.excluded ? '<span class="pm-flag">뺀 사진</span>' : '');
+  $('#pmOut').textContent = it && it.excluded ? '다시 살리기' : '이 사진 빼기'; $('#pmOut').disabled = !it || it.status !== 'ready';
+  const note = it && (it.note || (it.status === 'error' ? '이 파일은 열지 못했어요. 지원하지 않는 형식이거나 파일이 손상됐을 수 있어요.' : ''));
+  $('#pmNote').hidden = !note; $('#pmNote').textContent = note || '';
+}
+function pmSide() {
+  const it = pmCur(), ok = it && it.status === 'ready';
+  $$('#pmStyle [data-st]').forEach(b => b.setAttribute('aria-pressed', b.dataset.st === (ok ? it.style : PM.style)));
+  $$('#pmStrict [data-s]').forEach(b => b.setAttribute('aria-pressed', b.dataset.s === PM.strict));
+  $$('#pmCrop [data-c]').forEach(b => b.setAttribute('aria-pressed', b.dataset.c === PM.crop));
+  PM_ADJ.forEach(([k]) => { const v = ok ? Math.round(it.adj[k] * 100) : 0; $('#pm_' + k).value = v; $('#pm_' + k + 'O').textContent = v; $('#pm_' + k).disabled = !ok; });
+}
+async function pmSelect(i) {
+  const it = PM.items[i]; if (!it) return; PM.cur = i; const my = ++PM.seq;
+  $$('#pmGrid .pm-card').forEach(c => c.classList.toggle('on', +c.dataset.i === i));
+  pmHead(); pmSide();
+  const cv = $('#pmCv');
+  if (it.status !== 'ready') { PM.src = null; cv.hidden = true; $('#pmWait').hidden = false; $('#pmWait').textContent = it.status === 'loading' ? '여는 중이에요…' : '미리보기가 없어요.'; return; }
+  const base = await pmBaseCanvas(it); if (my !== PM.seq) return;
+  const pv = pmFit(base, 1400); base.width = base.height = 0;
+  PM.beforeCv = pv; PM.src = pv.getContext('2d').getImageData(0, 0, pv.width, pv.height); PM.out = new ImageData(pv.width, pv.height);
+  PM.afterCv = document.createElement('canvas'); PM.afterCv.width = pv.width; PM.afterCv.height = pv.height;
+  cv.width = pv.width; cv.height = pv.height; cv.hidden = false; $('#pmWait').hidden = true;
+  pmRefresh();
+}
+function pmRefresh() {
+  cancelAnimationFrame(PM.raf);
+  PM.raf = requestAnimationFrame(() => {
+    const it = pmCur(); if (!it || it.status !== 'ready' || !PM.src) return;
+    PM.afterCv.getContext('2d').putImageData(pmApply(PM.src, it.adj, PM.out), 0, 0); pmPaint();
+    const c = $(`#pmGrid canvas[data-th="${PM.cur}"]`); if (c) c.getContext('2d').putImageData(pmApply(it.small, it.adj, new ImageData(it.small.width, it.small.height)), 0, 0);
+  });
+}
+// the part of the picture a fixed-shape size keeps: {x,y,w,h} as fractions, sx/sy = how far it can slide
+function pmCropRect(it, key) {
+  const s = PM_SIZES.find(x => x.k === key), ar = s.w / s.h, src = it.w / it.h;
+  const w = src > ar ? ar / src : 1, h = src > ar ? 1 : src / ar, sx = 1 - w, sy = 1 - h;
+  return { x: sx * it.fx, y: sy * it.fy, w, h, sx, sy };
+}
+function pmPaint() {
+  const it = pmCur(), cv = $('#pmCv'); if (!it || !PM.src || !PM.afterCv) return;
+  const x = cv.getContext('2d'), W = cv.width, H = cv.height, u = W / Math.max(120, cv.getBoundingClientRect().width || W);
+  x.drawImage(PM.afterCv, 0, 0);
+  if (PM.cmp && !PM.crop) {
+    const sx = Math.round(W * PM.split);
+    x.drawImage(PM.beforeCv, 0, 0, sx, H, 0, 0, sx, H);
+    x.fillStyle = '#FFFFFF'; x.fillRect(sx - u, 0, 2 * u, H);
+    x.font = `700 ${13 * u}px Pretendard, sans-serif`; x.textBaseline = 'top';
+    const tag = (t, right) => { const w = x.measureText(t).width + 14 * u, px = right ? W - w - 10 * u : 10 * u; x.fillStyle = 'rgba(13,24,30,.78)'; x.fillRect(px, 10 * u, w, 24 * u); x.fillStyle = '#FFFFFF'; x.fillText(t, px + 7 * u, 15.5 * u); };
+    tag(isEN() ? 'Before' : '보정 전', false); tag(isEN() ? 'After' : '보정 후', true);
+  }
+  if (PM.crop) { const r = pmCropRect(it, PM.crop); x.fillStyle = 'rgba(13,24,30,.62)'; x.fillRect(0, 0, W, r.y * H); x.fillRect(0, (r.y + r.h) * H, W, H); x.fillRect(0, r.y * H, r.x * W, r.h * H); x.fillRect((r.x + r.w) * W, r.y * H, W, r.h * H); x.strokeStyle = '#FFFFFF'; x.lineWidth = 2 * u; x.strokeRect(r.x * W, r.y * H, r.w * W, r.h * H); }
+  if (it.faces && PM.eyesOn) { const T = PM_T[PM.strict]; it.faces.forEach(f => { if (f.ear == null || f.ear >= T.ear) return; x.strokeStyle = '#FC6589'; x.lineWidth = 3 * u; x.strokeRect(f.x * W, f.y * H, f.w * W, f.h * H); }); }
+}
+async function pmAdd(files) {
+  files = files.filter(f => PM_RAW.test(f.name) || /^image\//.test(f.type) || /\.(jpe?g|png|webp|gif|bmp|avif|heic|heif|tiff?)$/i.test(f.name));
+  if (!files.length) { toast('사진 파일을 찾지 못했어요.'); return; }
+  if (PM.busy) { toast('지금 여는 중이에요. 끝난 뒤에 더 올려 주세요.'); return; }
+  const phone = matchMedia('(max-width:980px)').matches, raws = files.filter(f => PM_RAW.test(f.name)).length;
+  if (phone && raws > 10) toast('휴대폰에서 RAW를 한꺼번에 많이 열면 멈출 수 있어요. 10장 안팎씩 나눠 올리는 걸 권해요.', 5000);
+  PM.busy = true; pmBuild();
+  const fresh = files.map(f => ({ id: uid(), file: f, name: f.name, isRaw: PM_RAW.test(f.name), status: 'loading', flags: [], excluded: false }));
+  PM.items.push(...fresh); pmList(); if (PM.cur < 0) pmSelect(PM.items.length - fresh.length);
+  $('#pmProg').hidden = false;
+  for (let i = 0; i < fresh.length; i++) {
+    const it = fresh[i];
+    $('#pmProgT').textContent = `사진 여는 중 ${i + 1}/${fresh.length}장`; $('#pmBarI').style.width = (i / fresh.length * 100) + '%';
+    try { await pmLoad(it); } catch (e) { console.error(e); it.status = 'error'; }
+    pmJudge(); pmList(); if (pmCur() === it) pmSelect(PM.cur);
+    await sleep(0);
+  }
+  if (PM.raw) { try { PM.raw.dispose(); } catch (e) {} PM.raw = null; }   // gives the decoder's memory back
+  pmDups(); pmJudge(); pmList(); pmHead();
+  $('#pmProg').hidden = true; PM.busy = false;
+  const bad = fresh.filter(i => i.status === 'error').length;
+  toast(bad ? `${fresh.length - bad}장을 열었고, ${bad}장은 열지 못했어요.` : `${fresh.length}장을 열고 자동 보정까지 했어요.`, 3200);
+  if (PM.eyesOn) pmEyesRun();
+}
+
+/* ---- closed eyes ---- */
+async function pmFaceApi() {
+  if (!PM.fa) { const m = await import('./vendor/faceapi/face-api.esm.js'); await m.nets.ssdMobilenetv1.loadFromUri('./vendor/faceapi/model'); PM.fa = m; }
+  return PM.fa;
+}
+async function pmMesh() {
+  if (!PM.mesh) {
+    await loadScript('./vendor/facemesh/face_mesh.js');
+    const fm = new window.FaceMesh({ locateFile: f => './vendor/facemesh/' + f });
+    fm.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.2, minTrackingConfidence: 0.5 });
+    fm.onResults(r => { PM.meshRes = r; });
+    await fm.initialize(); PM.mesh = fm;
+  }
+  return PM.mesh;
+}
+// eye openness = eyelid gap ÷ eye width, averaged over both eyes (open ≈ 0.25 or more, shut ≈ 0.1)
+const PM_EYES = [[33, 133, 160, 144, 159, 145, 158, 153], [263, 362, 387, 373, 386, 374, 385, 380]];
+async function pmEyeOpen(face) {
+  const fm = await pmMesh(); fm.reset(); PM.meshRes = null; await fm.send({ image: face });
+  const lm = PM.meshRes && PM.meshRes.multiFaceLandmarks && PM.meshRes.multiFaceLandmarks[0]; if (!lm) return null;
+  const d = (i, j) => Math.hypot((lm[i].x - lm[j].x) * face.width, (lm[i].y - lm[j].y) * face.height);
+  const e = PM_EYES.map(([a, b, u1, l1, u2, l2, u3, l3]) => (d(u1, l1) + d(u2, l2) + d(u3, l3)) / (3 * d(a, b) || 1));
+  return { ear: (e[0] + e[1]) / 2, l: e[0], r: e[1] };
+}
+async function pmFaces(it) {
+  const fa = await pmFaceApi(), cv = await pmBaseCanvas(it), W = cv.width, H = cv.height, regs = [[0, 0, W, H]];
+  if (Math.max(W, H) >= 1600) {   // small faces in group shots only show up when the picture is searched in pieces
+    const nx = W >= H ? 3 : 2, ny = W >= H ? 2 : 3, ov = 0.25, tw = W / (nx - (nx - 1) * ov), th = H / (ny - (ny - 1) * ov);
+    for (let y = 0; y < ny; y++) for (let x = 0; x < nx; x++) regs.push([Math.round(x * tw * (1 - ov)), Math.round(y * th * (1 - ov)), Math.round(tw), Math.round(th)]);
+  }
+  const found = [];
+  for (const [rx, ry, rw, rh] of regs) {
+    const k = Math.min(1, 1280 / Math.max(rw, rh)), t = document.createElement('canvas'); t.width = Math.round(rw * k); t.height = Math.round(rh * k);
+    const c = t.getContext('2d'); c.imageSmoothingQuality = 'high'; c.drawImage(cv, rx, ry, rw, rh, 0, 0, t.width, t.height);
+    const res = await fa.detectAllFaces(t, new fa.SsdMobilenetv1Options({ minConfidence: 0.5, maxResults: 40 }));
+    for (const r of res) { const b = r.box; found.push({ x: (rx + b.x / k) / W, y: (ry + b.y / k) / H, w: b.width / k / W, h: b.height / k / H, px: b.width / k, score: r.score, ear: null }); }
+    t.width = t.height = 0; await sleep(0);
+  }
+  // the same face turns up in overlapping pieces: keep the view where it was largest
+  found.sort((a, b) => b.px - a.px); const keep = [];
+  for (const f of found) { if (!keep.some(q => { const ix = Math.max(0, Math.min(f.x + f.w, q.x + q.w) - Math.max(f.x, q.x)), iy = Math.max(0, Math.min(f.y + f.h, q.y + q.h) - Math.max(f.y, q.y)), i = ix * iy; return i / Math.min(f.w * f.h, q.w * q.h) > 0.45; })) keep.push(f); }
+  // look closely at each face on its own: crop it with some room around and read the eyelids
+  for (const f of keep) {
+    if (f.px < 30) continue;
+    const side = Math.max(f.w * W, f.h * H) * 1.7, cx = (f.x + f.w / 2) * W, cy = (f.y + f.h / 2) * H, c = document.createElement('canvas'); c.width = c.height = 384;
+    const g = c.getContext('2d'); g.fillStyle = '#808080'; g.fillRect(0, 0, 384, 384); g.imageSmoothingQuality = 'high'; g.drawImage(cv, cx - side / 2, cy - side / 2, side, side, 0, 0, 384, 384);
+    // a side-on face gives nonsense numbers: leave it undecided
+    try { const e = await pmEyeOpen(c); if (e && Math.max(e.l, e.r) < 0.55) { f.ear = e.ear; f.l = e.l; f.r = e.r; } } catch (e) { console.warn(e); }
+    c.width = c.height = 0;
+  }
+  cv.width = cv.height = 0;
+  return keep;
+}
+function pmJudgeEyesOff() { pmJudge(); pmList(); pmHead(); pmPaint(); }
+async function pmEyesRun() {
+  if (PM.eyesBusy) return; const todo = PM.items.filter(i => i.status === 'ready' && !i.faces); if (!todo.length) { pmJudge(); pmList(); pmHead(); pmPaint(); return; }
+  PM.eyesBusy = true; const T = $('#pmEyesT'), keepT = T.textContent;
+  try {
+    T.textContent = '얼굴 찾는 도구를 불러오는 중…'; await pmFaceApi(); await pmMesh();
+    for (let i = 0; i < todo.length && PM.eyesOn; i++) {
+      while (PM.busy) await sleep(300);   // saving and opening go first
+      T.textContent = `눈 감은 사람 찾는 중 ${i + 1}/${todo.length}장`;
+      try { todo[i].faces = await pmFaces(todo[i]); } catch (e) { console.error(e); todo[i].faces = []; }
+      pmJudge(); pmList(); if (pmCur() === todo[i]) { pmHead(); pmPaint(); }
+    }
+    T.textContent = keepT;
+  } catch (e) { console.error(e); T.textContent = '얼굴 찾는 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'; }
+  PM.eyesBusy = false;
+}
+
+/* ---- save ---- */
+function pmSizesOn() { return $$('#photoMode [data-size]:checked').map(c => { const s = PM_SIZES.find(x => x.k === c.dataset.size); return s.custom ? { ...s, long: pmCl(+$('#pmCustom').value || 1600, 100, 12000), name: `긴 쪽 ${pmCl(+$('#pmCustom').value || 1600, 100, 12000)}px` } : s; }); }
+async function pmSource(it, need) {
+  if (need > Math.max(it.w, it.h) && !it.noFull && it.fullLong > Math.max(it.w, it.h)) {
+    try {
+      if (it.isRaw) { const r = await pmDecodeRaw(it.file, false, it.gain); return r.canvas; }
+      const b = await bxDecode(it.file), c = canvasFrom(b); b.close && b.close(); return c;
+    } catch (e) { console.warn('full-size source failed, using the working copy', e); if (PM.raw) { try { PM.raw.dispose(); } catch (x) {} PM.raw = null; } }
+  }
+  return pmBaseCanvas(it);
+}
+function pmRenderSize(it, src, s) {
+  let c;
+  if (s.w) {
+    const r = pmCropRect(it, s.k), cw = Math.round(r.w * src.width), chh = Math.round(r.h * src.height), k = Math.min(1, s.w / cw);
+    const t = document.createElement('canvas'); t.width = cw; t.height = chh; t.getContext('2d').drawImage(src, Math.round(r.x * src.width), Math.round(r.y * src.height), cw, chh, 0, 0, cw, chh);
+    c = bxScale(t, Math.max(1, Math.round(cw * k)), Math.max(1, Math.round(chh * k)));
+  } else if (s.orig) { c = document.createElement('canvas'); c.width = src.width; c.height = src.height; c.getContext('2d').drawImage(src, 0, 0); }
+  else c = pmFit(src, s.long);
+  const x = c.getContext('2d'), id = x.getImageData(0, 0, c.width, c.height); x.putImageData(pmApply(id, it.adj, id), 0, 0);
+  return c;
+}
+async function pmExport() {
+  if (PM.busy) return; const sizes = pmSizesOn(), list = PM.items.filter(i => i.status === 'ready' && !i.excluded);
+  if (!list.length) { toast('저장할 사진이 없어요.'); return; }
+  if (!sizes.length) { toast('저장 크기를 하나 이상 골라 주세요.'); return; }
+  PM.busy = true; $('#pmSave').disabled = true; $('#pmExpProg').hidden = false;
+  const total = list.length * sizes.length, single = total === 1; let done = 0, fail = 0, zip = null; const used = new Set();
+  try {
+    if (!single) zip = await getZip();
+    for (const it of list) {
+      $('#pmExpT').textContent = `저장하는 중 ${done + 1}/${total}`; $('#pmExpBar').style.width = (done / total * 100) + '%'; await sleep(0);
+      const L0 = Math.max(it.w, it.h), need = Math.max(...sizes.map(s => { if (s.orig) return it.fullLong; if (!s.w) return s.long; const r = pmCropRect(it, s.k); return Math.max(s.w / r.w * L0 / it.w, s.h / r.h * L0 / it.h); }));
+      let src; try { src = await pmSource(it, Math.min(need, it.fullLong)); } catch (e) { console.error(e); fail += sizes.length; done += sizes.length; continue; }
+      const stem = it.name.replace(/\.[^.]+$/, '');
+      for (const s of sizes) {
+        try {
+          const c = pmRenderSize(it, src, s), blob = await pmToBlob(c, 0.9); c.width = c.height = 0;
+          if (single) downloadBlob(blob, `${stem}_보정.jpg`);
+          else { let p = `${s.name}/${stem}.jpg`, n = 2; while (used.has(p)) p = `${s.name}/${stem}_${n++}.jpg`; used.add(p); zip.file(p, blob, { compression: 'STORE' }); }
+        } catch (e) { console.error(e); fail++; }
+        done++; $('#pmExpT').textContent = `저장하는 중 ${Math.min(done + 1, total)}/${total}`; $('#pmExpBar').style.width = (done / total * 100) + '%'; await sleep(0);
+      }
+      src.width = src.height = 0;
+    }
+    if (PM.raw) { try { PM.raw.dispose(); } catch (e) {} PM.raw = null; }
+    if (zip && done > fail) { $('#pmExpT').textContent = 'ZIP으로 묶는 중…'; const d = new Date(), z = n => String(n).padStart(2, '0'); downloadBlob(await zip.generateAsync({ type: 'blob' }), `보정사진_${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}.zip`); }
+    toast(fail ? `${total - fail}개를 저장했고 ${fail}개는 실패했어요.` : single ? '저장했어요.' : `${list.length}장 × 크기 ${sizes.length}개 = ${total}개를 ZIP으로 저장했어요.`, 3600);
+  } catch (e) { console.error(e); toast('저장하지 못했어요. 사진 수를 줄여서 다시 해 보세요.', 4000); }
+  PM.busy = false; $('#pmSave').disabled = false; $('#pmExpProg').hidden = true;
+}
+async function pmToDesign() {
+  const it = pmCur(); if (!it || it.status !== 'ready') { toast('보낼 사진을 먼저 골라 주세요.'); return; }
+  const src = await pmBaseCanvas(it), c = pmRenderSize(it, src, { long: 2048 }), blob = await pmToBlob(c, 0.92); src.width = src.height = c.width = c.height = 0;
+  setMode('design'); await handleFiles([new File([blob], it.name.replace(/\.[^.]+$/, '') + '_보정.jpg', { type: 'image/jpeg' })]);
+  toast('보정한 사진을 디자인에 넣었어요.');
+}
+if (new URLSearchParams(location.search).has('pmdebug')) window.__PM = { PM, pmAdd, pmExport, pmFaces, pmSelect, setMode, pmJudge, pmList };
+/*PM_JS_END*/
 boot();
 UILANG.init(); window.UILANG = UILANG;
 })();
