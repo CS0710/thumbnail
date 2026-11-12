@@ -1645,6 +1645,9 @@ body:not(.show-help) .drawer p.hint:not([id]),body:not(.show-help) #pDoc>p.hint:
 </div>
 <div class="cut-brush" id="cutBrush" hidden></div>
 <script type="text/plain" id="i18nEN">
+눈 확인 중… ⇒ Checking eyes…
+눈 확인 중 ⇒ Checking eyes
+눈 감은 사람 찾는 중 · 남은 사진 {#}장 ⇒ Checking eyes · {#} left
 디자인 ⇒ Design
 올린 사진 ⇒ Photos
 더 올리기 ⇒ Add more
@@ -9453,6 +9456,7 @@ function pmJudge() {
   });
 }
 const pmKind = it => it.status !== 'ready' ? it.status : it.excluded ? 'out' : it.flags.length ? 'warn' : 'ok';
+const pmWaitEyes = it => PM.eyesOn && it.status === 'ready' && !it.faces;
 const pmCur = () => PM.items[PM.cur];
 
 /* ---- UI ---- */
@@ -9544,7 +9548,7 @@ function pmList() {
   $('#pmOutAll').hidden = !cnt.warn;
   $('#pmGrid').innerHTML = PM.items.map((it, i) => {
     const k = pmKind(it); if (PM.filter !== 'all' && k !== PM.filter && !(k === 'loading' || k === 'error')) return '';
-    const st = k === 'loading' ? ['off', '여는 중…'] : k === 'error' ? ['warn', '열지 못했어요'] : k === 'out' ? ['off', '뺀 사진'] : k === 'warn' ? ['warn', '확인 · ' + it.flags.map(f => PM_FLAG[f]).join(' · ')] : ['ok', '좋음'];
+    const st = k === 'loading' ? ['off', '여는 중…'] : k === 'error' ? ['warn', '열지 못했어요'] : k === 'out' ? ['off', '뺀 사진'] : k === 'warn' ? ['warn', '확인 · ' + it.flags.map(f => PM_FLAG[f]).join(' · ') + (pmWaitEyes(it) ? ' · 눈 확인 중' : '')] : pmWaitEyes(it) ? ['off', '눈 확인 중…'] : ['ok', '좋음'];
     return `<button class="pm-card${i === PM.cur ? ' on' : ''}${k === 'out' ? ' out' : ''}" data-i="${i}" title="${esc(it.name)}"><span class="th">${it.small ? `<canvas data-th="${i}" width="${it.small.width}" height="${it.small.height}"></canvas>` : (k === 'error' ? '!' : '…')}</span><span class="st ${st[0]}">${st[1]}</span><span class="nm" data-noi18n>${esc(it.name)}</span></button>`;
   }).join('') || '<p class="hint" style="grid-column:1/-1">여기에 해당하는 사진이 없어요.</p>';
   pmThumbs();
@@ -9552,8 +9556,8 @@ function pmList() {
 function pmThumbs() { $$('#pmGrid canvas[data-th]').forEach(c => { const it = PM.items[+c.dataset.th]; if (!it || !it.small) return; const o = new ImageData(it.small.width, it.small.height); c.getContext('2d').putImageData(pmApply(it.small, it.adj, o), 0, 0); }); }
 function pmHead() {
   const it = pmCur(); $('#pmName').textContent = it ? it.name : '';
-  const fl = !it || it.status !== 'ready' ? '' : it.flags.length ? it.flags.map(f => `<span class="pm-flag" title="${f === 'dup' ? esc('비슷한 사진: ' + it.dupOf) : ''}">${PM_FLAG[f]}</span>`).join('') : '<span class="pm-flag ok">좋음</span>';
-  $('#pmFlags').innerHTML = fl + (it && it.excluded ? '<span class="pm-flag">뺀 사진</span>' : '');
+  const fl = !it || it.status !== 'ready' ? '' : it.flags.length ? it.flags.map(f => `<span class="pm-flag" title="${f === 'dup' ? esc('비슷한 사진: ' + it.dupOf) : ''}">${PM_FLAG[f]}</span>`).join('') : pmWaitEyes(it) ? '' : '<span class="pm-flag ok">좋음</span>';
+  $('#pmFlags').innerHTML = fl + (it && pmWaitEyes(it) ? '<span class="pm-flag" style="color:var(--muted)">눈 확인 중</span>' : '') + (it && it.excluded ? '<span class="pm-flag">뺀 사진</span>' : '');
   $('#pmOut').textContent = it && it.excluded ? '다시 살리기' : '이 사진 빼기'; $('#pmOut').disabled = !it || it.status !== 'ready';
   const note = it && (it.note || (it.status === 'error' ? '이 파일은 열지 못했어요. 지원하지 않는 형식이거나 파일이 손상됐을 수 있어요.' : ''));
   $('#pmNote').hidden = !note; $('#pmNote').textContent = note || '';
@@ -9687,15 +9691,17 @@ async function pmFaces(it) {
 }
 function pmJudgeEyesOff() { pmJudge(); pmList(); pmHead(); pmPaint(); }
 async function pmEyesRun() {
-  if (PM.eyesBusy) return; const todo = PM.items.filter(i => i.status === 'ready' && !i.faces); if (!todo.length) { pmJudge(); pmList(); pmHead(); pmPaint(); return; }
-  PM.eyesBusy = true; const T = $('#pmEyesT'), keepT = T.textContent;
+  const left = () => PM.items.filter(i => i.status === 'ready' && !i.faces);
+  if (PM.eyesBusy) return; if (!left().length) { pmJudge(); pmList(); pmHead(); pmPaint(); return; }
+  PM.eyesBusy = true; const T = $('#pmEyesT'), keepT = '얼굴이 작거나 옆모습이면 놓칠 수 있어요.';
   try {
     T.textContent = '얼굴 찾는 도구를 불러오는 중…'; await pmFaceApi(); await pmMesh();
-    for (let i = 0; i < todo.length && PM.eyesOn; i++) {
+    // photos added while this is running join the queue: look again after every photo instead of fixing the list up front
+    for (let n = 1, it; PM.eyesOn && (it = left()[0]); n++) {
       while (PM.busy) await sleep(300);   // saving and opening go first
-      T.textContent = `눈 감은 사람 찾는 중 ${i + 1}/${todo.length}장`;
-      try { todo[i].faces = await pmFaces(todo[i]); } catch (e) { console.error(e); todo[i].faces = []; }
-      pmJudge(); pmList(); if (pmCur() === todo[i]) { pmHead(); pmPaint(); }
+      T.textContent = `눈 감은 사람 찾는 중 · 남은 사진 ${left().length}장`;
+      try { it.faces = await pmFaces(it); } catch (e) { console.error(e); it.faces = []; }
+      pmJudge(); pmList(); if (pmCur() === it) { pmHead(); pmPaint(); }
     }
     T.textContent = keepT;
   } catch (e) { console.error(e); T.textContent = '얼굴 찾는 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'; }
