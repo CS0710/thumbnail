@@ -9326,19 +9326,23 @@ function pmStats(im) {
     if (l > 50 && l < 210 && mx - mn < 0.2 * mx + 8) { gr += r; gg += g; gb += b; gn++; }
   }
   const pct = p => { let c = 0; const t = n * p; for (let i = 0; i < 256; i++) { c += H[i]; if (c >= t) return i / 255; } return 1; };
-  return { p5: pct(0.05), p50: pct(0.5), p95: pct(0.95), p99: pct(0.99), clip: clip / n, gray: gn / n > 0.1 ? [gr / gn, gg / gn, gb / gn] : null };
+  return { p5: pct(0.05), p50: pct(0.5), p95: pct(0.95), p99: pct(0.99), p999: pct(0.999), clip: clip / n, gray: gn / n > 0.1 ? [gr / gn, gg / gn, gb / gn] : null };
 }
 const pmR2 = v => Math.round(v * 100) / 100, pmCl = (v, a, b) => Math.max(a, Math.min(b, v));
 function pmAuto(st, style) {
   const ev = style !== 'scene', a = { exp: 0, con: 0, hi: 0, sh: 0, temp: 0, tint: 0, sat: 0 };
-  const m = Math.max(st.p50, 0.03);
-  let stops = Math.log2(pmS2L(ev ? 0.48 : 0.44) / pmS2L(m)) * 0.75;
-  stops = pmCl(Math.min(stops, Math.log2(1.6 / Math.max(pmS2L(st.p99), 0.05))), -1.2, 2);
+  // Gentle on purpose: go only half-way to a "normal" brightness, at most one stop up, and never push the bright parts past white.
+  const m = Math.max(st.p50, 0.03), top = st.p999 == null ? st.p99 : st.p999;
+  let stops = Math.log2(pmS2L(ev ? 0.4 : 0.38) / pmS2L(m)) * 0.5;
+  const head = Math.min(Math.log2(pmS2L(0.92) / Math.max(pmS2L(st.p99), 0.02)), Math.log2(1.3 / Math.max(pmS2L(top), 0.02)));
+  // a dark picture with bright spots in it (lamps at night, a spot-lit wall, a stage) is meant to be dark: lifting it makes the lights bloom
+  const lowKey = st.p50 < 0.12 && top > 0.45;
+  stops = pmCl(Math.min(stops, Math.max(0, head), lowKey ? 0.4 : 1), -0.6, 1);
   const k = Math.pow(2, stops), f = v => pmL2S(Math.min(1, pmS2L(v) * k)), p5 = f(st.p5), p95 = f(st.p95), p99 = f(st.p99);
   a.exp = pmR2(stops / 2);
   a.hi = pmR2(-pmCl((p99 - 0.9) * 3 + st.clip * 2, 0, 0.7));
-  a.sh = pmR2(pmCl((0.14 - p5) * 4, 0, 0.6));
-  a.con = pmR2(pmCl((0.72 - (p95 - p5)) * 0.8, 0, 0.45) + (ev ? 0.05 : 0.14));
+  a.sh = pmR2(pmCl((0.1 - p5) * 3, 0, lowKey ? 0.12 : 0.3));
+  a.con = pmR2(pmCl((0.65 - (p95 - p5)) * 0.6, 0, 0.3) + (ev ? 0.04 : 0.12));
   a.sat = ev ? 0.1 : 0.3;
   if (st.gray) {   // only nudge the colour cast part-way: full correction kills warm room light and sunsets
     const R = pmS2L(st.gray[0] / 255), G = pmS2L(st.gray[1] / 255), B = pmS2L(st.gray[2] / 255), w = ev ? 0.3 : 0.2;
@@ -9391,7 +9395,9 @@ async function pmDecodeRaw(file, half, gain) {
     const H = new Uint32Array(1024); let c = 0;
     for (let i = 0; i < n; i += 5) { const p = i * ch; let v = d[p]; if (ch >= 3) { if (d[p + 1] > v) v = d[p + 1]; if (d[p + 2] > v) v = d[p + 2]; } H[(v * 1023 / top) | 0]++; c++; }
     let acc = 0, p = 1023; for (let i = 1023; i >= 0; i--) { acc += H[i]; if (acc >= c * 0.003) { p = i; break; } }
-    gain = pmCl(0.93 / Math.max(pmS2L((p + 0.5) / 1023), 1e-4), 1, 6);
+    // leave the camera's exposure alone unless the shot is badly underexposed (brightest parts more than ~2.5 stops under white);
+    // then lift it here, where the RAW still has its full range, rather than later in 8 bits
+    const t = Math.max(pmS2L((p + 0.5) / 1023), 1e-4); gain = t < 0.18 ? pmCl(0.4 / t, 1, 4) : 1;
   }
   const N = is16 ? 65536 : 256, L = new Uint8Array(N);
   for (let i = 0; i < N; i++) L[i] = Math.round(pmL2S(pmShoulder(pmS2L(i / (N - 1)) * gain, gain)) * 255);
@@ -9448,7 +9454,7 @@ function pmJudge() {
   PM.items.forEach(it => {
     const f = []; if (it.status !== 'ready') { it.flags = f; return; }
     if (it.crisp < T.blur) f.push('blur');
-    if ((it.isRaw && it.gain >= 4.5) || it.stats.p50 < 0.08) f.push('dark');
+    if ((it.isRaw && it.gain >= 2) || it.stats.p50 < 0.08) f.push('dark');
     if (it.stats.clip > 0.15) f.push('bright');
     if (it.dupOf) f.push('dup');
     if (PM.eyesOn && it.faces && it.faces.some(c => c.ear != null && c.ear < T.ear)) f.push('eyes');
