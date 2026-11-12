@@ -9331,25 +9331,29 @@ function pmStats(im) {
   const pct = p => { let c = 0; const t = n * p; for (let i = 0; i < 256; i++) { c += H[i]; if (c >= t) return i / 255; } return 1; };
   return { p5: pct(0.05), p50: pct(0.5), p95: pct(0.95), p99: pct(0.99), p999: pct(0.999), clip: clip / n, gray: gn / n > 0.1 ? [gr / gn, gg / gn, gb / gn] : null };
 }
-// how far auto correction goes: [share of the way to a normal brightness, most stops up, most stops up for dark-on-purpose shots, most shadow lift]
-const PM_POWER = { soft: [0.5, 1, 0.4, 0.3], mid: [0.7, 1.4, 0.6, 0.4], strong: [0.9, 1.8, 0.9, 0.5] };
+// how far auto correction goes: share of the way to a normal brightness · most stops up · stops it may push the bright parts past white
+// (they are folded back under a soft shoulder, not cut off) · most shadow lift · how hard it corrects a flat picture · contrast added · colour added
+const PM_POWER = { soft: [0.4, 1, 0, 0.3, 0.6, 0.03, 0.05], mid: [0.7, 1.5, 0.4, 0.55, 1, 0.15, 0.14], strong: [1, 2, 0.9, 0.8, 1.4, 0.28, 0.24] };
 const pmR2 = v => Math.round(v * 100) / 100, pmCl = (v, a, b) => Math.max(a, Math.min(b, v));
 function pmAuto(st, style) {
   const ev = style !== 'scene', a = { exp: 0, con: 0, hi: 0, sh: 0, temp: 0, tint: 0, sat: 0 };
-  // Part of the way to a "normal" brightness, with a ceiling, and never pushing the bright parts past white. How far is the user's choice.
-  const [share, maxUp, maxLow, maxSh] = PM_POWER[PM.power] || PM_POWER.mid;
+  const [share, maxUp, over, maxSh, punch, addCon, addSat] = PM_POWER[PM.power] || PM_POWER.mid;
   const m = Math.max(st.p50, 0.03), top = st.p999 == null ? st.p99 : st.p999;
-  let stops = Math.log2(pmS2L(ev ? 0.4 : 0.38) / pmS2L(m)) * share;
-  const head = Math.min(Math.log2(pmS2L(0.92) / Math.max(pmS2L(st.p99), 0.02)), Math.log2(1.3 / Math.max(pmS2L(top), 0.02)));
-  // a dark picture with bright spots in it (lamps at night, a spot-lit wall, a stage) is meant to be dark: lifting it makes the lights bloom
-  const lowKey = st.p50 < 0.12 && top > 0.45;
-  stops = pmCl(Math.min(stops, Math.max(0, head), lowKey ? maxLow : maxUp), -0.6, maxUp);
+  // how much brighter the picture "wants" to be, and how much room the bright parts leave for that
+  // (a RAW already opens at the brightness the camera showed, so this is polish: it only darkens a picture that is clearly too bright)
+  const want0 = Math.log2(pmS2L(ev ? 0.5 : 0.47) / pmS2L(m)), want = want0 > 0 ? Math.min(want0 * share, maxUp) : st.p50 > 0.62 ? Math.max(want0 * 0.3, -0.2) : 0;
+  const head = Math.max(0, Math.min(Math.log2(pmS2L(0.92) / Math.max(pmS2L(st.p99), 0.02)), Math.log2(1.3 / Math.max(pmS2L(top), 0.02))));
+  // a very dark picture with bright spots in it (lamps at night, a stage) is meant to be dark: lifting it makes the lights bloom
+  const lowKey = st.p50 < 0.08 && top > 0.45;
+  const room = lowKey ? Math.min(head + over * 0.3, maxUp * 0.4) : head + over;
+  const stops = want > 0 ? Math.min(want, room) : want, blocked = Math.max(0, want - stops), past = Math.max(0, stops - head);
   const k = Math.pow(2, stops), f = v => pmL2S(Math.min(1, pmS2L(v) * k)), p5 = f(st.p5), p95 = f(st.p95), p99 = f(st.p99);
   a.exp = pmR2(stops / 2);
-  a.hi = pmR2(-pmCl((p99 - 0.9) * 3 + st.clip * 2, 0, 0.7));
-  a.sh = pmR2(pmCl((0.1 - p5) * 3, 0, lowKey ? 0.12 : maxSh));
-  a.con = pmR2(pmCl((0.65 - (p95 - p5)) * 0.6, 0, 0.3) + (ev ? 0.04 : 0.12));
-  a.sat = ev ? 0.1 : 0.3;
+  a.hi = pmR2(-pmCl((p99 - 0.9) * 3 + st.clip * 2 + past * 0.35, 0, 0.8));
+  // brightness the bright parts wouldn't allow goes into the shadows instead (dark trees under a bright sky)
+  a.sh = pmR2(pmCl((0.1 - p5) * 3 + blocked * 0.5, 0, lowKey ? 0.12 + over * 0.1 : maxSh));
+  a.con = pmR2(pmCl((0.75 - (p95 - p5)) * 0.7, 0, 0.35) * punch + addCon + (ev ? 0 : 0.06));
+  a.sat = pmR2(addSat + (ev ? 0 : 0.12));
   if (st.gray) {   // only nudge the colour cast part-way: full correction kills warm room light and sunsets
     const R = pmS2L(st.gray[0] / 255), G = pmS2L(st.gray[1] / 255), B = pmS2L(st.gray[2] / 255), w = ev ? 0.3 : 0.2;
     a.temp = pmR2(pmCl(w * Math.log2(B / R) / 0.7, -0.2, 0.2));
@@ -9391,27 +9395,55 @@ const pmHam = (a, b) => { let n = 0; for (let i = 0; i < 64; i++) if (a[i] !== b
 
 async function pmLibRaw() { if (!PM.raw) { const m = await import('./vendor/libraw/index.js'); PM.raw = new m.default(); } return PM.raw; }
 // RAW → 8-bit picture. The RAW's extra range is used here: dark shots are lifted before anything is thrown away.
-async function pmDecodeRaw(file, half, gain) {
+async function pmDecodeRaw(file, half, look, cam) {
   const raw = await pmLibRaw();
   await raw.open(new Uint8Array(await file.arrayBuffer()), { halfSize: half, useCameraWb: true, outputBps: 16, noAutoBright: true, outputColor: 1, gamm: [1 / 2.4, 12.92] });
   const im = await raw.imageData();
   if (!im || !im.width || !im.data || !im.data.length) throw new Error('raw-empty');
   const d = im.data, w = im.width, h = im.height, ch = im.colors || 3, n = w * h, is16 = d instanceof Uint16Array, top = is16 ? 65535 : 255;
-  if (gain == null) {
-    const H = new Uint32Array(1024); let c = 0;
-    for (let i = 0; i < n; i += 5) { const p = i * ch; let v = d[p]; if (ch >= 3) { if (d[p + 1] > v) v = d[p + 1]; if (d[p + 2] > v) v = d[p + 2]; } H[(v * 1023 / top) | 0]++; c++; }
-    let acc = 0, p = 1023; for (let i = 1023; i >= 0; i--) { acc += H[i]; if (acc >= c * 0.003) { p = i; break; } }
-    // leave the camera's exposure alone unless the shot is badly underexposed (brightest parts more than ~2.5 stops under white);
-    // then lift it here, where the RAW still has its full range, rather than later in 8 bits
-    const t = Math.max(pmS2L((p + 0.5) / 1023), 1e-4); gain = t < 0.18 ? pmCl(0.4 / t, 1, 4) : 1;
+  if (!look) {
+    // The decoder's plain rendering comes out a stop or two darker than what the camera showed on its screen.
+    // Bring it up to the camera's own look (the RAW carries the camera's JPEG preview to compare with), in two steps that
+    // never cut off the bright parts: plain gain as far as the highlights allow, then a curve that lifts only the middle.
+    const HM = new Uint32Array(1024), HL = new Uint32Array(1024); let c = 0;
+    for (let i = 0; i < n; i += 5) {
+      const p = i * ch; let mx = d[p], lum = d[p];
+      if (ch >= 3) { if (d[p + 1] > mx) mx = d[p + 1]; if (d[p + 2] > mx) mx = d[p + 2]; lum = 0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2]; }
+      HM[(mx * 1023 / top) | 0]++; HL[(lum * 1023 / top) | 0]++; c++;
+    }
+    let acc = 0, hi = 1023; for (let i = 1023; i >= 0; i--) { acc += HM[i]; if (acc >= c * 0.003) { hi = i; break; } }
+    let med = 0; acc = 0; for (let i = 0; i < 1024; i++) { acc += HL[i]; if (acc >= c * 0.5) { med = i; break; } }
+    const hiL = Math.max(pmS2L((hi + 0.5) / 1023), 1e-4), medL = Math.max(pmS2L((med + 0.5) / 1023), 1e-4), room = Math.max(1, 0.95 / hiL);
+    const ar = w / h, pv = (cam || []).find(x => Math.abs(x.ar - ar) < 0.04 || Math.abs(1 / x.ar - ar) < 0.04);
+    if (pv) {
+      const want = pmS2L(pmCl(pv.p50, 0.02, 0.9)) / medL, gain = pmCl(Math.min(want, room), 1, 6), m1 = pmL2S(Math.min(1, medL * gain));
+      look = { gain, gam: pv.p50 > m1 && m1 > 0 && m1 < 1 ? pmCl(Math.log(pmCl(pv.p50, 0.02, 0.9)) / Math.log(m1), 0.55, 1) : 1, matched: true };
+    } else look = { gain: hiL < 0.18 ? pmCl(0.4 / hiL, 1, 4) : 1, gam: 1, matched: false };   // no preview to go by: only rescue badly underexposed shots
   }
-  const N = is16 ? 65536 : 256, L = new Uint8Array(N);
-  for (let i = 0; i < N; i++) L[i] = Math.round(pmL2S(pmShoulder(pmS2L(i / (N - 1)) * gain, gain)) * 255);
+  const N = is16 ? 65536 : 256, L = new Uint8Array(N), g = look.gain, gm = look.gam || 1;
+  for (let i = 0; i < N; i++) L[i] = Math.round(Math.pow(pmL2S(pmShoulder(pmS2L(i / (N - 1)) * g, g)), gm) * 255);
   const id = new ImageData(w, h), o = id.data;
   if (ch >= 3) for (let i = 0, p = 0, q = 0; i < n; i++, p += ch, q += 4) { o[q] = L[d[p]]; o[q + 1] = L[d[p + 1]]; o[q + 2] = L[d[p + 2]]; o[q + 3] = 255; }
   else for (let i = 0, q = 0; i < n; i++, q += 4) { o[q] = o[q + 1] = o[q + 2] = L[d[i]]; o[q + 3] = 255; }
   const cv = document.createElement('canvas'); cv.width = w; cv.height = h; cv.getContext('2d').putImageData(id, 0, 0);
-  return { canvas: cv, gain };
+  return { canvas: cv, look };
+}
+// how bright the camera itself rendered this shot: middle brightness of each JPEG preview stored inside the RAW
+async function pmCamLook(file) {
+  const out = [];
+  try {
+    const u = new Uint8Array(await file.arrayBuffer()), at = [];
+    for (let i = 0; i < u.length - 3 && at.length < 12; i++) if (u[i] === 0xFF && u[i + 1] === 0xD8 && u[i + 2] === 0xFF) at.push(i);
+    for (const a of at) {
+      let b; try { b = await createImageBitmap(new Blob([u.subarray(a)], { type: 'image/jpeg' }), { resizeWidth: 320, resizeQuality: 'low' }); } catch (e) { continue; }
+      if (b.height < 40) { b.close && b.close(); continue; }
+      const c = canvasFrom(b), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, H = new Uint32Array(256); let n = 0;
+      for (let i = 0; i < d.length; i += 4) { H[(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]) | 0]++; n++; }
+      let acc = 0, med = 0; for (let i = 0; i < 256; i++) { acc += H[i]; if (acc >= n * 0.5) { med = i; break; } }
+      out.push({ ar: c.width / c.height, p50: med / 255 }); b.close && b.close(); c.width = c.height = 0;
+    }
+  } catch (e) { console.warn(e); }
+  return out;
 }
 // fallback for RAW flavours the decoder can't read: most RAW files carry a ready-made JPEG preview inside
 async function pmEmbedded(file) {
@@ -9428,7 +9460,7 @@ async function pmBaseCanvas(it) { const b = await createImageBitmap(it.base); co
 async function pmLoad(it) {
   let cv;
   if (it.isRaw) {
-    try { const r = await pmDecodeRaw(it.file, true); cv = r.canvas; it.gain = r.gain; it.fullLong = Math.max(cv.width, cv.height) * 2; }
+    try { const r = await pmDecodeRaw(it.file, true, null, await pmCamLook(it.file)); cv = r.canvas; it.look = r.look; it.gain = r.look.gain; it.camMatched = r.look.matched; it.fullLong = Math.max(cv.width, cv.height) * 2; }
     catch (e) {
       console.warn('RAW decode failed, trying the embedded preview', e);
       if (PM.raw) { try { PM.raw.dispose(); } catch (x) {} PM.raw = null; }
@@ -9460,7 +9492,7 @@ function pmJudge() {
   PM.items.forEach(it => {
     const f = []; if (it.status !== 'ready') { it.flags = f; return; }
     if (it.crisp < T.blur) f.push('blur');
-    if ((it.isRaw && it.gain >= 2) || it.stats.p50 < 0.08) f.push('dark');
+    if ((it.isRaw && !it.camMatched && it.gain >= 2) || it.stats.p50 < 0.08) f.push('dark');
     if (it.stats.clip > 0.15) f.push('bright');
     if (it.dupOf) f.push('dup');
     if (PM.eyesOn && it.faces && it.faces.some(c => c.ear != null && c.ear < T.ear)) f.push('eyes');
@@ -9728,7 +9760,7 @@ function pmSizesOn() { return $$('#photoMode [data-size]:checked').map(c => { co
 async function pmSource(it, need) {
   if (need > Math.max(it.w, it.h) && !it.noFull && it.fullLong > Math.max(it.w, it.h)) {
     try {
-      if (it.isRaw) { const r = await pmDecodeRaw(it.file, false, it.gain); return r.canvas; }
+      if (it.isRaw) { const r = await pmDecodeRaw(it.file, false, it.look); return r.canvas; }
       const b = await bxDecode(it.file), c = canvasFrom(b); b.close && b.close(); return c;
     } catch (e) { console.warn('full-size source failed, using the working copy', e); if (PM.raw) { try { PM.raw.dispose(); } catch (x) {} PM.raw = null; } }
   }
