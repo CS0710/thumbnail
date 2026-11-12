@@ -1645,6 +1645,12 @@ body:not(.show-help) .drawer p.hint:not([id]),body:not(.show-help) #pDoc>p.hint:
 </div>
 <div class="cut-brush" id="cutBrush" hidden></div>
 <script type="text/plain" id="i18nEN">
+자동 보정 세기 ⇒ Auto strength
+약하게 ⇒ Soft
+강하게 ⇒ Strong
+눈 확인 중… ⇒ Checking eyes…
+눈 확인 중 ⇒ Checking eyes
+눈 감은 사람 찾는 중 · 남은 사진 {#}장 ⇒ Checking eyes · {#} left
 디자인 ⇒ Design
 올린 사진 ⇒ Photos
 더 올리기 ⇒ Add more
@@ -9268,7 +9274,7 @@ setHelp(lsGet('tg.help') === '1');
 /*PM_JS*/
 /*PM_JS_BEGIN*/
 /* ---------------- photo fix: RAW · auto correct · picking out bad shots ---------------- */
-const PM = { items: [], cur: -1, filter: 'all', strict: lsGet('tg.pmStrict') || 'mid', style: lsGet('tg.pmStyle') || 'event', eyesOn: lsGet('tg.pmEyes') ? lsGet('tg.pmEyes') === '1' : !matchMedia('(max-width:980px)').matches,   // heavy on phones: off there until asked for
+const PM = { power: lsGet('tg.pmPower') || 'mid', items: [], cur: -1, filter: 'all', strict: lsGet('tg.pmStrict') || 'mid', style: lsGet('tg.pmStyle') || 'event', eyesOn: lsGet('tg.pmEyes') ? lsGet('tg.pmEyes') === '1' : !matchMedia('(max-width:980px)').matches,   // heavy on phones: off there until asked for
  
   busy: false, built: false, split: 0.5, cmp: true, crop: '', undo: null, raw: null, fa: null, src: null, out: null, beforeCv: null, afterCv: null, raf: 0, seq: 0 };
 const PM_RAW = /\.(cr2|cr3|crw|nef|nrw|arw|srf|sr2|dng|raf|orf|rw2|pef|srw|x3f|3fr|erf|kdc|dcr|mos|mrw|rwl|iiq|raw)$/i;
@@ -9323,19 +9329,26 @@ function pmStats(im) {
     if (l > 50 && l < 210 && mx - mn < 0.2 * mx + 8) { gr += r; gg += g; gb += b; gn++; }
   }
   const pct = p => { let c = 0; const t = n * p; for (let i = 0; i < 256; i++) { c += H[i]; if (c >= t) return i / 255; } return 1; };
-  return { p5: pct(0.05), p50: pct(0.5), p95: pct(0.95), p99: pct(0.99), clip: clip / n, gray: gn / n > 0.1 ? [gr / gn, gg / gn, gb / gn] : null };
+  return { p5: pct(0.05), p50: pct(0.5), p95: pct(0.95), p99: pct(0.99), p999: pct(0.999), clip: clip / n, gray: gn / n > 0.1 ? [gr / gn, gg / gn, gb / gn] : null };
 }
+// how far auto correction goes: [share of the way to a normal brightness, most stops up, most stops up for dark-on-purpose shots, most shadow lift]
+const PM_POWER = { soft: [0.5, 1, 0.4, 0.3], mid: [0.7, 1.4, 0.6, 0.4], strong: [0.9, 1.8, 0.9, 0.5] };
 const pmR2 = v => Math.round(v * 100) / 100, pmCl = (v, a, b) => Math.max(a, Math.min(b, v));
 function pmAuto(st, style) {
   const ev = style !== 'scene', a = { exp: 0, con: 0, hi: 0, sh: 0, temp: 0, tint: 0, sat: 0 };
-  const m = Math.max(st.p50, 0.03);
-  let stops = Math.log2(pmS2L(ev ? 0.48 : 0.44) / pmS2L(m)) * 0.75;
-  stops = pmCl(Math.min(stops, Math.log2(1.6 / Math.max(pmS2L(st.p99), 0.05))), -1.2, 2);
+  // Part of the way to a "normal" brightness, with a ceiling, and never pushing the bright parts past white. How far is the user's choice.
+  const [share, maxUp, maxLow, maxSh] = PM_POWER[PM.power] || PM_POWER.mid;
+  const m = Math.max(st.p50, 0.03), top = st.p999 == null ? st.p99 : st.p999;
+  let stops = Math.log2(pmS2L(ev ? 0.4 : 0.38) / pmS2L(m)) * share;
+  const head = Math.min(Math.log2(pmS2L(0.92) / Math.max(pmS2L(st.p99), 0.02)), Math.log2(1.3 / Math.max(pmS2L(top), 0.02)));
+  // a dark picture with bright spots in it (lamps at night, a spot-lit wall, a stage) is meant to be dark: lifting it makes the lights bloom
+  const lowKey = st.p50 < 0.12 && top > 0.45;
+  stops = pmCl(Math.min(stops, Math.max(0, head), lowKey ? maxLow : maxUp), -0.6, maxUp);
   const k = Math.pow(2, stops), f = v => pmL2S(Math.min(1, pmS2L(v) * k)), p5 = f(st.p5), p95 = f(st.p95), p99 = f(st.p99);
   a.exp = pmR2(stops / 2);
   a.hi = pmR2(-pmCl((p99 - 0.9) * 3 + st.clip * 2, 0, 0.7));
-  a.sh = pmR2(pmCl((0.14 - p5) * 4, 0, 0.6));
-  a.con = pmR2(pmCl((0.72 - (p95 - p5)) * 0.8, 0, 0.45) + (ev ? 0.05 : 0.14));
+  a.sh = pmR2(pmCl((0.1 - p5) * 3, 0, lowKey ? 0.12 : maxSh));
+  a.con = pmR2(pmCl((0.65 - (p95 - p5)) * 0.6, 0, 0.3) + (ev ? 0.04 : 0.12));
   a.sat = ev ? 0.1 : 0.3;
   if (st.gray) {   // only nudge the colour cast part-way: full correction kills warm room light and sunsets
     const R = pmS2L(st.gray[0] / 255), G = pmS2L(st.gray[1] / 255), B = pmS2L(st.gray[2] / 255), w = ev ? 0.3 : 0.2;
@@ -9388,7 +9401,9 @@ async function pmDecodeRaw(file, half, gain) {
     const H = new Uint32Array(1024); let c = 0;
     for (let i = 0; i < n; i += 5) { const p = i * ch; let v = d[p]; if (ch >= 3) { if (d[p + 1] > v) v = d[p + 1]; if (d[p + 2] > v) v = d[p + 2]; } H[(v * 1023 / top) | 0]++; c++; }
     let acc = 0, p = 1023; for (let i = 1023; i >= 0; i--) { acc += H[i]; if (acc >= c * 0.003) { p = i; break; } }
-    gain = pmCl(0.93 / Math.max(pmS2L((p + 0.5) / 1023), 1e-4), 1, 6);
+    // leave the camera's exposure alone unless the shot is badly underexposed (brightest parts more than ~2.5 stops under white);
+    // then lift it here, where the RAW still has its full range, rather than later in 8 bits
+    const t = Math.max(pmS2L((p + 0.5) / 1023), 1e-4); gain = t < 0.18 ? pmCl(0.4 / t, 1, 4) : 1;
   }
   const N = is16 ? 65536 : 256, L = new Uint8Array(N);
   for (let i = 0; i < N; i++) L[i] = Math.round(pmL2S(pmShoulder(pmS2L(i / (N - 1)) * gain, gain)) * 255);
@@ -9445,7 +9460,7 @@ function pmJudge() {
   PM.items.forEach(it => {
     const f = []; if (it.status !== 'ready') { it.flags = f; return; }
     if (it.crisp < T.blur) f.push('blur');
-    if ((it.isRaw && it.gain >= 4.5) || it.stats.p50 < 0.08) f.push('dark');
+    if ((it.isRaw && it.gain >= 2) || it.stats.p50 < 0.08) f.push('dark');
     if (it.stats.clip > 0.15) f.push('bright');
     if (it.dupOf) f.push('dup');
     if (PM.eyesOn && it.faces && it.faces.some(c => c.ear != null && c.ear < T.ear)) f.push('eyes');
@@ -9453,6 +9468,7 @@ function pmJudge() {
   });
 }
 const pmKind = it => it.status !== 'ready' ? it.status : it.excluded ? 'out' : it.flags.length ? 'warn' : 'ok';
+const pmWaitEyes = it => PM.eyesOn && it.status === 'ready' && !it.faces;
 const pmCur = () => PM.items[PM.cur];
 
 /* ---- UI ---- */
@@ -9485,6 +9501,7 @@ function pmBuild() {
     <aside class="pm-side" aria-label="보정">
       <h2>자동 보정</h2>
       <div class="seg grid2" id="pmStyle" style="margin-top:12px"><button data-st="event" title="사람 얼굴이 자연스럽고 밝게">행사</button><button data-st="scene" title="하늘과 초록이 선명하게">풍경</button></div>
+      <div class="field" style="margin-top:10px"><span class="lbl">자동 보정 세기</span><div class="seg grid3" id="pmPower"><button data-p="soft">약하게</button><button data-p="mid">보통</button><button data-p="strong">강하게</button></div></div>
       <div class="row" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr"><button class="btn sm" id="pmAutoOne">이 사진 자동</button><button class="btn sm primary" id="pmAutoAll">전체 자동 보정</button></div>
       <div class="pm-sec"><div class="row" style="justify-content:space-between"><h3 style="margin:0">직접 조절</h3><button class="btn sm ghost" id="pmReset">보정 없애기</button></div>
         ${PM_ADJ.map(([k, n]) => `<div class="field"><label for="pm_${k}">${n} <output id="pm_${k}O">0</output></label><input type="range" id="pm_${k}" data-adj="${k}" min="-100" max="100" value="0"></div>`).join('')}
@@ -9516,6 +9533,7 @@ function pmBuild() {
   $('#pmOutAll').onclick = () => { PM.undo = { kind: 'out', v: PM.items.map(i => i.excluded) }; let n = 0; PM.items.forEach(i => { if (pmKind(i) === 'warn') { i.excluded = true; n++; } }); pmList(); pmHead(); $('#pmUndo').hidden = false; toast(`확인 필요 사진 ${n}장을 뺐어요. ‘뺀 사진’에서 다시 살릴 수 있어요.`, 3600); };
   $('#pmCmp').onclick = () => { PM.cmp = !PM.cmp; $('#pmCmp').setAttribute('aria-pressed', PM.cmp); pmPaint(); };
   $('#pmStyle').onclick = e => { const b = e.target.closest('[data-st]'), it = pmCur(); if (!b) return; PM.style = b.dataset.st; lsSet('tg.pmStyle', PM.style); if (it && it.status === 'ready') { it.style = PM.style; it.adj = pmAuto(it.stats, it.style); } pmSide(); pmRefresh(); };
+  $('#pmPower').onclick = e => { const b = e.target.closest('[data-p]'); if (!b || b.dataset.p === PM.power) return; PM.power = b.dataset.p; lsSet('tg.pmPower', PM.power); pmSnap(); let n = 0; PM.items.forEach(i => { if (i.status === 'ready' && !i.excluded) { i.adj = pmAuto(i.stats, i.style); n++; } }); pmSide(); pmRefresh(); pmThumbs(); if (n) toast(`세기를 바꿔서 ${n}장을 다시 자동 보정했어요. 직접 조절한 값은 ‘방금 한 일 되돌리기’로 되살릴 수 있어요.`, 4200); };
   $('#pmAutoOne').onclick = () => { const it = pmCur(); if (!it || it.status !== 'ready') return; it.adj = pmAuto(it.stats, it.style); pmSide(); pmRefresh(); };
   $('#pmAutoAll').onclick = () => { pmSnap(); let n = 0; PM.items.forEach(i => { if (i.status === 'ready' && !i.excluded) { i.adj = pmAuto(i.stats, i.style); n++; } }); pmSide(); pmRefresh(); pmThumbs(); toast(`${n}장을 사진마다 따로 계산해서 자동 보정했어요.`); };
   $('#pmReset').onclick = () => { const it = pmCur(); if (!it || it.status !== 'ready') return; it.adj = { exp: 0, con: 0, hi: 0, sh: 0, temp: 0, tint: 0, sat: 0 }; pmSide(); pmRefresh(); };
@@ -9544,7 +9562,7 @@ function pmList() {
   $('#pmOutAll').hidden = !cnt.warn;
   $('#pmGrid').innerHTML = PM.items.map((it, i) => {
     const k = pmKind(it); if (PM.filter !== 'all' && k !== PM.filter && !(k === 'loading' || k === 'error')) return '';
-    const st = k === 'loading' ? ['off', '여는 중…'] : k === 'error' ? ['warn', '열지 못했어요'] : k === 'out' ? ['off', '뺀 사진'] : k === 'warn' ? ['warn', '확인 · ' + it.flags.map(f => PM_FLAG[f]).join(' · ')] : ['ok', '좋음'];
+    const st = k === 'loading' ? ['off', '여는 중…'] : k === 'error' ? ['warn', '열지 못했어요'] : k === 'out' ? ['off', '뺀 사진'] : k === 'warn' ? ['warn', '확인 · ' + it.flags.map(f => PM_FLAG[f]).join(' · ') + (pmWaitEyes(it) ? ' · 눈 확인 중' : '')] : pmWaitEyes(it) ? ['off', '눈 확인 중…'] : ['ok', '좋음'];
     return `<button class="pm-card${i === PM.cur ? ' on' : ''}${k === 'out' ? ' out' : ''}" data-i="${i}" title="${esc(it.name)}"><span class="th">${it.small ? `<canvas data-th="${i}" width="${it.small.width}" height="${it.small.height}"></canvas>` : (k === 'error' ? '!' : '…')}</span><span class="st ${st[0]}">${st[1]}</span><span class="nm" data-noi18n>${esc(it.name)}</span></button>`;
   }).join('') || '<p class="hint" style="grid-column:1/-1">여기에 해당하는 사진이 없어요.</p>';
   pmThumbs();
@@ -9552,8 +9570,8 @@ function pmList() {
 function pmThumbs() { $$('#pmGrid canvas[data-th]').forEach(c => { const it = PM.items[+c.dataset.th]; if (!it || !it.small) return; const o = new ImageData(it.small.width, it.small.height); c.getContext('2d').putImageData(pmApply(it.small, it.adj, o), 0, 0); }); }
 function pmHead() {
   const it = pmCur(); $('#pmName').textContent = it ? it.name : '';
-  const fl = !it || it.status !== 'ready' ? '' : it.flags.length ? it.flags.map(f => `<span class="pm-flag" title="${f === 'dup' ? esc('비슷한 사진: ' + it.dupOf) : ''}">${PM_FLAG[f]}</span>`).join('') : '<span class="pm-flag ok">좋음</span>';
-  $('#pmFlags').innerHTML = fl + (it && it.excluded ? '<span class="pm-flag">뺀 사진</span>' : '');
+  const fl = !it || it.status !== 'ready' ? '' : it.flags.length ? it.flags.map(f => `<span class="pm-flag" title="${f === 'dup' ? esc('비슷한 사진: ' + it.dupOf) : ''}">${PM_FLAG[f]}</span>`).join('') : pmWaitEyes(it) ? '' : '<span class="pm-flag ok">좋음</span>';
+  $('#pmFlags').innerHTML = fl + (it && pmWaitEyes(it) ? '<span class="pm-flag" style="color:var(--muted)">눈 확인 중</span>' : '') + (it && it.excluded ? '<span class="pm-flag">뺀 사진</span>' : '');
   $('#pmOut').textContent = it && it.excluded ? '다시 살리기' : '이 사진 빼기'; $('#pmOut').disabled = !it || it.status !== 'ready';
   const note = it && (it.note || (it.status === 'error' ? '이 파일은 열지 못했어요. 지원하지 않는 형식이거나 파일이 손상됐을 수 있어요.' : ''));
   $('#pmNote').hidden = !note; $('#pmNote').textContent = note || '';
@@ -9561,6 +9579,7 @@ function pmHead() {
 function pmSide() {
   const it = pmCur(), ok = it && it.status === 'ready';
   $$('#pmStyle [data-st]').forEach(b => b.setAttribute('aria-pressed', b.dataset.st === (ok ? it.style : PM.style)));
+  $$('#pmPower [data-p]').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === PM.power));
   $$('#pmStrict [data-s]').forEach(b => b.setAttribute('aria-pressed', b.dataset.s === PM.strict));
   $$('#pmCrop [data-c]').forEach(b => b.setAttribute('aria-pressed', b.dataset.c === PM.crop));
   PM_ADJ.forEach(([k]) => { const v = ok ? Math.round(it.adj[k] * 100) : 0; $('#pm_' + k).value = v; $('#pm_' + k + 'O').textContent = v; $('#pm_' + k).disabled = !ok; });
@@ -9687,15 +9706,17 @@ async function pmFaces(it) {
 }
 function pmJudgeEyesOff() { pmJudge(); pmList(); pmHead(); pmPaint(); }
 async function pmEyesRun() {
-  if (PM.eyesBusy) return; const todo = PM.items.filter(i => i.status === 'ready' && !i.faces); if (!todo.length) { pmJudge(); pmList(); pmHead(); pmPaint(); return; }
-  PM.eyesBusy = true; const T = $('#pmEyesT'), keepT = T.textContent;
+  const left = () => PM.items.filter(i => i.status === 'ready' && !i.faces);
+  if (PM.eyesBusy) return; if (!left().length) { pmJudge(); pmList(); pmHead(); pmPaint(); return; }
+  PM.eyesBusy = true; const T = $('#pmEyesT'), keepT = '얼굴이 작거나 옆모습이면 놓칠 수 있어요.';
   try {
     T.textContent = '얼굴 찾는 도구를 불러오는 중…'; await pmFaceApi(); await pmMesh();
-    for (let i = 0; i < todo.length && PM.eyesOn; i++) {
+    // photos added while this is running join the queue: look again after every photo instead of fixing the list up front
+    for (let n = 1, it; PM.eyesOn && (it = left()[0]); n++) {
       while (PM.busy) await sleep(300);   // saving and opening go first
-      T.textContent = `눈 감은 사람 찾는 중 ${i + 1}/${todo.length}장`;
-      try { todo[i].faces = await pmFaces(todo[i]); } catch (e) { console.error(e); todo[i].faces = []; }
-      pmJudge(); pmList(); if (pmCur() === todo[i]) { pmHead(); pmPaint(); }
+      T.textContent = `눈 감은 사람 찾는 중 · 남은 사진 ${left().length}장`;
+      try { it.faces = await pmFaces(it); } catch (e) { console.error(e); it.faces = []; }
+      pmJudge(); pmList(); if (pmCur() === it) { pmHead(); pmPaint(); }
     }
     T.textContent = keepT;
   } catch (e) { console.error(e); T.textContent = '얼굴 찾는 도구를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.'; }
