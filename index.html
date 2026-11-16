@@ -5358,6 +5358,16 @@ function fit() {
   cv.requestRenderAll();
 }
 new ResizeObserver(() => fit()).observe(fitBox);
+// Browsers quietly drop a canvas's drawing when memory runs low (many open tabs, big photos). The objects are
+// all still there, so repainting brings the picture back; without this the editor looks wiped until something moves.
+function repaintLost() {
+  if (document.hidden) return;
+  cv.requestRenderAll();
+  if (typeof curMode === 'function' && curMode() === 'photo' && typeof PM === 'object' && PM.cur >= 0 && PM.items[PM.cur] && PM.items[PM.cur].status === 'ready') pmSelect(PM.cur);
+}
+document.addEventListener('visibilitychange', repaintLost);
+window.addEventListener('focus', repaintLost);
+setInterval(() => { if (!document.hidden) cv.requestRenderAll(); }, 4000);
 
 /* ---------------- background ---------------- */
 function applyBgTo(c, d) {
@@ -8664,7 +8674,7 @@ async function bxThumbs() {
     let url = bxTh.get(f);
     if (url === undefined) {
       url = null;
-      try { const b = await createImageBitmap(f, { resizeWidth: 160, resizeQuality: 'low' }); const c = document.createElement('canvas'); c.width = b.width; c.height = b.height; c.getContext('2d').drawImage(b, 0, 0); b.close && b.close(); url = c.toDataURL('image/jpeg', 0.7); } catch (e) {}
+      try { const b = await createImageBitmap(f, { resizeWidth: 160, resizeQuality: 'low' }); const c = document.createElement('canvas'); c.width = b.width; c.height = b.height; c.getContext('2d').drawImage(b, 0, 0); b.close && b.close(); url = c.toDataURL('image/jpeg', 0.7); c.width = c.height = 0; } catch (e) {}
       bxTh.set(f, url);
       if (!$(`#bxList [data-bxth="${i}"]`)) continue;   // the list re-rendered meanwhile
     }
