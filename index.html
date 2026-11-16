@@ -40,25 +40,25 @@ html[lang=en] .ph.busy::after{content:"Loading…"}
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0D181E; --panel:#1E1F2A; --panel-2:#2E3242; --ink:#F7F8F9; --text:#DADCE0; --muted:#C1C7D1; --faint:#9BA2AE; --line:#45495B;
-    --mat:#0D181E; --mat-dot:#1E1F2A;
-    --primary:#F7F8F9; --primary-hover:#EDEEF1; --primary-pressed:#FFFFFF; --on-primary:#233237;
-    --sec:#2E3242; --sec-hover:#3A3F50; --sec-pressed:#45495B;
-    --emph:#FC6589; --emph-hover:#FD7A9B; --emph-pressed:#E8557A; --on-emph:#0D181E;
-    --accent:#F5F5F5; --accent-ink:#111111;
-    --hot:#FF7A4D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F7F8F9; --ring:#0D181E; --on-status:#0D181E;
-    --float-shadow:0 4px 16px rgba(0,0,0,.5); color-scheme:dark;
+    --bg:#0B0F1E; --panel:#151A2C; --panel-2:#1D2338; --ink:#F2F4FC; --text:#C9CEE3; --muted:#9CA4C4; --faint:#6C7495; --line:#2B3253;
+    --mat:#0A0E1B; --mat-dot:#192036;
+    --primary:#6B6DF6; --primary-hover:#7D7FFF; --primary-pressed:#5456E3; --on-primary:#FFFFFF;
+    --sec:#242B4C; --sec-hover:#2C345A; --sec-pressed:#374172;
+    --emph:#21C7EB; --emph-hover:#3FD4F4; --emph-pressed:#12AFD1; --on-emph:#06222D;
+    --accent:#6B6DF6; --accent-ink:#FFFFFF;
+    --hot:#FF7A6B; --ok:#3DD17A; --caution:#FFA94D; --focus:#8D8FFF; --ring:#0B0F1E; --on-status:#06222D;
+    --float-shadow:0 4px 18px rgba(0,0,0,.55); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0D181E; --panel:#1E1F2A; --panel-2:#2E3242; --ink:#F7F8F9; --text:#DADCE0; --muted:#C1C7D1; --faint:#9BA2AE; --line:#45495B;
-  --mat:#0D181E; --mat-dot:#1E1F2A;
-  --primary:#F7F8F9; --primary-hover:#EDEEF1; --primary-pressed:#FFFFFF; --on-primary:#233237;
-  --sec:#2E3242; --sec-hover:#3A3F50; --sec-pressed:#45495B;
-  --emph:#FC6589; --emph-hover:#FD7A9B; --emph-pressed:#E8557A; --on-emph:#0D181E;
-  --accent:#F5F5F5; --accent-ink:#111111;
-  --hot:#FF7A4D; --ok:#3CC24A; --caution:#FF8A57; --focus:#F7F8F9; --ring:#0D181E; --on-status:#0D181E;
-  --float-shadow:0 4px 16px rgba(0,0,0,.5); color-scheme:dark;
+  --bg:#0B0F1E; --panel:#151A2C; --panel-2:#1D2338; --ink:#F2F4FC; --text:#C9CEE3; --muted:#9CA4C4; --faint:#6C7495; --line:#2B3253;
+  --mat:#0A0E1B; --mat-dot:#192036;
+  --primary:#6B6DF6; --primary-hover:#7D7FFF; --primary-pressed:#5456E3; --on-primary:#FFFFFF;
+  --sec:#242B4C; --sec-hover:#2C345A; --sec-pressed:#374172;
+  --emph:#21C7EB; --emph-hover:#3FD4F4; --emph-pressed:#12AFD1; --on-emph:#06222D;
+  --accent:#6B6DF6; --accent-ink:#FFFFFF;
+  --hot:#FF7A6B; --ok:#3DD17A; --caution:#FFA94D; --focus:#8D8FFF; --ring:#0B0F1E; --on-status:#06222D;
+  --float-shadow:0 4px 18px rgba(0,0,0,.55); color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -975,6 +975,10 @@ body:not(.show-help) .drawer p.hint:not([id]),body:not(.show-help) #pDoc>p.hint:
         <button role="menuitemcheckbox" id="badgeBtn" aria-pressed="false" title="유튜브 재생시간 표시가 가리는 자리"><svg class="i"><use href="#i-clock"/></svg>재생시간 표시</button>
         <div class="menu-sep"></div>
         <button role="menuitemcheckbox" id="helpBtn" aria-pressed="false" title="패널마다 있는 설명 글을 보이거나 숨겨요"><svg class="i"><use href="#i-eye"/></svg>설명 글 보기</button>
+        <div class="menu-sep"></div>
+        <button role="menuitemradio" data-theme-set="" aria-pressed="true"><svg class="i"><use href="#i-monitor"/></svg>테마: 기기 설정 따라가기</button>
+        <button role="menuitemradio" data-theme-set="light" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg>테마: 밝게 (원래 색)</button>
+        <button role="menuitemradio" data-theme-set="dark" aria-pressed="false"><svg class="i"><use href="#i-drop"/></svg>테마: 어둡게 (새 스타일)</button>
       </div>
     </div>
     <div class="menu-wrap only-design">
@@ -1645,6 +1649,9 @@ body:not(.show-help) .drawer p.hint:not([id]),body:not(.show-help) #pDoc>p.hint:
 </div>
 <div class="cut-brush" id="cutBrush" hidden></div>
 <script type="text/plain" id="i18nEN">
+테마: 기기 설정 따라가기 ⇒ Theme: follow device
+테마: 밝게 (원래 색) ⇒ Theme: light (original)
+테마: 어둡게 (새 스타일) ⇒ Theme: dark (new style)
 자동 보정 세기 ⇒ Auto strength
 약하게 ⇒ Soft
 강하게 ⇒ Strong
@@ -9226,6 +9233,16 @@ async function boot() {
   }
 }
 
+
+/* ---------------- theme picker ---------------- */
+function applyTheme(v) {
+  if (v === 'light' || v === 'dark') document.documentElement.dataset.theme = v;
+  else { delete document.documentElement.dataset.theme; v = ''; }
+  lsSet('tg.theme', v);
+  $$('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', b.dataset.themeSet === v));
+}
+$$('[data-theme-set]').forEach(b => b.addEventListener('click', () => applyTheme(b.dataset.themeSet)));
+applyTheme(lsGet('tg.theme') || '');
 /* ---------------- top menu: modes, phone sheets, help text ---------------- */
 const MODE_NAMES = { design: '디자인', photo: '사진 보정', convert: '일괄 변환', mine: '마이스페이스' };
 function markMode(m) {
