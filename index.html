@@ -1088,9 +1088,6 @@ body:not(.show-help) .drawer p.hint:not([id]),body:not(.show-help) #pDoc>p.hint:
           <button data-add="sub"><span style="font-family:'Pretendard';font-weight:600;font-size:19px;color:var(--ink)">부제목 넣기</span></button>
           <button data-add="small"><span style="font-family:'Pretendard';font-size:14px;color:var(--ink)">작은 글씨 넣기</span></button>
         </div>
-        <h3>한 번에 꾸미기</h3>
-        <p class="hint" style="margin-top:0">글자를 선택한 상태면 그 글자에, 아니면 새 글자로 넣어요.</p>
-        <div class="presets" id="presetGrid" style="margin-top:8px"></div>
         <h3>글꼴 직접 올리기</h3>
         <p data-en='Upload TTF · OTF · WOFF files, or <b>the ZIP as downloaded</b>, and they’re saved in this browser. Files that differ only in weight (Bold, Light…) are grouped as one font. Check each font’s license for commercial use.' class="hint" style="margin-top:0">TTF·OTF·WOFF 파일이나 <b>받은 ZIP 그대로</b> 올리면 이 브라우저에 저장돼요. Bold·Light처럼 굵기만 다른 파일은 한 글꼴로 묶어요. 상업적 사용 허용 여부는 폰트마다 확인하세요.</p>
         <div class="row" style="margin-top:8px"><button class="btn sm" id="fontUpBtn"><svg class="i"><use href="#i-upload"/></svg>폰트 파일 올리기</button><button class="btn sm" id="wfOpen"><svg class="i"><use href="#i-globe"/></svg>웹폰트 추가</button></div>
@@ -5679,9 +5676,10 @@ async function applyPreset(p, t) {
   else { const n = makeText('여기에 제목', Object.assign({ fontSize: 130 }, s)); addObj(n); }
 }
 function renderPresets() {
+  if (!$('#presetGrid')) return;
   $('#presetGrid').innerHTML = TEXT_PRESETS.map((p, i) => `<button class="preset" data-i="${i}" style="background:${p.bg || '#7E8798'}" title="${esc(p.n)}"><span><span style="${p.css}">가나다</span><small>${esc(p.n)}</small></span></button>`).join('');
 }
-$('#presetGrid').onclick = e => { const b = e.target.closest('.preset'); if (!b) return; const o = cv.getActiveObject(); applyPreset(TEXT_PRESETS[+b.dataset.i], o && isTxt(o) ? o : null); };
+if ($('#presetGrid')) $('#presetGrid').onclick = e => { const b = e.target.closest('.preset'); if (!b) return; const o = cv.getActiveObject(); applyPreset(TEXT_PRESETS[+b.dataset.i], o && isTxt(o) ? o : null); };
 $$('[data-add]').forEach(b => b.onclick = async () => {
   const k = b.dataset.add;
   const plain = { fontFamily: 'Pretendard', fill: '#111111', stroke: null, strokeWidth: 0, shadow: null, textBackgroundColor: '', outer: null, depth: null };
