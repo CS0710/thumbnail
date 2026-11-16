@@ -898,6 +898,29 @@ body:not(.show-help) .drawer p.hint:not([id]),body:not(.show-help) #pDoc>p.hint:
   .pm-side{padding-bottom:max(40px,env(safe-area-inset-bottom,0px))}
 }
 /*PM_CSS_END*/
+/*POLISH_CSS*/
+.bx-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;max-height:340px}
+.bx-card{position:relative;display:flex;flex-direction:column;gap:3px;min-width:0;font-size:11.5px;padding:0}
+.bx-card .th{display:block;aspect-ratio:1;border-radius:8px;background:var(--sec);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.bx-card .th img{width:100%;height:100%;object-fit:cover;display:block}
+.bx-card .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.bx-card .sz{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx-card .sz b{color:var(--ink)}
+.bx-card .sz b.bad{color:var(--hot)}
+.bx-card .bx-x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:rgba(10,14,27,.72);color:#FFFFFF;font-size:11px;display:grid;place-items:center}
+@media (min-width:981px){
+  .work{gap:12px;padding:12px;background:var(--mat)}
+  .rail,.drawer,.insp{border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .drawer{border-right:1px solid var(--line)}
+  .insp{border-left:1px solid var(--line)}
+  .rail{border-right:1px solid var(--line);padding-top:12px}
+  .stage{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .pm-main{gap:12px;padding:12px;background:var(--mat)}
+  .pm-list,.pm-side{border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .pm-view{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+  .pm-stage{background:var(--mat)}
+  .modal.as-page .dlg{border-radius:14px}
+}
 </style>
 </head>
 <body>
@@ -8624,9 +8647,30 @@ function bxUI() {
   $('#bxCount').textContent = `${BX.files.length}장 · ${fmtBytes(BX.files.reduce((a, f) => a + f.size, 0))}`;
   $('#bxClear').hidden = !BX.files.length; $('#bxGo').disabled = !BX.files.length || BX.busy; $('#bxToCanvas').disabled = !BX.files.length || BX.busy;
 }
+const bxTh = new WeakMap();
 function bxRenderList() {
-  $('#bxList').innerHTML = BX.files.map((f, i) => { const o = BX.out[i]; return `<div class="bx-row"><span class="nm" title="${esc(f.name)}">${esc(f.name)}</span><span class="sz">${fmtBytes(f.size)}${o ? (o.err ? ' → <b class="bad">읽지 못함</b>' : ` → <b>${fmtBytes(o.blob.size)}</b> · ${o.w}×${o.h}`) : ''}</span><button class="bx-x" data-bxdel="${i}" aria-label="빼기" title="빼기">✕</button></div>`; }).join('');
+  $('#bxList').innerHTML = BX.files.map((f, i) => { const o = BX.out[i];
+    return `<div class="bx-card"><span class="th" data-bxth="${i}"></span><button class="bx-x" data-bxdel="${i}" aria-label="빼기" title="빼기">✕</button>`
+      + `<span class="nm" title="${esc(f.name)}" data-noi18n>${esc(f.name)}</span>`
+      + `<span class="sz">${fmtBytes(f.size)}${o ? (o.err ? ' → <b class="bad">읽지 못함</b>' : ` → <b>${fmtBytes(o.blob.size)}</b> · ${o.w}×${o.h}`) : ''}</span></div>`; }).join('');
+  bxThumbs();
   bxUI();
+}
+// small previews, made once per file; HEIC and friends that the browser can't draw just show no picture
+async function bxThumbs() {
+  if (BX.files.length > 120) return;
+  for (let i = 0; i < BX.files.length; i++) {
+    const f = BX.files[i], holder = $(`#bxList [data-bxth="${i}"]`); if (!holder) continue;
+    let url = bxTh.get(f);
+    if (url === undefined) {
+      url = null;
+      try { const b = await createImageBitmap(f, { resizeWidth: 160, resizeQuality: 'low' }); const c = document.createElement('canvas'); c.width = b.width; c.height = b.height; c.getContext('2d').drawImage(b, 0, 0); b.close && b.close(); url = c.toDataURL('image/jpeg', 0.7); } catch (e) {}
+      bxTh.set(f, url);
+      if (!$(`#bxList [data-bxth="${i}"]`)) continue;   // the list re-rendered meanwhile
+    }
+    const h = $(`#bxList [data-bxth="${i}"]`);
+    if (h && url) { h.innerHTML = `<img alt="" src="${url}">`; }
+  }
 }
 function bxAdd(list) { const imgs = [...list].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|webp|gif|bmp|avif|heic|heif)$/i.test(f.name)); BX.files.push(...imgs); BX.out = []; bxRenderList(); if (list.length && !imgs.length) toast('사진 파일만 넣을 수 있어요.'); }
 $('#bxOpen').onclick = bxOpen;
