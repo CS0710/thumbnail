@@ -5346,6 +5346,14 @@ const okImgData = v => typeof v === 'string' && IMG_DATA.test(v);
 function takeAssets(obj) { let bad = 0; for (const [id, d] of Object.entries(obj && typeof obj === 'object' ? obj : {})) { if (ASSET_ID.test(id) && okImgData(d)) { assets.set(id, d); assetRev.set(d, id); } else bad++; } if (bad) console.warn('skipped', bad, 'asset(s) that are not plain image data'); return bad; }
 function cleanDoc(d) { if (!d || typeof d !== 'object') return; d.w = Math.max(1, Math.round(+d.w)) || 1280; d.h = Math.max(1, Math.round(+d.h)) || 720; }
 function cleanVars(vars) { (Array.isArray(vars) ? vars : []).forEach(v => { if (!v || typeof v !== 'object') return; if (v.snap) cleanDoc(v.snap.doc); if (v.dur != null) v.dur = +v.dur || 0; }); }
+// Photos stay in memory until nothing points at them. Called only when the undo history starts over (open, new),
+// so an id counts as used if any snapshot left in history mentions it anywhere.
+function pruneAssets() {
+  const keep = hist.filter(Boolean);
+  let n = 0;
+  for (const [id, d] of assets) if (!keep.some(sn => sn.includes('"' + id + '"') || sn.includes('asset:' + id))) { assets.delete(id); assetRev.delete(d); palCache.delete(id); n++; }
+  if (n) console.info('freed', n, 'unused photo(s)');
+}
 function usedAssets(snapStr) { const out = {}; for (const m of snapStr.matchAll(/"(?:assetId|orig|base)":"([a-z0-9]+)"/g)) if (assets.has(m[1])) out[m[1]] = assets.get(m[1]); return out; }
 
 /* ---------------- fit & overlays ---------------- */
@@ -5418,7 +5426,12 @@ function commit() {
   hist = hist.slice(0, hi + 1); hist.push(s); if (hist.length > 80) hist.shift(); hi = hist.length - 1;
   updateUndo(); autosave(); schedulePreview(); scheduleThumb(); DRV.dirty = true;
 }
-const autosave = debounce(() => { const s = hist[hi]; if (!s) return; DB.put('kv', { snap: s, assets: usedAssets(s), projectId: currentProjectId, driveId: DRV.fileId, driveName: DRV.fileName, at: Date.now() }, 'current').catch(() => {}); }, 700);
+const autosave = debounce(() => { const s = hist[hi]; if (!s) return; DB.put('kv', { snap: s, assets: usedAssets(s), projectId: currentProjectId, driveId: DRV.fileId, driveName: DRV.fileName, driveMod: DRV.mod || null, clean: s === savedSnap, at: Date.now() }, 'current').catch(() => {}); }, 700);
+// "saved" = kept somewhere besides this browser's scratch copy (내 작업, Drive, or a downloaded file)
+let savedSnap = null;
+function markSaved() { savedSnap = hist[hi] || null; autosave(); }
+const unsaved = () => !!hist[hi] && hist[hi] !== savedSnap;
+function okToReplace() { return !unsaved() || confirm('지금 작업에 아직 저장하지 않은 변경이 있어요.\n다른 작업을 열면 지금 화면은 사라져요.\n\n‘확인’: 그래도 열기\n‘취소’: 그대로 두기 (먼저 저장해 주세요)'); }
 const DRV = { token: null, exp: 0, folder: null, fileId: null, fileName: '' };
 function updateUndo() { $('#undoBtn').disabled = hi <= 0; $('#redoBtn').disabled = hi >= hist.length - 1; }
 // fonts carried inside an imported PDF/AI live with the artboard (doc.fonts) so they survive reloads
@@ -5452,7 +5465,7 @@ async function restore(snapStr, { resetHistory = false } = {}) {
     await loadState(s.doc, s.canvas);
   } catch (e) { console.error(e); toast('작업을 불러오지 못했어요.'); }
   restoring = false;
-  if (resetHistory) { hist = [snapshot()]; hi = 0; updateUndo(); }
+  if (resetHistory) { hist = [snapshot()]; hi = 0; updateUndo(); savedSnap = hist[0]; pruneAssets(); }
   renderVbar(); refreshLayers(); syncPanel(); schedulePreview(); autosave();
 }
 async function undo() { if (hi <= 0) return; hi--; await restore(hist[hi]); updateUndo(); }
@@ -5903,11 +5916,15 @@ async function syncTemplates() {
   const f = await drvFolder();
   const tf = DRV.tplFolder || (DRV.tplFolder = (await drvFindFolder('내 템플릿', f)) || (await drvMakeFolder('내 템플릿', f)));
   const cloud = new Map((await drvFiles(`'${tf}' in parents`)).filter(x => x.appProperties && x.appProperties.tplId).map(x => [x.appProperties.tplId, x]));
-  const synced = new Set(jsonLS('tg.tplSynced', [])), dels = jsonLS('tg.tplDel', []);
+  // "already uploaded" marks belong to one Drive folder; another account or a re-made folder starts fresh
+  const prevTf = lsGet('tg.tplFolderId'); if (prevTf !== tf) lsSet('tg.tplFolderId', tf);
+  const synced = new Set(prevTf && prevTf !== tf ? [] : jsonLS('tg.tplSynced', [])), dels = jsonLS('tg.tplDel', []);
   let up = 0, down = 0;
   for (const id of dels) { const c = cloud.get(id); if (c) await drvTrash(c.id); cloud.delete(id); synced.delete(id); }
   lsSet('tg.tplDel', '[]');
   const local = await DB.all('templates'), have = new Set();
+  const gone = local.filter(t => !cloud.has(t.id) && synced.has(t.id));
+  if (gone.length >= 2 && !cloud.size && !confirm(`드라이브의 ‘내 템플릿’ 폴더가 비어 있어요.\n이 기기의 템플릿 ${gone.length}개도 지울까요?\n\n‘확인’: 이 기기에서도 지우기 (다른 기기에서 일부러 다 지웠을 때)\n‘취소’: 남겨 두고 드라이브에 다시 올리기`)) gone.forEach(t => synced.delete(t.id));
   for (const t of local) {
     if (cloud.has(t.id)) { synced.add(t.id); have.add(t.id); continue; }
     if (synced.has(t.id)) { await DB.del('templates', t.id); synced.delete(t.id); down++; continue; } // deleted on another device
@@ -5949,7 +5966,7 @@ async function copyDeviceLink() {
   const old = (lsGet('tg.gclient') || '').trim();
   if (old === v) { setTimeout(() => toast('이미 같은 구글 클라이언트 ID가 들어 있어요.'), 1200); return; }
   if (old && !confirm(`이 링크가 구글 클라이언트 ID를 바꾸려고 해요.\n\n지금: ${old}\n새 값: ${v}\n\n직접 만든 연결 링크일 때만 '확인'을 누르세요. 다른 사람에게 받은 링크라면 '취소'를 누르세요.`)) { setTimeout(() => toast('원래 구글 클라이언트 ID를 그대로 뒀어요.', 4000), 1200); return; }
-  lsSet('tg.gclient', v); setTimeout(() => toast('구글 클라이언트 ID를 넣었어요. 마이스페이스에서 드라이브에 연결하면 템플릿·API 키·내 색을 가져와요.', 6000), 1200);
+  setGClient(v); setTimeout(() => toast('구글 클라이언트 ID를 넣었어요. 마이스페이스에서 드라이브에 연결하면 템플릿·API 키·내 색을 가져와요.', 6000), 1200);
 })();
 
 /* ---------------- photo search ---------------- */
@@ -6230,9 +6247,9 @@ function renderMyColors() {
 document.addEventListener('contextmenu', e => { const b = e.target.closest('.sw.my'); if (!b) return; e.preventDefault(); myColors = myColors.filter(x => x !== b.dataset.c); saveMyColors(); toast('내 색에서 뺐어요.'); });
 $('#myColorList').onclick = e => { const b = e.target.closest('[data-rmc]'); if (!b) return; myColors = myColors.filter(x => x !== b.dataset.rmc); saveMyColors(); };
 // ---- dominant colours of a photo ----
-const palCache = new Map();
-async function photoPalette(url) {
-  if (palCache.has(url)) return palCache.get(url);
+const palCache = new Map(); // keyed by asset id (a key of the whole photo data kept every photo alive)
+async function photoPalette(url, key = url) {
+  if (palCache.has(key)) return palCache.get(key);
   const img = await loadImgEl(url); const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, 64, 64);
   const d = x.getImageData(0, 0, 64, 64).data, buckets = new Map();
   for (let i = 0; i < d.length; i += 4) { if (d[i + 3] < 128) continue; const k = (d[i] >> 4) << 8 | (d[i + 1] >> 4) << 4 | (d[i + 2] >> 4); const b = buckets.get(k) || [0, 0, 0, 0]; b[0] += d[i]; b[1] += d[i + 1]; b[2] += d[i + 2]; b[3]++; buckets.set(k, b); }
@@ -6244,12 +6261,12 @@ async function photoPalette(url) {
   const sat = c2 => { const mx = Math.max(...c2), mn = Math.min(...c2); return mx ? (mx - mn) / mx : 0; };
   const vivid = pick.slice().sort((a, b) => sat(b) - sat(a))[0];
   if (vivid) { const col = new fabric.Color(hex(vivid)); const hsl = col._rgbToHsl(...col.getSource()); out.push(new fabric.Color(`hsl(${(hsl[0] + 180) % 360},90%,55%)`).toHex().replace(/^/, '#').toUpperCase()); }
-  palCache.set(url, out); return out;
+  palCache.set(key, out); return out;
 }
 let lastPalette = [];
 async function showPalette(o) {
-  const url = assets.get((o.meta && (o.meta.orig || o.meta.base)) || o.assetId); if (!url) return;
-  try { lastPalette = await photoPalette(url); } catch (e) { lastPalette = []; }
+  const id = (o.meta && (o.meta.orig || o.meta.base)) || o.assetId, url = assets.get(id); if (!url) return;
+  try { lastPalette = await photoPalette(url, id); } catch (e) { lastPalette = []; }
   $('#iPal').innerHTML = lastPalette.map((c, i) => `<button type="button" class="sw" data-pal="${c}" style="background:${c}" title="${c}${i === lastPalette.length - 1 ? ' (어울리는 반대색)' : ''}" aria-label="${c}"></button>`).join('');
 }
 $('#iPal').addEventListener('click', e => { const b = e.target.closest('[data-pal]'); if (b) { e.stopPropagation(); addMyColor(b.dataset.pal); } }, true);
@@ -7629,7 +7646,7 @@ $('#credCopy').onclick = async () => {
 
 /* ---------------- project files ---------------- */
 function projectPayload() { const s = hist[hi] || snapshot(); return { app: 'thumbnail-gongbang', v: 1, ...JSON.parse(s), assets: usedAssets(s) }; }
-$('#saveFileBtn').onclick = () => { const p = projectPayload(); downloadBlob(new Blob([JSON.stringify(p)], { type: 'application/json' }), `썸네일작업-${stamp()}.json`); toast('작업 파일을 내려받았어요. 나중에 ‘열기’로 이어서 할 수 있어요.'); };
+$('#saveFileBtn').onclick = () => { const p = projectPayload(); downloadBlob(new Blob([JSON.stringify(p)], { type: 'application/json' }), `썸네일작업-${stamp()}.json`); markSaved(); toast('작업 파일을 내려받았어요. 나중에 ‘열기’로 이어서 할 수 있어요.'); };
 $('#openFileBtn').onclick = () => $('#projFile').click();
 $('#projFile').onchange = e => { const f = e.target.files[0]; if (f) openProjectFile(f); e.target.value = ''; };
 async function openProjectData(p) {
@@ -7639,7 +7656,8 @@ async function openProjectData(p) {
   await restore(JSON.stringify({ doc: p.doc, canvas: p.canvas, vars: p.vars, cur: p.cur, title: p.title || '' }), { resetHistory: true });
 }
 async function openProjectFile(f) {
-  try { await openProjectData(JSON.parse(await f.text())); DRV.fileId = null; toast('작업 파일을 열었어요.'); }
+  if (!okToReplace()) return;
+  try { await openProjectData(JSON.parse(await f.text())); DRV.fileId = null; DRV.fileName = ''; DRV.mod = null; toast('작업 파일을 열었어요.'); }
   catch (e) { toast('썸네일 공방 작업 파일(.json)이 아니에요.'); }
 }
 
@@ -7650,7 +7668,7 @@ async function saveProject(asNew) {
   const thumb = renderOut(320).toDataURL('image/jpeg', 0.8);
   const id = !asNew && currentProjectId ? currentProjectId : uid();
   await DB.put('projects', { id, name, at: Date.now(), thumb, snap: s, assets: usedAssets(s) });
-  currentProjectId = id; autosave(); renderProjects(); toast(`‘${name}’ 저장했어요.`);
+  currentProjectId = id; markSaved(); renderProjects(); toast(`‘${name}’ 저장했어요.`);
 }
 $('#projSave').onclick = () => saveProject(false);
 const delArm = new Set();
@@ -7662,7 +7680,7 @@ async function renderProjects() {
 }
 $('#projList').onclick = async e => {
   const o = e.target.closest('[data-open]');
-  if (o) { const p = await DB.get('projects', o.dataset.open); if (!p) return; Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); }); currentProjectId = p.id; DRV.fileId = null; DRV.fileName = ''; DRV.lastSave = null; DRV.dirty = false; setProjTitle(p.name); await restore(p.snap, { resetHistory: true }); msStatus(); renderProjects(); toast(`‘${p.name}’ 열었어요.`); return; }
+  if (o) { const p = await DB.get('projects', o.dataset.open); if (!p || !okToReplace()) return; Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); }); currentProjectId = p.id; DRV.fileId = null; DRV.fileName = ''; DRV.lastSave = null; DRV.dirty = false; DRV.mod = null; setProjTitle(p.name); await restore(p.snap, { resetHistory: true }); msStatus(); renderProjects(); toast(`‘${p.name}’ 열었어요.`); return; }
   const d = e.target.closest('[data-del]');
   if (d) { const id = d.dataset.del; if (delArm.has(id)) { delArm.delete(id); await DB.del('projects', id); if (currentProjectId === id) currentProjectId = null; } else { delArm.add(id); setTimeout(() => { delArm.delete(id); renderProjects(); }, 3500); } renderProjects(); }
 };
@@ -7671,9 +7689,9 @@ $('#projList').onclick = async e => {
 async function blank() {
   restoring = true; cv.discardActiveObject(); cv.clear(); cv.backgroundImage = null;
   Object.assign(doc, { bg: { type: 'solid', c1: '#FFFFFF', c2: '#FFFFFF', dir: 'v' }, bgfx: { dim: 0, blur: 0 }, credits: [] });
-  currentProjectId = null; setProjTitle(''); DRV.fileId = null; DRV.fileName = '';
+  currentProjectId = null; setProjTitle(''); DRV.fileId = null; DRV.fileName = ''; DRV.mod = null;
   proj.vars = [{ name: 'A' }]; proj.cur = 0; renderVbar();
-  applyBg(); restoring = false; hist = []; hi = -1; commit();
+  applyBg(); restoring = false; hist = []; hi = -1; commit(); markSaved(); pruneAssets();
 }
 ['projTitle', 'projName'].forEach(id => { const el = document.getElementById(id); el.addEventListener('input', () => setProjTitle(el.value)); el.addEventListener('change', () => { setProjTitle(el.value.trim()); commit(); }); el.addEventListener('keydown', e => { if (e.key === 'Enter') el.blur(); }); });
 $('#newBtn').onclick = () => $('#newModal').hidden = false;
@@ -7684,7 +7702,7 @@ $('#newSave').onclick = async () => { $('#newModal').hidden = true; await savePr
 /* ---------------- settings ---------------- */
 $('#settingsBtn').onclick = () => { $('#setPixabay').value = KEYS.pixabay; $('#setUnsplash').value = KEYS.unsplash; $('#setGClient').value = lsGet('tg.gclient') || ''; $('#originNow').textContent = location.origin; renderMyColors(); $('#setModal').hidden = false; };
 $('#setClose').onclick = () => $('#setModal').hidden = true;
-$('#setSave').onclick = () => { KEYS.pixabay = $('#setPixabay').value.trim(); KEYS.unsplash = $('#setUnsplash').value.trim(); lsSet('tg.key.pixabay', KEYS.pixabay); lsSet('tg.key.unsplash', KEYS.unsplash); lsSet('tg.gclient', $('#setGClient').value.trim()); touchSettings(); DRV.token = null; $('#setModal').hidden = true; renderSrc(); toast('저장했어요.'); };
+$('#setSave').onclick = () => { KEYS.pixabay = $('#setPixabay').value.trim(); KEYS.unsplash = $('#setUnsplash').value.trim(); lsSet('tg.key.pixabay', KEYS.pixabay); lsSet('tg.key.unsplash', KEYS.unsplash); setGClient($('#setGClient').value.trim()); touchSettings(); $('#setModal').hidden = true; renderSrc(); toast('저장했어요.'); };
 $$('.modal').forEach(m => m.addEventListener('pointerdown', e => { if (e.target === m && m.id !== 'cutModal') m.hidden = true; }));
 
 /* ---------------- text effects controls ---------------- */
@@ -8533,6 +8551,8 @@ window.addEventListener('offline', () => toast('인터넷이 끊겼어요. 사�
 
 /* ---------------- google drive ---------------- */
 const gClient = () => (lsGet('tg.gclient') || '').trim();
+// a different client ID means a different Google app: forget the sign-in and the folders found with it
+function setGClient(v) { v = String(v || '').trim(); if (v === (lsGet('tg.gclient') || '').trim()) return; /* runs from the #gc= link before gClient exists */ lsSet('tg.gclient', v); DRV.token = null; DRV.exp = 0; DRV.folder = DRV.imgFolder = DRV.tplFolder = null; }
 const GSI = 'https://accounts.google.com/gsi/client';
 async function drvAuth() {
   if (DRV.token && Date.now() < DRV.exp - 60000) return DRV.token;
@@ -8541,7 +8561,7 @@ async function drvAuth() {
   return new Promise((res, rej) => {
     const tc = google.accounts.oauth2.initTokenClient({
       client_id: gClient(), scope: 'https://www.googleapis.com/auth/drive.file',
-      callback: r => { if (r.error) { rej(new Error(r.error)); return; } if (google.accounts.oauth2.hasGrantedAllScopes && !google.accounts.oauth2.hasGrantedAllScopes(r, 'https://www.googleapis.com/auth/drive.file')) { rej(new Error('scope')); return; } DRV.token = r.access_token; DRV.exp = Date.now() + (+r.expires_in || 3600) * 1000; DRV.staleWarned = false; res(DRV.token); if (!SYNC.auto) { SYNC.auto = true; setTimeout(() => cloudSync(false), 300); } },
+      callback: r => { if (r.error) { rej(new Error(r.error)); return; } if (google.accounts.oauth2.hasGrantedAllScopes && !google.accounts.oauth2.hasGrantedAllScopes(r, 'https://www.googleapis.com/auth/drive.file')) { rej(new Error('scope')); return; } DRV.token = r.access_token; DRV.exp = Date.now() + (+r.expires_in || 3600) * 1000; DRV.staleWarned = false; DRV.folder = DRV.imgFolder = DRV.tplFolder = null; /* the account may have changed */ res(DRV.token); if (!SYNC.auto) { SYNC.auto = true; setTimeout(() => cloudSync(false), 300); } },
       error_callback: e => rej(new Error((e && e.type) || 'popup')),
     });
     tc.requestAccessToken();
@@ -8586,7 +8606,7 @@ async function drvUpload(name, blob, thumb, fileId) {
   const meta = { name, mimeType: 'application/json', contentHints: { thumbnail: { image: thumb, mimeType: 'image/jpeg' } } };
   if (!fileId) meta.parents = [await drvFolder()];
   const base = 'https://www.googleapis.com/upload/drive/v3/files' + (fileId ? '/' + fileId : '');
-  const init = await drvFetch(base + '?uploadType=resumable&fields=id,name', { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json; charset=UTF-8', 'X-Upload-Content-Type': 'application/json' }, body: JSON.stringify(meta) });
+  const init = await drvFetch(base + '?uploadType=resumable&fields=id,name,modifiedTime', { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json; charset=UTF-8', 'X-Upload-Content-Type': 'application/json' }, body: JSON.stringify(meta) });
   const loc = init.headers.get('Location');
   if (loc) { const r = await fetch(loc, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: blob }); if (!r.ok) throw new Error('upload ' + r.status); return r.json(); }
   const bd = 'tg' + uid();
@@ -9179,21 +9199,30 @@ function msStatus(t) {
   $('#msStatus').textContent = st;
   const ss = $('#saveState'); ss.classList.toggle('drive', !!DRV.lastSave && !stale); ss.classList.toggle('stale', stale); ss.title = stale || DRV.lastSave ? st : '이 브라우저에 자동 저장돼요. 마이스페이스에서 구글 드라이브에도 저장할 수 있어요.';
 }
+const drvModTime = async id => (await (await drvFetch(`https://www.googleapis.com/drive/v3/files/${id}?fields=modifiedTime`)).json()).modifiedTime || null;
 async function msSaveNow(asNew, quiet) {
+  if (!asNew && DRV.fileId) {
+    const now = await drvModTime(DRV.fileId);
+    if (DRV.mod && now && now !== DRV.mod) {
+      if (quiet) { msStatus('드라이브에 다른 기기(또는 다른 창)에서 저장한 더 새 버전이 있어서 자동 저장을 멈췄어요. 마이스페이스의 저장 버튼을 눌러 정해 주세요.'); if (!DRV.conflictWarned) { DRV.conflictWarned = true; toast('드라이브에 더 새 버전이 있어서 자동 저장을 멈췄어요. 마이스페이스에서 저장을 눌러 정해 주세요.', 7000); } return; }
+      if (!confirm(`드라이브의 ‘${DRV.fileName.replace(/\.json$/, '')}’ 파일이 다른 기기(또는 다른 창)에서 더 나중에 저장됐어요.\n\n‘확인’: 지금 화면 내용으로 덮어쓰기\n‘취소’: 덮어쓰지 않고 새 파일로 저장`)) asNew = true;
+    }
+  }
   cv.discardActiveObject(); cv.renderAll();
   const name = (proj.title || '제목 없는 디자인') + '.json';
   const blob = new Blob([JSON.stringify(projectPayload())], { type: 'application/json' });
   const thumb = renderOut(400).toDataURL('image/jpeg', 0.8).split(',')[1].replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   if (!quiet) msStatus('드라이브에 저장하는 중…');
   const r = await drvUpload(name, blob, thumb, asNew ? null : DRV.fileId);
-  DRV.fileId = r.id; DRV.fileName = r.name || name; DRV.lastSave = Date.now(); DRV.dirty = false; autosave(); msStatus();
+  DRV.fileId = r.id; DRV.fileName = r.name || name; DRV.lastSave = Date.now(); DRV.dirty = false; DRV.conflictWarned = false;
+  DRV.mod = r.modifiedTime || await drvModTime(r.id).catch(() => null); markSaved(); msStatus();
   if (!quiet) { toast(`드라이브에 ‘${DRV.fileName.replace(/\.json$/, '')}’(으)로 저장했어요.`); if (msMode === 'drive' && msT === 'work') msList(); msQuota(); }
 }
 $('#msSrc').onclick = e => { const b = e.target.closest('[data-ms]'); if (b) msSet(b.dataset.ms); };
 $('#msTab').onclick = e => { const b = e.target.closest('[data-mt]'); if (!b) return; msT = b.dataset.mt; msRender(); msList(); };
 $('#msGoSet').onclick = () => { $('#settingsBtn').click(); setTimeout(() => { const d = $('.steps'); if (d) d.open = true; $('#setGClient').focus(); }, 50); };
 $('#msConnBtn').onclick = msConnect;
-$('#msSync').onclick = () => cloudSync(true); $('#msLink').onclick = copyDeviceLink; $('#setLink').onclick = () => { const v = $('#setGClient').value.trim(); if (v && v !== gClient()) lsSet('tg.gclient', v); copyDeviceLink(); };
+$('#msSync').onclick = () => cloudSync(true); $('#msLink').onclick = copyDeviceLink; $('#setLink').onclick = () => { const v = $('#setGClient').value.trim(); if (v && v !== gClient()) setGClient(v); copyDeviceLink(); };
 $('#msErr').addEventListener('click', e => { if (e.target.closest('#msRetry')) { DRV.token = null; DRV.exp = 0; DRV.folder = null; DRV.imgFolder = null; msConnect(); } });
 $('#msSave').onclick = () => msSaveNow(false).catch(drvErr);
 $('#msSaveNew').onclick = () => msSaveNow(true).catch(drvErr);
@@ -9215,14 +9244,14 @@ $('#msBackup').onclick = async () => {
 };
 $('#msDrive').addEventListener('click', async e => {
   const o = e.target.closest('[data-wopen]');
-  if (o) { try { toast('드라이브에서 불러오는 중…'); const p = await (await drvFetch(`https://www.googleapis.com/drive/v3/files/${o.dataset.wopen}?alt=media`)).json(); await openProjectData(p); setProjTitle(o.dataset.dname.replace(/\.json$/, '')); hist[hi] = snapshot(); DRV.fileId = o.dataset.wopen; DRV.fileName = o.dataset.dname; DRV.lastSave = null; DRV.dirty = false; autosave(); msStatus(); msList(); toast(`‘${DRV.fileName.replace(/\.json$/, '')}’ 열었어요.`); } catch (er) { drvErr(er); } return; }
+  if (o) { if (!okToReplace()) return; try { toast('드라이브에서 불러오는 중…'); const mod = await drvModTime(o.dataset.wopen); const p = await (await drvFetch(`https://www.googleapis.com/drive/v3/files/${o.dataset.wopen}?alt=media`)).json(); await openProjectData(p); setProjTitle(o.dataset.dname.replace(/\.json$/, '')); hist[hi] = snapshot(); DRV.fileId = o.dataset.wopen; DRV.fileName = o.dataset.dname; DRV.lastSave = null; DRV.dirty = false; DRV.mod = mod; DRV.conflictWarned = false; markSaved(); msStatus(); msList(); toast(`‘${DRV.fileName.replace(/\.json$/, '')}’ 열었어요.`); } catch (er) { drvErr(er); } return; }
   const a = e.target.closest('[data-iadd]');
   if (a) { try { toast('사진을 가져오는 중…'); const b = await (await drvFetch(`https://www.googleapis.com/drive/v3/files/${a.dataset.iadd}?alt=media`)).blob(); await addImageData(await blobToDataURL(b), { name: a.dataset.dname }); toast('캔버스에 넣었어요.'); } catch (er) { drvErr(er); } return; }
   const r = e.target.closest('[data-wren]');
   if (r) {
     const card = r.closest('.ms-card'), nm = card.querySelector('.nm'), old = nm.textContent;
     nm.outerHTML = `<input class="txt ms-ren" value="${esc(old)}" maxlength="80">`; const inp = card.querySelector('.ms-ren'); inp.focus(); inp.select();
-    const done = async ok => { inp.onblur = null; const v = inp.value.trim(); if (!ok || !v || v === old) return msList(); try { await drvFetch(`https://www.googleapis.com/drive/v3/files/${r.dataset.wren}?fields=id,name`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: v + '.json' }) }); if (r.dataset.wren === DRV.fileId) { DRV.fileName = v + '.json'; setProjTitle(v); commit(); } toast('이름을 바꿨어요.'); } catch (er) { drvErr(er); } msList(); };
+    const done = async ok => { inp.onblur = null; const v = inp.value.trim(); if (!ok || !v || v === old) return msList(); try { const rn = await (await drvFetch(`https://www.googleapis.com/drive/v3/files/${r.dataset.wren}?fields=id,name,modifiedTime`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: v + '.json' }) })).json(); if (r.dataset.wren === DRV.fileId) { DRV.fileName = v + '.json'; if (rn.modifiedTime) DRV.mod = rn.modifiedTime; setProjTitle(v); commit(); } toast('이름을 바꿨어요.'); } catch (er) { drvErr(er); } msList(); };
     inp.onkeydown = ev => { if (ev.key === 'Enter') done(true); if (ev.key === 'Escape') done(false); }; inp.onblur = () => done(true); return;
   }
   const d = e.target.closest('[data-wdel]');
@@ -9308,8 +9337,9 @@ async function boot() {
   const cur = await DB.get('kv', 'current');
   if (cur && cur.snap) {
     Object.entries(cur.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); });
-    currentProjectId = cur.projectId || null; DRV.fileId = cur.driveId || null; DRV.fileName = cur.driveName || '';
+    currentProjectId = cur.projectId || null; DRV.fileId = cur.driveId || null; DRV.fileName = cur.driveName || ''; DRV.mod = cur.driveMod || null;
     await restore(cur.snap, { resetHistory: true });
+    if (cur.clean === false) savedSnap = null; // it had changes that were only in this browser
   } else {
     await blank();
     hist = [hist[hi]]; hi = 0; updateUndo();
