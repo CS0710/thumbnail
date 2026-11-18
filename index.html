@@ -754,6 +754,7 @@ input.num.rv:focus{border-color:var(--ink);outline:none;box-shadow:inset 0 0 0 1
 @media (hover:none){ .ms-acts{opacity:1} }
 .save-state{color:var(--muted)}
 .save-state.drive{color:var(--ok)}
+.save-state.stale{color:var(--caution)}
 /* video preview */
 #avCv{display:block;width:100%;height:auto;background:#000;border-radius:4px}
 .av-ctl{display:flex;align-items:center;gap:8px;margin-top:8px}
@@ -5339,6 +5340,12 @@ function hydrate(json) { walkJSON(json, o => {
   if (o.type === 'i-text') delete o.path;
   if (o.fill && typeof o.fill === 'object' && typeof o.fill.source === 'string' && o.fill.source.startsWith('asset:')) o.fill.source = assets.get(o.fill.source.slice(6)) || '';
 }); }
+// data from outside (project files, Drive): only plain image data with simple ids, numeric sizes
+const ASSET_ID = /^[a-z0-9]{1,40}$/, IMG_DATA = /^data:image\/[\w.+-]+(;[\w=.+-]+)*,[^"'<>\s\\]*$/;
+const okImgData = v => typeof v === 'string' && IMG_DATA.test(v);
+function takeAssets(obj) { let bad = 0; for (const [id, d] of Object.entries(obj && typeof obj === 'object' ? obj : {})) { if (ASSET_ID.test(id) && okImgData(d)) { assets.set(id, d); assetRev.set(d, id); } else bad++; } if (bad) console.warn('skipped', bad, 'asset(s) that are not plain image data'); return bad; }
+function cleanDoc(d) { if (!d || typeof d !== 'object') return; d.w = Math.max(1, Math.round(+d.w)) || 1280; d.h = Math.max(1, Math.round(+d.h)) || 720; }
+function cleanVars(vars) { (Array.isArray(vars) ? vars : []).forEach(v => { if (!v || typeof v !== 'object') return; if (v.snap) cleanDoc(v.snap.doc); if (v.dur != null) v.dur = +v.dur || 0; }); }
 function usedAssets(snapStr) { const out = {}; for (const m of snapStr.matchAll(/"(?:assetId|orig|base)":"([a-z0-9]+)"/g)) if (assets.has(m[1])) out[m[1]] = assets.get(m[1]); return out; }
 
 /* ---------------- fit & overlays ---------------- */
@@ -5910,7 +5917,7 @@ async function syncTemplates() {
   }
   for (const [id, c] of cloud) {
     if (have.has(id)) continue;
-    try { const t = await drvJSON(c.id); if (t && t.id && t.state) { await DB.put('templates', t); synced.add(id); down++; } } catch (e) { console.warn('template', c.name, e); }
+    try { const t = await drvJSON(c.id); if (t && typeof t.id === 'string' && ASSET_ID.test(t.id) && t.state && typeof t.state === 'object') { t.name = String(t.name || '템플릿'); if (!okImgData(t.thumb)) t.thumb = ''; t.assets = Object.fromEntries(Object.entries(t.assets && typeof t.assets === 'object' ? t.assets : {}).filter(([k, v]) => ASSET_ID.test(k) && okImgData(v))); cleanDoc(t.state.doc); await DB.put('templates', t); synced.add(id); down++; } } catch (e) { console.warn('template', c.name, e); }
   }
   lsSet('tg.tplSynced', JSON.stringify([...synced]));
   if (up || down) renderMyTemplates();
@@ -5934,7 +5941,16 @@ async function copyDeviceLink() {
   try { await navigator.clipboard.writeText(u); toast('연결 링크를 복사했어요. 다른 기기에서 이 링크로 열고 드라이브에 연결하면 템플릿·설정이 들어와요.', 5200); }
   catch (e) { prompt('이 링크를 복사해 다른 기기에서 여세요', u); }
 }
-(() => { const m = location.hash.match(/(?:^#|&)gc=([^&]+)/); if (!m) return; lsSet('tg.gclient', decodeURIComponent(m[1])); history.replaceState(null, '', location.pathname + location.search); setTimeout(() => toast('구글 클라이언트 ID를 넣었어요. 마이스페이스에서 드라이브에 연결하면 템플릿·API 키·내 색을 가져와요.', 6000), 1200); })();
+(() => {
+  const m = location.hash.match(/(?:^#|&)gc=([^&]+)/); if (!m) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  let v = ''; try { v = decodeURIComponent(m[1]).trim(); } catch (e) {}
+  if (!/^[\w.-]+\.apps\.googleusercontent\.com$/.test(v)) { setTimeout(() => toast('연결 링크 속 구글 클라이언트 ID 모양이 맞지 않아서 넣지 않았어요.', 5000), 1200); return; }
+  const old = (lsGet('tg.gclient') || '').trim();
+  if (old === v) { setTimeout(() => toast('이미 같은 구글 클라이언트 ID가 들어 있어요.'), 1200); return; }
+  if (old && !confirm(`이 링크가 구글 클라이언트 ID를 바꾸려고 해요.\n\n지금: ${old}\n새 값: ${v}\n\n직접 만든 연결 링크일 때만 '확인'을 누르세요. 다른 사람에게 받은 링크라면 '취소'를 누르세요.`)) { setTimeout(() => toast('원래 구글 클라이언트 ID를 그대로 뒀어요.', 4000), 1200); return; }
+  lsSet('tg.gclient', v); setTimeout(() => toast('구글 클라이언트 ID를 넣었어요. 마이스페이스에서 드라이브에 연결하면 템플릿·API 키·내 색을 가져와요.', 6000), 1200);
+})();
 
 /* ---------------- photo search ---------------- */
 const KEYS = { pixabay: lsGet('tg.key.pixabay') || '', unsplash: lsGet('tg.key.unsplash') || '' };
@@ -7617,8 +7633,8 @@ $('#saveFileBtn').onclick = () => { const p = projectPayload(); downloadBlob(new
 $('#openFileBtn').onclick = () => $('#projFile').click();
 $('#projFile').onchange = e => { const f = e.target.files[0]; if (f) openProjectFile(f); e.target.value = ''; };
 async function openProjectData(p) {
-  if (!p || !p.canvas || !p.doc) throw new Error('format');
-  Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); });
+  if (!p || !p.canvas || !p.doc || typeof p.doc !== 'object') throw new Error('format');
+  cleanDoc(p.doc); cleanVars(p.vars); takeAssets(p.assets);
   currentProjectId = null;
   await restore(JSON.stringify({ doc: p.doc, canvas: p.canvas, vars: p.vars, cur: p.cur, title: p.title || '' }), { resetHistory: true });
 }
@@ -7646,7 +7662,7 @@ async function renderProjects() {
 }
 $('#projList').onclick = async e => {
   const o = e.target.closest('[data-open]');
-  if (o) { const p = await DB.get('projects', o.dataset.open); if (!p) return; Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); }); currentProjectId = p.id; setProjTitle(p.name); await restore(p.snap, { resetHistory: true }); renderProjects(); toast(`‘${p.name}’ 열었어요.`); return; }
+  if (o) { const p = await DB.get('projects', o.dataset.open); if (!p) return; Object.entries(p.assets || {}).forEach(([id, d]) => { assets.set(id, d); assetRev.set(d, id); }); currentProjectId = p.id; DRV.fileId = null; DRV.fileName = ''; DRV.lastSave = null; DRV.dirty = false; setProjTitle(p.name); await restore(p.snap, { resetHistory: true }); msStatus(); renderProjects(); toast(`‘${p.name}’ 열었어요.`); return; }
   const d = e.target.closest('[data-del]');
   if (d) { const id = d.dataset.del; if (delArm.has(id)) { delArm.delete(id); await DB.del('projects', id); if (currentProjectId === id) currentProjectId = null; } else { delArm.add(id); setTimeout(() => { delArm.delete(id); renderProjects(); }, 3500); } renderProjects(); }
 };
@@ -7718,7 +7734,7 @@ async function openPick() {
   pickTarget = act(); if (!pickTarget || !isTxt(pickTarget)) return;
   const imgs = cv.getObjects().filter(o => o.type === 'image' && o.assetId);
   const srcId = o => (o.meta && (o.meta.orig || o.meta.base)) || o.assetId;
-  $('#pickCanvas').innerHTML = imgs.length ? imgs.map(o => `<div class="it"><img src="${assets.get(srcId(o))}" alt=""><button class="add" data-pa="${srcId(o)}" aria-label="이 사진 쓰기"></button></div>`).join('') : '<p class="hint" style="grid-column:1/-1;margin:0">캔버스에 사진이 없어요.</p>';
+  $('#pickCanvas').innerHTML = imgs.length ? imgs.map(o => `<div class="it"><img src="${esc(assets.get(srcId(o)) || '')}" alt=""><button class="add" data-pa="${esc(srcId(o))}" aria-label="이 사진 쓰기"></button></div>`).join('') : '<p class="hint" style="grid-column:1/-1;margin:0">캔버스에 사진이 없어요.</p>';
   const lib = (await DB.all('uploads')).sort((a, b) => b.at - a.at);
   $('#pickLib').innerHTML = lib.length ? lib.map(it => `<div class="it"><img src="${it.thumb}" alt="${esc(it.name)}"><button class="add" data-pl="${it.id}" aria-label="${esc(it.name)} 쓰기"></button></div>`).join('') : '<p class="hint" style="grid-column:1/-1;margin:0">보관함이 비어 있어요.</p>';
   $('#pickModal').hidden = false;
@@ -7897,7 +7913,7 @@ $('#boardZip').onclick = zipVariants;
 async function renderMyTemplates() {
   const ts = (await DB.all('templates')).sort((a, b) => b.at - a.at);
   $('#myTplEmpty').hidden = ts.length > 0;
-  $('#myTplGrid').innerHTML = ts.map(t => `<div class="lib-tpl"><button class="tpl" data-mt="${t.id}" style="background:#222 url('${t.thumb}') center/cover" title="${esc(t.name)}"><span style="color:#fff;font-size:13px;font-family:var(--body);font-weight:600;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:4px">${esc(t.name)}</span></button><button class="btn sm ghost danger" data-mtdel="${t.id}" style="height:24px;margin-top:2px">${tplDelArm.has(t.id) ? '정말 지우기' : '지우기'}</button></div>`).join('');
+  $('#myTplGrid').innerHTML = ts.map(t => `<div class="lib-tpl"><button class="tpl" data-mt="${esc(t.id)}" style="background:#222 url('${okImgData(t.thumb) ? t.thumb : ''}') center/cover" title="${esc(t.name)}"><span style="color:#fff;font-size:13px;font-family:var(--body);font-weight:600;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:4px">${esc(t.name)}</span></button><button class="btn sm ghost danger" data-mtdel="${esc(t.id)}" style="height:24px;margin-top:2px">${tplDelArm.has(t.id) ? '정말 지우기' : '지우기'}</button></div>`).join('');
 }
 const tplDelArm = new Set();
 $('#myTplSave').onclick = async () => {
@@ -7911,7 +7927,7 @@ $('#myTplGrid').onclick = async e => {
   if (d) { const id = d.dataset.mtdel; if (tplDelArm.has(id)) { tplDelArm.delete(id); await DB.del('templates', id); tplTomb(id); if (drvLive()) cloudSync(false); } else { tplDelArm.add(id); setTimeout(() => { tplDelArm.delete(id); renderMyTemplates(); }, 3500); } renderMyTemplates(); return; }
   const b = e.target.closest('[data-mt]'); if (!b) return;
   const t = await DB.get('templates', b.dataset.mt); if (!t) return;
-  Object.entries(t.assets || {}).forEach(([id, d2]) => { assets.set(id, d2); assetRev.set(d2, id); });
+  takeAssets(t.assets);
   cv.discardActiveObject(); restoring = true; await loadState(JSON.parse(JSON.stringify(t.state.doc)), JSON.parse(JSON.stringify(t.state.canvas))); restoring = false; commit();
   toast(`‘${t.name}’ 템플릿을 불러왔어요. 글자만 바꾸면 돼요.`);
 };
@@ -8525,7 +8541,7 @@ async function drvAuth() {
   return new Promise((res, rej) => {
     const tc = google.accounts.oauth2.initTokenClient({
       client_id: gClient(), scope: 'https://www.googleapis.com/auth/drive.file',
-      callback: r => { if (r.error) { rej(new Error(r.error)); return; } if (google.accounts.oauth2.hasGrantedAllScopes && !google.accounts.oauth2.hasGrantedAllScopes(r, 'https://www.googleapis.com/auth/drive.file')) { rej(new Error('scope')); return; } DRV.token = r.access_token; DRV.exp = Date.now() + (+r.expires_in || 3600) * 1000; res(DRV.token); if (!SYNC.auto) { SYNC.auto = true; setTimeout(() => cloudSync(false), 300); } },
+      callback: r => { if (r.error) { rej(new Error(r.error)); return; } if (google.accounts.oauth2.hasGrantedAllScopes && !google.accounts.oauth2.hasGrantedAllScopes(r, 'https://www.googleapis.com/auth/drive.file')) { rej(new Error('scope')); return; } DRV.token = r.access_token; DRV.exp = Date.now() + (+r.expires_in || 3600) * 1000; DRV.staleWarned = false; res(DRV.token); if (!SYNC.auto) { SYNC.auto = true; setTimeout(() => cloudSync(false), 300); } },
       error_callback: e => rej(new Error((e && e.type) || 'popup')),
     });
     tc.requestAccessToken();
@@ -9158,9 +9174,10 @@ async function msList() {
   } catch (e) { box.innerHTML = ''; drvErr(e); }
 }
 function msStatus(t) {
-  const st = t || (DRV.lastSave ? `드라이브에 저장됨 · ${fmtWhen(DRV.lastSave)}${DRV.fileName ? ' · ' + DRV.fileName.replace(/\.json$/, '') : ''}` : DRV.fileId ? `드라이브 파일: ${DRV.fileName.replace(/\.json$/, '')}` : '아직 드라이브에 저장하지 않은 작업이에요.');
+  const stale = lsGet('tg.drvauto') === '1' && !!DRV.dirty && !drvLive();
+  const st = t || (stale ? '드라이브에 연결돼 있지 않아서 드라이브 자동 저장이 멈춰 있어요. 눌러서 다시 연결해 주세요. 이 브라우저에는 계속 저장돼요.' : DRV.lastSave ? `드라이브에 저장됨 · ${fmtWhen(DRV.lastSave)}${DRV.fileName ? ' · ' + DRV.fileName.replace(/\.json$/, '') : ''}` : DRV.fileId ? `드라이브 파일: ${DRV.fileName.replace(/\.json$/, '')}` : '아직 드라이브에 저장하지 않은 작업이에요.');
   $('#msStatus').textContent = st;
-  const ss = $('#saveState'); ss.classList.toggle('drive', !!DRV.lastSave); ss.title = DRV.lastSave ? st : '이 브라우저에 자동 저장돼요. 마이스페이스에서 구글 드라이브에도 저장할 수 있어요.';
+  const ss = $('#saveState'); ss.classList.toggle('drive', !!DRV.lastSave && !stale); ss.classList.toggle('stale', stale); ss.title = stale || DRV.lastSave ? st : '이 브라우저에 자동 저장돼요. 마이스페이스에서 구글 드라이브에도 저장할 수 있어요.';
 }
 async function msSaveNow(asNew, quiet) {
   cv.discardActiveObject(); cv.renderAll();
@@ -9220,7 +9237,7 @@ $('#msDrive').addEventListener('click', async e => {
 // quiet cloud autosave: only while signed in (no surprise login pop-ups)
 setInterval(() => {
   if (lsGet('tg.drvauto') !== '1' || !DRV.dirty || DRV.saving) return;
-  if (!drvLive()) { msStatus('드라이브 연결이 끝났어요. 마이스페이스에서 다시 연결하면 자동 저장이 이어져요.'); return; }
+  if (!drvLive()) { msStatus('드라이브 연결이 끝났어요. 마이스페이스에서 다시 연결하면 자동 저장이 이어져요.'); if (!DRV.staleWarned) { DRV.staleWarned = true; toast('드라이브 연결이 끝나서 드라이브 자동 저장이 멈췄어요. 위쪽 구름 버튼을 눌러 다시 연결해 주세요. 이 브라우저에는 계속 저장돼요.', 7000); } return; }
   DRV.saving = true; msSaveNow(false, true).catch(e => { console.error(e); msStatus('드라이브 자동 저장에 실패했어요. 잠시 뒤 다시 해요.'); }).finally(() => DRV.saving = false);
 }, 60000);
 $('#drvMenu').onclick = () => { showTab('mine'); msSet('drive'); };
